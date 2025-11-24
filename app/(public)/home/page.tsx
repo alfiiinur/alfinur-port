@@ -1,5 +1,9 @@
 import { HeroGrids } from "./grids/heroGrids";
+import AboutPage from "./sections/about";
 import { SectionHeader } from "./sections/headers";
+import PortfolioSection from "./sections/portfolio";
+import { ProcessSection } from "./sections/process";
+import ServicesSection from "./sections/services";
 
 export default function HomePage() {
   return (
@@ -8,6 +12,10 @@ export default function HomePage() {
         <div>
           <SectionHeader />
           <HeroGrids />
+          <PortfolioSection />
+          <ServicesSection />
+          <ProcessSection />
+          <AboutPage />
         </div>
       </section>
     </>

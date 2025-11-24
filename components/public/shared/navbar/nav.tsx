@@ -13,13 +13,12 @@ export const Navbar = () => {
     { name: "About", href: "/about" },
     { name: "Projects", href: "/projects" },
     { name: "Blog", href: "/blog" },
-    { name: "Experience", href: "/experience" },
     { name: "Services", href: "/services" },
     { name: "Contact", href: "/contact" },
   ];
 
   return (
-    <nav className="hidden lg:flex w-full py-4 px-8 justify-between items-center  bg-white dark:bg-black">
+    <nav className=" hidden lg:flex w-full py-4 px-8 justify-between items-center  bg-white dark:bg-black">
       {/* Logo */}
       <div className="font-anton text-2xl font-bold dark:text-white">
         MyPortfolio
