@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import SocialSticker from "../SocialStikers";
 import { Separator } from "@/components/ui/separator";
+import { HighlightTeks } from "../HighlightTeks";
 
 export default function FooterMain() {
   return (
@@ -20,6 +21,7 @@ export default function FooterMain() {
               alfinurdanialin900@gmail.com
             </a>
           </p>
+          {/* <HighlightTeks textHighlight="Let’s create something amazing together." /> */}
         </div>
         <div className="md:col-span-5 flex flex-col justify-between h-full mt-10">
           <div>

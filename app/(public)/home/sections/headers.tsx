@@ -1,8 +1,15 @@
+import { Button } from "@/components/ui/moving-border";
+
 export const SectionHeader = () => {
   return (
-    <div className="text-center max-w-7xl mx-auto py-12 px-4">
-      <div className="inline-block border border-gray-300 rounded-full px-4 py-1 text-xs font-bold tracking-widest uppercase mb-6">
-        🙌 HALLO
+    <div className="text-center max-w-7xl mx-auto py-12 px-4 mt-10">
+      <div>
+        <Button
+          borderRadius="1.75rem"
+          className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200 dark:border-slate-800 px-2 py-1 text-xs font-bold tracking-widest uppercase mb-6 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+        >
+          HALLO EVERYONE
+        </Button>
       </div>
       <h2 className="font-anton text-5xl md:text-7xl font-extrabold mb-6 tracking-tight text-balance text-black dark:text-white">
         I,m Alfi Nur Danialin <br /> a{" "}

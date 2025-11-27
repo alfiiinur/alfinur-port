@@ -1,6 +1,7 @@
 import { timelineData } from "@/components/dataMock/timelineWork";
 import { Timeline } from "@/components/public/shared/Timeline";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
 export const AboutHero = () => {
@@ -9,7 +10,7 @@ export const AboutHero = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Kiri: Judul About Me + Nama & Bio (dipindah ke sini) */}
         <div className="md:col-span-3 flex flex-col justify-between">
-          <h1 className="text-anton text-[5rem] md:text-[7rem] font-black leading-none tracking-tighter uppercase italic">
+          <h1 className="text-anton text-[5rem] md:text-[7rem] font-black leading-none tracking-tighter uppercase italic text-black dark:text-white">
             About <br /> Me
           </h1>
 
@@ -19,11 +20,29 @@ export const AboutHero = () => {
               <h2 className="text-anton text-3xl md:text-3xl font-black uppercase tracking-tighter italic text-black dark:text-white">
                 ALFI NUR DANIALIN
               </h2>
-              <p className="mt-4 text-sm md:text-base text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+              <p className="mt-4 text-sm md:text-base text-gray-600 dark:text-gray-400 font-medium leading-relaxed ">
                 I am an IT Developer based in Indonesia, passionate about
                 creating innovative and efficient IT solutions that drive
                 success.
               </p>
+            </div>
+            <div className="relative h-48 w-full rounded-3xl overflow-hidden">
+              <Image
+                src="/img-alfinur/IMG_2280.JPG"
+                alt="Detail"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-48 w-full rounded-3xl overflow-hidden">
+              <video
+                src="/img-alfinur/IMG_2252.MOV"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
@@ -44,7 +63,7 @@ export const AboutHero = () => {
           {/* Foto kecil */}
           <div className="relative h-48 w-full rounded-3xl overflow-hidden">
             <Image
-              src="/img-alfinur/IMG_5870.JPG"
+              src="/img-alfinur/IMG_2556.JPG"
               alt="Detail"
               fill
               className="object-cover"
@@ -54,22 +73,44 @@ export const AboutHero = () => {
           {/* Timeline reusable */}
           <div className="mt-8">
             <div>
-              <h3 className="text-xl font-bold mb-2 italic">WORK NOW </h3>
+              <h3 className="text-xl font-bold mb-2 italic text-black dark:text-white">
+                WORK NOW{" "}
+              </h3>
             </div>
-            <div>
-              <h3 className="text-xl font-bold mb-2 italic">IT PERTAMINA</h3>
-              <div className="gap-2 ">
-                <Badge className="bg-green-100 text-green-800 mb-2 mt-1">
+            <div className=" rounded-2xl p-2 bg-black dark:bg-white mb-4 shadow-lg hover:shadow-2xl transition-shadow ">
+              <h3 className="text-xl font-bold mb-2 italic text-white dark:text-black text-center">
+                IT PERTAMINA
+              </h3>
+              <div className="flex justify-center items-center gap-2 mb-4 ">
+                <Badge className="bg-green-100 text-green-800 ">
                   IT Developer
                 </Badge>
+
+                <Badge className="bg-blue-100 text-blue-800 ">2025-Now</Badge>
               </div>
 
-              <Badge className="bg-blue-100 text-blue-800 mb-4">2025-Now</Badge>
-
-              <p className="text-black text-sm font-medium leading-relaxed font-poppins dark:text-white">
+              <p className="text-white text-sm font-medium leading-relaxed font-poppins dark:text-black">
                 I work in Pertamina Jagir Surabaya as an IT Developer. My role
                 involves developing and maintaining IT systems to support the
                 companys operations and enhance efficiency.
+              </p>
+            </div>
+            <div className=" rounded-2xl p-2 bg-black dark:bg-white mb-4 shadow-lg hover:shadow-2xl transition-shadow ">
+              <h3 className="text-xl font-bold mb-2 italic text-white dark:text-black text-center">
+                DESAIN GRAPHIC
+              </h3>
+              <div className="flex justify-center items-center gap-2 mb-4 ">
+                <Badge className="bg-yellow-100 text-yellow-800 ">
+                  Desain Graphic
+                </Badge>
+
+                <Badge className="bg-red-100 text-red-800 ">2025-Now</Badge>
+              </div>
+
+              <p className="text-white text-sm font-medium leading-relaxed font-poppins dark:text-black">
+                I also work as a freelance graphic designer, creating visual
+                content for various clients. This role allows me to utilize my
+                creativity and design skills to deliver impactful designs.
               </p>
             </div>
           </div>

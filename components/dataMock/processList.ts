@@ -1,8 +1,9 @@
 export const processSteps = [
-  { id: 1, label: "Sketch Design" },
-  { id: 2, label: "Design Development" },
-  { id: 3, label: "Development Application" },
-  { id: 4, label: "Interior Design" },
-  { id: 5, label: "Building approval plans + documentation" },
-  { id: 6, label: "Construction plans + documentation" },
+  { id: 1, label: "Diskusi & Analisis Kebutuhan" },
+  { id: 2, label: "Proposal + Estimasi Biaya & Timeline" },
+  { id: 3, label: "Desain UI/UX + Review" },
+  { id: 4, label: "Development" },
+  { id: 5, label: "Testing" },
+  { id: 6, label: "Launch + Training" },
+  { id: 7, label: "Maintenance & Support" },
 ];

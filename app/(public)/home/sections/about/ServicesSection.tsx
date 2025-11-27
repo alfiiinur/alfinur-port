@@ -28,8 +28,10 @@ export const ServicesSection = () => {
         {/* KIRI: Judul & Gambar Besar */}
         <div className="flex flex-col gap-8">
           <div>
-            <h2 className="text-5xl font-black mb-6">Our Services</h2>
-            <p className="text-sm text-gray-600 max-w-md">
+            <h2 className="text-5xl font-black mb-6 text-black dark:text-white">
+              Our Services
+            </h2>
+            <p className="text-sm text-black dark:text-white max-w-md">
               At Britto Charette, we offer a comprehensive range of services to
               bring your interior design vision to life. Each service is
               tailored to meet the unique needs of our clients.
