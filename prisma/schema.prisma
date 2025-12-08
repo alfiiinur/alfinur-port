@@ -1,0 +1,154 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects      Project[]
+  blogs         Blog[]
+  designs       Design[]
+  adminComments Comment[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  thumbnail   String
+  images      String[]
+  media       String[]
+  category    String
+  client      String?
+  link        String?
+  tags        String[]
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+}
+
+model Blog {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  thumbnail   String
+  media       String[]
+  category    String
+  tags        String[]
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id])
+  comments Comment[]
+  views    BlogView[]
+}
+
+model BlogView {
+  id        String   @id @default(uuid())
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, ipAddress])
+}
+
+model Design {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String?
+  image       String
+  media       String[]
+  category    String
+  tags        String[]
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  name      String
+  message   String
+  ipAddress String
+  approved  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+
+  // Admin reply
+  isAdminReply Boolean @default(false)
+  adminId      String?
+  admin        User?   @relation(fields: [adminId], references: [id])
+
+  // Reactions
+  reactions CommentReaction[]
+}
+
+model CommentReaction {
+  id        String       @id @default(uuid())
+  type      ReactionType
+  ipAddress String
+  createdAt DateTime     @default(now())
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, ipAddress, type])
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+  LOVE
+  LAUGH
+  SAD
+  ANGRY
+}
+
+model CommentRateLimit {
+  id           String    @id @default(uuid())
+  ipAddress    String
+  blogId       String
+  commentCount Int       @default(0)
+  lastComment  DateTime  @default(now())
+  blockedUntil DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([ipAddress, blogId])
+}
