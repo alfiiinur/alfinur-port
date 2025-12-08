@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/public/theme-provider";
+import { Metadata } from "next";
 import {
   Anton,
   Libre_Baskerville,
@@ -6,9 +7,6 @@ import {
   Stack_Sans_Notch,
 } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/public/theme-provider";
-import { Header } from "@/components/public/shared/navbar/header";
-import Bottom from "@/components/public/shared/footer/bottom";
 
 const fontStackSans = Stack_Sans_Notch({
   variable: "--font-stack-sans-notch",
@@ -56,10 +54,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-
           {children}
-          <Bottom />
         </ThemeProvider>
       </body>
     </html>

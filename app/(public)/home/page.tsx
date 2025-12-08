@@ -1,10 +1,11 @@
+import AboutPageSection from "../about/about";
+import TestimonialPage from "../services/components/Testimonial";
 import { HeroGrids } from "./grids/heroGrids";
-import AboutPage from "./sections/about";
+
 import { SectionHeader } from "./sections/headers";
 import PortfolioSection from "./sections/portfolio";
 import { ProcessSection } from "./sections/process";
 import ServicesSection from "./sections/services";
-import TestimonialPage from "./sections/testimonial";
 
 export default function HomePage() {
   return (
@@ -16,7 +17,7 @@ export default function HomePage() {
           <PortfolioSection />
           <ServicesSection />
           <ProcessSection />
-          <AboutPage />
+          <AboutPageSection />
           <TestimonialPage />
         </div>
       </section>

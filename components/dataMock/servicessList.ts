@@ -2,7 +2,7 @@
 export const services = [
   "Logo Design",
   "Visual Refreshment",
-  "Brand Guidelines", // Ini yang ada icon hijaunya
+  "Brand Guidelines", 
   "Infographic Design",
   "Brand Implementation",
   "Social Media Design",

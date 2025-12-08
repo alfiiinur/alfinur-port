@@ -7,6 +7,7 @@ import {
   Briefcase,
   CommandIcon,
   FileDown,
+  GalleryVerticalEnd,
   Home,
   Mail,
   PenTool,
@@ -46,7 +47,13 @@ export const Navbar = () => {
       icon: Briefcase,
       tooltip: "Projects",
     },
-    { name: "Blog", href: "/blog", icon: PenTool, tooltip: "Blog" },
+    { name: "Blog", href: "/blogs", icon: PenTool, tooltip: "Blog" },
+    {
+      name: "Design",
+      href: "/design",
+      icon: GalleryVerticalEnd,
+      tooltip: "Design",
+    },
     { name: "Services", href: "/services", icon: Wrench, tooltip: "Services" },
     { name: "Contact", href: "/contact", icon: Mail, tooltip: "Contact" },
   ];

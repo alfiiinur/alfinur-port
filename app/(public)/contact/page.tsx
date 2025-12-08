@@ -1,7 +1,15 @@
+import ContactServis from "./contact_detail/contact_servis";
+import { ContactSection } from "./contact_detail/contact_page";
+import LocationSection from "@/components/public/shared/maps/LocationMaps";
+import FAQPage from "@/components/public/shared/faq/Faq";
+
 export default function ContactPage() {
   return (
     <div>
-      <h1>Contact Us</h1>
+      <ContactServis />
+      <ContactSection />
+      <LocationSection/>
+      <FAQPage/>
     </div>
   );
 }
