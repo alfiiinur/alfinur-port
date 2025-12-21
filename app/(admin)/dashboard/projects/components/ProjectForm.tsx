@@ -8,9 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import MediaUpload from "@/components/admin/MediaUpload";
 import MultiMediaUpload from "@/components/admin/MultiMediaUpload";
 import PreviewModal from "@/components/admin/PreviewModal";
+import SectionBuilder, { ProjectSection } from "./SectionBuilder";
 import { createProject, updateProject } from "../actions";
 import { useState, useRef } from "react";
-import { Loader2, Eye } from "lucide-react";
+import { Loader2, Eye, LayoutList, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
   "Web Design",
@@ -31,6 +33,8 @@ interface Project {
   link: string | null;
   tags: string[];
   published: boolean;
+  hasSections?: boolean;
+  sections?: ProjectSection[];
 }
 
 interface ProjectFormProps {
@@ -42,6 +46,11 @@ export default function ProjectForm({ project }: ProjectFormProps) {
   const [thumbnail, setThumbnail] = useState(project?.thumbnail || "");
   const [media, setMedia] = useState<string[]>(project?.media || []);
   const [showPreview, setShowPreview] = useState(false);
+  const [hasSections, setHasSections] = useState(project?.hasSections || false);
+  const [sections, setSections] = useState<ProjectSection[]>(
+    project?.sections || []
+  );
+  const [sectionsExpanded, setSectionsExpanded] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const getFormData = () => {
@@ -59,6 +68,8 @@ export default function ProjectForm({ project }: ProjectFormProps) {
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
+      hasSections,
+      sections,
     };
   };
 
@@ -71,6 +82,8 @@ export default function ProjectForm({ project }: ProjectFormProps) {
     setIsLoading(true);
     formData.set("thumbnail", thumbnail);
     formData.set("media", JSON.stringify(media));
+    formData.set("hasSections", hasSections.toString());
+    formData.set("sections", JSON.stringify(sections));
 
     try {
       if (project) {
@@ -134,11 +147,15 @@ export default function ProjectForm({ project }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Thumbnail *</Label>
+              <Label>Thumbnail (Image or Video) *</Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                Upload an image or video as the project cover
+              </p>
               <MediaUpload
                 value={thumbnail}
                 onChange={setThumbnail}
-                accept="image"
+                accept="all"
+                mediaType="thumbnail"
               />
             </div>
 
@@ -183,6 +200,73 @@ export default function ProjectForm({ project }: ProjectFormProps) {
                 defaultValue={project?.tags.join(", ")}
                 placeholder="web, design, responsive"
               />
+            </div>
+
+            {/* Custom Sections Toggle */}
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="hasSections"
+                    checked={hasSections}
+                    onChange={(e) => setHasSections(e.target.checked)}
+                    className="h-4 w-4 rounded border-input"
+                  />
+                  <div>
+                    <Label
+                      htmlFor="hasSections"
+                      className="font-medium flex items-center gap-2"
+                    >
+                      <LayoutList className="w-4 h-4" />
+                      Enable Custom Sections
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Add detailed sections like process steps, features, etc.
+                      with bento grid media
+                    </p>
+                  </div>
+                </div>
+                {hasSections && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSectionsExpanded(!sectionsExpanded)}
+                  >
+                    {sectionsExpanded ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              <AnimatePresence>
+                {hasSections && sectionsExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-4 border-t">
+                      <SectionBuilder
+                        sections={sections}
+                        onChange={setSections}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {hasSections && !sectionsExpanded && sections.length > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  {sections.length} section(s) configured. Click expand to edit.
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-2">

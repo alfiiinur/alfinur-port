@@ -1,11 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import ProjectHero from "./components/ProjectHero";
-import ProjectsSection from "./components/ProjectsSection";
+import ProjectsPage from "@/app/(public)/projects/components/ProjectsPage";
 
 export const metadata = {
-  title: "Projects | Our Creative Portfolio",
+  title: "Projects | Alfi Nur Portfolio",
   description:
-    "Explore our portfolio of innovative designs and digital solutions.",
+    "Explore my portfolio of innovative designs and digital solutions.",
 };
 
 async function getProjects() {
@@ -30,10 +29,5 @@ export default async function Projects() {
     getCategories(),
   ]);
 
-  return (
-    <main className="min-h-screen">
-      <ProjectHero />
-      <ProjectsSection projects={projects} categories={categories} />
-    </main>
-  );
+  return <ProjectsPage projects={projects} categories={categories} />;
 }

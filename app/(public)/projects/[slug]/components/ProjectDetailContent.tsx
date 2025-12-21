@@ -1,6 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, ExternalLink, User, Video } from "lucide-react";
+import ProjectSections from "./ProjectSections";
+
+interface BentoItem {
+  id: string;
+  type: "image" | "video";
+  url: string;
+  size: "small" | "medium" | "large" | "wide" | "tall";
+  caption?: string;
+}
+
+interface ProjectSection {
+  id: string;
+  title: string;
+  content: string;
+  bentoItems: BentoItem[];
+  order: number;
+}
 
 interface Project {
   title: string;
@@ -10,6 +27,8 @@ interface Project {
   link: string | null;
   tags: string[];
   createdAt: Date;
+  hasSections?: boolean;
+  sections?: ProjectSection[] | null;
 }
 
 interface ProjectDetailContentProps {
@@ -59,86 +78,104 @@ export default function ProjectDetailContent({
     { year: "numeric", month: "long" }
   );
 
+  // Parse sections if it's a JSON string
+  const sections: ProjectSection[] = project.sections
+    ? typeof project.sections === "string"
+      ? JSON.parse(project.sections)
+      : project.sections
+    : [];
+
   return (
-    <section className="py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 space-y-8">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">About This Project</h2>
-              <p className="text-muted-foreground leading-relaxed text-lg whitespace-pre-wrap">
-                {project.description}
-              </p>
-            </div>
-
-            {project.media.length > 0 && (
+    <>
+      <section className="py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-8">
               <div>
-                <h2 className="text-xl font-semibold mb-4">Project Gallery</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {project.media.map((url, index) => (
-                    <MediaItem
-                      key={index}
-                      url={url}
-                      title={project.title}
-                      index={index}
-                    />
-                  ))}
-                </div>
+                <h2 className="text-xl font-semibold mb-4">
+                  About This Project
+                </h2>
+                <p className="text-muted-foreground leading-relaxed text-lg whitespace-pre-wrap">
+                  {project.description}
+                </p>
               </div>
-            )}
-          </div>
 
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6 p-6 rounded-2xl bg-card border">
-              <h3 className="font-semibold text-lg">Project Details</h3>
-              {project.client && (
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                    <User className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Client</p>
-                    <p className="font-medium">{project.client}</p>
-                  </div>
-                </div>
-              )}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                  <Calendar className="w-5 h-5 text-muted-foreground" />
-                </div>
+              {project.media.length > 0 && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Date</p>
-                  <p className="font-medium">{formattedDate}</p>
-                </div>
-              </div>
-              {project.tags.length > 0 && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-3">Tags</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
-                        {tag}
-                      </Badge>
+                  <h2 className="text-xl font-semibold mb-4">
+                    Project Gallery
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {project.media.map((url, index) => (
+                      <MediaItem
+                        key={index}
+                        url={url}
+                        title={project.title}
+                        index={index}
+                      />
                     ))}
                   </div>
                 </div>
               )}
-              {project.link && (
-                <Button asChild className="w-full">
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Live Project
-                  </a>
-                </Button>
-              )}
+            </div>
+
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-6 p-6 rounded-2xl bg-card border">
+                <h3 className="font-semibold text-lg">Project Details</h3>
+                {project.client && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <User className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Client</p>
+                      <p className="font-medium">{project.client}</p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                    <Calendar className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date</p>
+                    <p className="font-medium">{formattedDate}</p>
+                  </div>
+                </div>
+                {project.tags.length > 0 && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-3">Tags</p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {project.link && (
+                  <Button asChild className="w-full">
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View Live Project
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Custom Sections with Sidebar Navigation */}
+      {project.hasSections && sections.length > 0 && (
+        <ProjectSections sections={sections} projectTitle={project.title} />
+      )}
+    </>
   );
 }
