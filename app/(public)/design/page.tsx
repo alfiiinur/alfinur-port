@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import DesignHero from "./components/DesignHero";
-import DesignGrid from "./components/DesignGrid";
+import DesignPageClient from "./components/DesignPageClient";
 
 export const metadata = {
   title: "Design Gallery | Creative Works",
@@ -11,6 +10,10 @@ async function getDesigns() {
   return prisma.design.findMany({
     where: { published: true },
     orderBy: { createdAt: "desc" },
+    include: {
+      _count: { select: { likes: true } },
+      author: { select: { name: true } },
+    },
   });
 }
 
@@ -23,18 +26,35 @@ async function getCategories() {
   return ["All", ...designs.map((d) => d.category)];
 }
 
+async function getFeaturedDesigns() {
+  // Get top 5 most liked designs for carousel
+  const designs = await prisma.design.findMany({
+    where: { published: true },
+    include: {
+      _count: { select: { likes: true } },
+      author: { select: { name: true } },
+    },
+  });
+
+  if (designs.length === 0) return [];
+
+  // Sort by likes count and get top 5
+  const sorted = designs.sort((a, b) => b._count.likes - a._count.likes);
+  return sorted.slice(0, 5);
+}
+
 export default async function Designs() {
-  const [designs, categories] = await Promise.all([
+  const [designs, categories, featuredDesigns] = await Promise.all([
     getDesigns(),
     getCategories(),
+    getFeaturedDesigns(),
   ]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <DesignHero />
-        <DesignGrid designs={designs} categories={categories} />
-      </div>
-    </div>
+    <DesignPageClient
+      designs={designs}
+      categories={categories}
+      featuredDesigns={featuredDesigns}
+    />
   );
 }

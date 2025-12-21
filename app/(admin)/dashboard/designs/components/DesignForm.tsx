@@ -19,7 +19,47 @@ const categories = [
   "Logo",
   "Poster",
   "Social Media",
+  "Product",
 ];
+
+// Size guide per category
+const categorySizeGuide: Record<
+  string,
+  { width: number; height: number; ratio: string; note: string }
+> = {
+  "UI Design": {
+    width: 1920,
+    height: 1080,
+    ratio: "16:9",
+    note: "Desktop/Web UI",
+  },
+  "Graphic Design": {
+    width: 1600,
+    height: 1200,
+    ratio: "4:3",
+    note: "General graphic",
+  },
+  Illustration: {
+    width: 2000,
+    height: 2000,
+    ratio: "1:1",
+    note: "Square artwork",
+  },
+  Logo: { width: 1080, height: 1080, ratio: "1:1", note: "Square logo" },
+  Poster: { width: 2480, height: 3508, ratio: "A4", note: "Print-ready A4" },
+  "Social Media": {
+    width: 1080,
+    height: 1080,
+    ratio: "1:1",
+    note: "Instagram/Social",
+  },
+  Product: {
+    width: 1920,
+    height: 1080,
+    ratio: "16:9",
+    note: "Product showcase",
+  },
+};
 
 interface Design {
   id: string;
@@ -41,7 +81,17 @@ export default function DesignForm({ design }: DesignFormProps) {
   const [image, setImage] = useState(design?.image || "");
   const [media, setMedia] = useState<string[]>(design?.media || []);
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(
+    design?.category || ""
+  );
   const formRef = useRef<HTMLFormElement>(null);
+
+  const currentSizeGuide = categorySizeGuide[selectedCategory] || {
+    width: 1600,
+    height: 1200,
+    ratio: "4:3",
+    note: "Select category for size guide",
+  };
 
   const getFormData = () => {
     if (!formRef.current) return null;
@@ -104,7 +154,8 @@ export default function DesignForm({ design }: DesignFormProps) {
                 <select
                   id="category"
                   name="category"
-                  defaultValue={design?.category}
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
                   required
                   className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                 >
@@ -120,7 +171,24 @@ export default function DesignForm({ design }: DesignFormProps) {
 
             <div className="space-y-2">
               <Label>Main Image / Video *</Label>
-              <MediaUpload value={image} onChange={setImage} accept="all" />
+              {/* Dynamic Size Guide based on Category */}
+              <div className="mb-3 p-3 bg-muted/50 rounded-lg border border-dashed">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  📐 Recommended Size for {selectedCategory || "Design"}:
+                </p>
+                <p className="text-lg font-bold text-primary">
+                  {currentSizeGuide.width} x {currentSizeGuide.height}px
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Ratio: {currentSizeGuide.ratio} • {currentSizeGuide.note}
+                </p>
+              </div>
+              <MediaUpload
+                value={image}
+                onChange={setImage}
+                accept="all"
+                mediaType="design"
+              />
             </div>
 
             <div className="space-y-2">
@@ -128,6 +196,11 @@ export default function DesignForm({ design }: DesignFormProps) {
               <p className="text-sm text-muted-foreground mb-2">
                 Add more images or videos to showcase your design
               </p>
+              {/* Size guide info for gallery */}
+              <div className="mb-2 text-xs text-muted-foreground bg-muted/30 px-3 py-2 rounded">
+                💡 Gallery images should match the main image size (
+                {currentSizeGuide.width} x {currentSizeGuide.height}px)
+              </div>
               <MultiMediaUpload
                 value={media}
                 onChange={setMedia}

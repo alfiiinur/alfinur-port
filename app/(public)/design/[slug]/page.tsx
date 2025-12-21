@@ -1,8 +1,16 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Video, ImageIcon } from "lucide-react";
+import { ArrowLeft, Video, ImageIcon, Grid, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import PostNavigation from "@/components/public/shared/PostNavigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface DesignDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -17,6 +25,22 @@ async function getRelatedDesigns(slug: string, category: string) {
     where: { slug: { not: slug }, category, published: true },
     take: 3,
   });
+}
+
+async function getAdjacentDesigns(currentDate: Date) {
+  const [previous, next] = await Promise.all([
+    prisma.design.findFirst({
+      where: { published: true, createdAt: { lt: currentDate } },
+      orderBy: { createdAt: "desc" },
+      select: { slug: true, title: true, image: true },
+    }),
+    prisma.design.findFirst({
+      where: { published: true, createdAt: { gt: currentDate } },
+      orderBy: { createdAt: "asc" },
+      select: { slug: true, title: true, image: true },
+    }),
+  ]);
+  return { previous, next };
 }
 
 export async function generateMetadata({ params }: DesignDetailPageProps) {
@@ -59,19 +83,47 @@ export default async function DesignDetailPage({
   const design = await getDesign(slug);
   if (!design) notFound();
 
-  const relatedDesigns = await getRelatedDesigns(slug, design.category);
+  const [relatedDesigns, { previous, next }] = await Promise.all([
+    getRelatedDesigns(slug, design.category),
+    getAdjacentDesigns(design.createdAt),
+  ]);
   const isMainVideo = design.image?.match(/\.(mp4|webm|ogg)$/i);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16 md:py-24">
-        <Link
-          href="/design"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Designs</span>
-        </Link>
+        {/* Back Navigation with Options */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 px-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Designs</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem asChild>
+              <Link
+                href="/design"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Grid className="w-4 h-4" />
+                Design Grid
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/design/showcase"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Play className="w-4 h-4" />
+                Design Showcase
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <div className="max-w-4xl mx-auto">
           <Badge variant="secondary" className="mb-4">
@@ -133,6 +185,9 @@ export default async function DesignDetailPage({
               ))}
             </div>
           )}
+
+          {/* Previous/Next Navigation */}
+          <PostNavigation previous={previous} next={next} basePath="/design" />
 
           {/* Related */}
           {relatedDesigns.length > 0 && (

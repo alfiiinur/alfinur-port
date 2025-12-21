@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { ImageIcon, Video } from "lucide-react";
+import { ImageIcon, Video, Heart } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Design {
   id: string;
@@ -9,14 +12,51 @@ interface Design {
   image: string;
   category: string;
   tags: string[];
+  _count?: { likes: number };
 }
 
 interface DesignCardProps {
   design: Design;
+  onLikeChange?: (id: string, count: number) => void;
 }
 
-export default function DesignCard({ design }: DesignCardProps) {
+export default function DesignCard({ design, onLikeChange }: DesignCardProps) {
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(design._count?.likes || 0);
+  const [isLoading, setIsLoading] = useState(false);
   const isVideo = design.image?.match(/\.(mp4|webm|ogg)$/i);
+
+  useEffect(() => {
+    // Check if user already liked this design
+    fetch(`/api/designs/${design.id}/like`)
+      .then((res) => res.json())
+      .then((data) => {
+        setLiked(data.liked);
+        setLikeCount(data.count);
+      })
+      .catch(console.error);
+  }, [design.id]);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/designs/${design.id}/like`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      setLiked(data.liked);
+      setLikeCount(data.count);
+      onLikeChange?.(design.id, data.count);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Link href={`/design/${design.slug}`} className="group">
@@ -53,6 +93,24 @@ export default function DesignCard({ design }: DesignCardProps) {
             </div>
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+
+          {/* Like Button */}
+          <button
+            onClick={handleLike}
+            disabled={isLoading}
+            className="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 dark:bg-black/70 backdrop-blur-sm shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors ${
+                liked
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600 dark:text-gray-300"
+              }`}
+            />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              {likeCount}
+            </span>
+          </button>
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
