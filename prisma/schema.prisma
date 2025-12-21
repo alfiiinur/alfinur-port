@@ -11,14 +11,58 @@ model User {
   name      String
   email     String   @unique
   password  String
+  avatar    String?
+  bio       String?
+  timezone  String   @default("Asia/Jakarta")
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projects      Project[]
-  blogs         Blog[]
-  designs       Design[]
-  adminComments Comment[]
+  projects       Project[]
+  blogs          Blog[]
+  designs        Design[]
+  adminComments  Comment[]
+  calendarEvents CalendarEvent[]
+  calendars      Calendar[]
+  notes          Note[]
+  chatSessions   ChatSession[]
+  chatMessages   ChatMessage[]
+  sessions       UserSession[]
+  loginHistory   LoginHistory[]
+}
+
+model UserSession {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceName   String?
+  deviceType   String?  // desktop, mobile, tablet
+  browser      String?
+  ipAddress    String?
+  lastActive   DateTime @default(now())
+  isCurrentSession Boolean @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model LoginHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  browser   String?
+  device    String?
+  location  String?
+  status    LoginStatus @default(SUCCESS)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum LoginStatus {
+  SUCCESS
+  FAILED
 }
 
 enum Role {
@@ -39,6 +83,8 @@ model Project {
   link        String?
   tags        String[]
   published   Boolean  @default(false)
+  hasSections Boolean  @default(false)
+  sections    Json?    // Custom sections with bento grid media
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -92,6 +138,18 @@ model Design {
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
+  likes    DesignLike[]
+}
+
+model DesignLike {
+  id        String   @id @default(uuid())
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  designId String
+  design   Design @relation(fields: [designId], references: [id], onDelete: Cascade)
+
+  @@unique([designId, ipAddress])
 }
 
 model Comment {
@@ -151,4 +209,404 @@ model CommentRateLimit {
   updatedAt    DateTime  @updatedAt
 
   @@unique([ipAddress, blogId])
+}
+
+model CalendarEvent {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?
+  startDate     DateTime
+  endDate       DateTime?
+  allDay        Boolean   @default(false)
+  color         String    @default("#3b82f6")
+  calendarId    String    @default("personal")
+  guests        String[]
+  attachments   String[]  // file URLs (images, videos, documents)
+  reminder      Int?      // minutes before event
+  googleEventId String?   // for Google Calendar sync
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Calendar {
+  id        String   @id @default(uuid())
+  name      String
+  color     String   @default("#3b82f6")
+  isVisible Boolean  @default(true)
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Note {
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  color       String    @default("#fef08a")
+  isPinned    Boolean   @default(false)
+  attachments String[]  // file URLs (images, documents)
+  noteDate    DateTime? // optional date for calendar integration
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==================== LIVE CHAT SYSTEM ====================
+
+model ChatSession {
+  id           String        @id @default(uuid())
+  visitorName  String?
+  visitorEmail String?
+  visitorIp    String
+  status       ChatStatus    @default(ACTIVE)
+  isAiEnabled  Boolean       @default(true) // Toggle AI auto-reply
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  closedAt     DateTime?
+
+  messages ChatMessage[]
+
+  // Assigned admin (optional)
+  assignedToId String?
+  assignedTo   User?   @relation(fields: [assignedToId], references: [id])
+}
+
+enum ChatStatus {
+  ACTIVE
+  WAITING    // Waiting for admin
+  RESOLVED
+  CLOSED
+}
+
+model ChatMessage {
+  id          String        @id @default(uuid())
+  content     String
+  sender      MessageSender
+  isRead      Boolean       @default(false)
+  attachments String[]      // File/image URLs
+  metadata    Json?         // For AI context, quick reply info, etc
+  createdAt   DateTime      @default(now())
+
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  // If sent by admin
+  adminId String?
+  admin   User?   @relation(fields: [adminId], references: [id])
+}
+
+enum MessageSender {
+  VISITOR
+  ADMIN
+  AI
+}
+
+model QuickReply {
+  id        String   @id @default(uuid())
+  title     String   // Display name
+  shortcut  String   @unique // e.g., "/price", "/services"
+  content   String   // The actual reply content
+  category  String   // e.g., "pricing", "services", "greeting"
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== TASK MANAGEMENT SYSTEM ====================
+
+model Task {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  status      TaskStatus   @default(NOT_STARTED)
+  priority    TaskPriority @default(MEDIUM)
+  paymentStatus PaymentStatus?
+  startDate   DateTime     @default(now())
+  dueDate     DateTime?
+  tags        String[]
+  attachments String[]     // file URLs (images, documents)
+  isCompleted Boolean      @default(false)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Parent task for subtasks
+  parentId    String?
+  parent      Task?        @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks    Task[]       @relation("TaskSubtasks")
+
+  // Assignees
+  assignees   TaskAssignee[]
+}
+
+model TaskAssignee {
+  id        String   @id @default(uuid())
+  name      String
+  avatar    String?
+  email     String?
+  createdAt DateTime @default(now())
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, email])
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  TESTING
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum PaymentStatus {
+  NOT_PAID
+  PARTIALLY_PAID
+  PAID
+}
+
+// ==================== FINANCE SYSTEM ====================
+
+model Wallet {
+  id          String   @id @default(uuid())
+  name        String
+  type        WalletType @default(CASH)
+  balance     Float    @default(0)
+  currency    String   @default("IDR")
+  color       String   @default("#3b82f6")
+  icon        String   @default("wallet")
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId       String
+  transactions Transaction[]
+  bills        Bill[]
+}
+
+enum WalletType {
+  CASH
+  BANK
+  E_WALLET
+  CREDIT_CARD
+  INVESTMENT
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  amount      Float
+  type        TransactionType
+  category    String
+  description String?
+  date        DateTime        @default(now())
+  attachments String[]        // receipt images for future OCR
+  tags        String[]
+  isRecurring Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  billId String?
+  bill   Bill?   @relation(fields: [billId], references: [id])
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+model Bill {
+  id          String     @id @default(uuid())
+  name        String
+  amount      Float
+  dueDate     DateTime
+  category    String
+  description String?
+  status      BillStatus @default(PENDING)
+  isRecurring Boolean    @default(false)
+  recurringType RecurringType?
+  reminder    Int?       // days before due date
+  attachments String[]   // bill images for future OCR
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  walletId     String?
+  wallet       Wallet?       @relation(fields: [walletId], references: [id])
+  transactions Transaction[]
+}
+
+enum BillStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum RecurringType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model FinanceCategory {
+  id        String              @id @default(uuid())
+  name      String
+  type      TransactionType
+  icon      String
+  color     String
+  isDefault Boolean             @default(false)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+// ==================== SERVICES MANAGEMENT ====================
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String
+  icon        String   @default("code")
+  price       Float?
+  priceType   PriceType @default(FIXED)
+  currency    String   @default("IDR")
+  features    String[]
+  category    String   // e.g., "Web Development", "Design", "Consulting"
+  isPopular   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum PriceType {
+  FIXED
+  STARTING_FROM
+  HOURLY
+  CONTACT_US
+}
+
+model Testimonial {
+  id          String   @id @default(uuid())
+  name        String
+  role        String?  // e.g., "CEO at Company"
+  company     String?
+  avatar      String?
+  content     String
+  rating      Int      @default(5) // 1-5 stars
+  projectType String?  // e.g., "Website", "Mobile App"
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Faq {
+  id          String   @id @default(uuid())
+  question    String
+  answer      String
+  category    String   // e.g., "General", "Pricing", "Technical"
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== CONTACT SUBMISSIONS ====================
+
+model ContactSubmission {
+  id          String              @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  service     String              // Selected service type
+  budget      String?             // Budget range
+  timeline    String?             // Project timeline
+  message     String
+  status      ContactStatus       @default(NEW)
+  notes       String?             // Admin notes
+  ipAddress   String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+// ==================== SITE SETTINGS ====================
+
+model SiteSettings {
+  id        String   @id @default("default")
+  
+  // Site Info
+  siteName        String   @default("MyPortfolio")
+  siteTagline     String   @default("Creative Developer")
+  siteDescription String   @default("Personal portfolio website")
+  contactEmail    String   @default("")
+  contactPhone    String   @default("")
+  contactAddress  String   @default("")
+  
+  // Social Links
+  socialGithub    String   @default("")
+  socialLinkedin  String   @default("")
+  socialTwitter   String   @default("")
+  socialInstagram String   @default("")
+  socialYoutube   String   @default("")
+  
+  // Navbar Visibility
+  showHome        Boolean  @default(true)
+  showAbout       Boolean  @default(true)
+  showProjects    Boolean  @default(true)
+  showBlogs       Boolean  @default(true)
+  showDesign      Boolean  @default(true)
+  showServices    Boolean  @default(true)
+  showContact     Boolean  @default(true)
+  
+  // Section Visibility
+  showHeroSection       Boolean  @default(true)
+  showTestimonials      Boolean  @default(true)
+  showNewsletter        Boolean  @default(true)
+  showChatWidget        Boolean  @default(true)
+  showFaq               Boolean  @default(true)
+  showGallery           Boolean  @default(true)
+  showFooter            Boolean  @default(true)
+  
+  // SEO
+  metaTitle       String   @default("")
+  metaDescription String   @default("")
+  googleAnalyticsId String @default("")
+  
+  // Maintenance
+  maintenanceMode Boolean  @default(false)
+  maintenanceMessage String @default("We are currently under maintenance. Please check back soon.")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
