@@ -6,6 +6,8 @@ export interface AwardData {
   name: string;
   description: string;
   year: string;
+  certificateUrl?: string; // URL to certificate file (PDF/image)
+  certificateImage?: string; // Preview image of certificate
 }
 
 export interface TestimonialData {

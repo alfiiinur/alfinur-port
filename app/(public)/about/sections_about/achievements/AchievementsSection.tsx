@@ -15,7 +15,7 @@ export default function AchievementsSection({
       {/* Header */}
       <div className="mb-12">
         <SectionLabel text={label} />
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-6 tracking-tight">
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-6 tracking-tight dark:text-white">
           {title}
         </h2>
       </div>
@@ -24,8 +24,9 @@ export default function AchievementsSection({
       <div className="mb-20">
         <div className="hidden md:grid grid-cols-12 gap-4 pb-4 border-b border-gray-200 text-sm font-medium text-gray-400">
           <div className="col-span-4">Name of the award</div>
-          <div className="col-span-7">Description</div>
+          <div className="col-span-6">Description</div>
           <div className="col-span-1 text-right">Year</div>
+          <div className="col-span-1 text-right">Cert</div>
         </div>
 
         <div className="flex flex-col">
@@ -36,7 +37,7 @@ export default function AchievementsSection({
       </div>
 
       {/* Testimonials Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {testimonials.map((item) => (
           <div key={item.id} className="h-full">
             {item.isHighlight ? (
@@ -46,7 +47,7 @@ export default function AchievementsSection({
             )}
           </div>
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }
