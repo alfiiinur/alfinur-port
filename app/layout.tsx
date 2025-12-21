@@ -4,14 +4,14 @@ import {
   Anton,
   Libre_Baskerville,
   Poppins,
-  Stack_Sans_Notch,
+  Space_Grotesk,
 } from "next/font/google";
 import "./globals.css";
 
-const fontStackSans = Stack_Sans_Notch({
+const fontSpaceGrotesk = Space_Grotesk({
   variable: "--font-stack-sans-notch",
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const fontAnton = Anton({
@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontAnton.variable} ${fontLibre.variable} ${fontPoppins.variable} ${fontStackSans.variable} antialiased`}
+        className={`${fontAnton.variable} ${fontLibre.variable} ${fontPoppins.variable} ${fontSpaceGrotesk.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
