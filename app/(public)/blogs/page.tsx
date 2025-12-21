@@ -1,9 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import BlogHero from "./components/BlogHero";
-import BlogSidebar from "./components/BlogSidebar";
-import BlogGrid from "./components/BlogGrid";
-import VisitSection from "./components/VisitSection";
-import Snippet from "@/components/admin/terminal";
+import BlogBentoGrid from "./components/BlogBentoGrid";
 
 export const metadata = {
   title: "Blog | Articles & Insights",
@@ -31,20 +27,24 @@ export default async function Blogs() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <BlogHero />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-3 order-2 lg:order-1">
-            <div className="lg:sticky lg:top-24">
-              <BlogSidebar categories={categories} />
-            </div>
-          </div>
-          <div className="lg:col-span-9 order-1 lg:order-2">
-            <BlogGrid blogs={blogs} categories={categories} />
-          </div>
+      {/* Header */}
+      <div className="container mx-auto px-4 pt-24 md:pt-32 pb-8">
+        <div className="max-w-2xl">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
+            • Alfi Journal
+          </span>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+            Discover Stories & Insights
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Explore articles on web development, design, and technology.
+          </p>
         </div>
-        <VisitSection />
-        <Snippet />
+      </div>
+
+      {/* Bento Grid Content */}
+      <div className="container mx-auto px-4 pb-16">
+        <BlogBentoGrid blogs={blogs} categories={categories} />
       </div>
     </div>
   );

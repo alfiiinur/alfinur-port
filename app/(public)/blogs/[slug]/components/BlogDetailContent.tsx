@@ -21,7 +21,7 @@ function MediaItem({ url, index }: { url: string; index: number }) {
   const isVideo = url?.match(/\.(mp4|webm|ogg)$/i);
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-muted my-6">
+    <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-muted my-4 sm:my-6">
       {isVideo ? (
         <div className="relative">
           <video
@@ -29,8 +29,8 @@ function MediaItem({ url, index }: { url: string; index: number }) {
             controls
             className="w-full aspect-video object-cover"
           />
-          <div className="absolute top-2 left-2 px-2 py-1 bg-black/50 text-white text-xs rounded flex items-center gap-1">
-            <Video className="w-3 h-3" /> Video
+          <div className="absolute top-2 left-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-black/50 text-white text-[10px] sm:text-xs rounded flex items-center gap-1">
+            <Video className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Video
           </div>
         </div>
       ) : (
@@ -67,11 +67,11 @@ export default function BlogDetailContent({ post }: BlogDetailContentProps) {
   };
 
   return (
-    <article className="prose prose-lg dark:prose-invert max-w-none">
-      <div className="not-prose mb-8 flex justify-end">
+    <article className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none">
+      <div className="not-prose mb-6 sm:mb-8 flex justify-end">
         <button
           onClick={handleShare}
-          className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-xs sm:text-sm font-medium"
         >
           {copied ? "Copied!" : "Share"}
         </button>
@@ -84,9 +84,11 @@ export default function BlogDetailContent({ post }: BlogDetailContentProps) {
 
       {/* Media Gallery */}
       {post.media.length > 0 && (
-        <div className="not-prose mt-12">
-          <h3 className="text-xl font-semibold mb-4">Media</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="not-prose mt-8 sm:mt-12">
+          <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+            Media
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {post.media.map((url, index) => (
               <MediaItem key={index} url={url} index={index} />
             ))}
@@ -96,13 +98,13 @@ export default function BlogDetailContent({ post }: BlogDetailContentProps) {
 
       {/* Tags */}
       {post.tags.length > 0 && (
-        <div className="not-prose mt-12 pt-8 border-t border-border">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+        <div className="not-prose mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border">
+          <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 sm:mb-4">
             Tags
           </h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {post.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
+              <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}
