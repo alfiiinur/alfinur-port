@@ -1,36 +1,33 @@
 import RichHeading from "@/components/public/shared/hiding/HidingRich";
 import { InlineImage } from "@/components/public/shared/hiding/InlineImage.";
-const iconTeam = "/img/room.jpg"; // Icon Orang
-const iconTarget = "/img/room.jpg"; // Icon Target/Bunga
-const iconChart = "/img/room.jpg"; // Icon Chart
+
+const iconCode = "/frontend/iconWeb/internet-world.gif";
+const iconDesign = "/frontend/iconWeb/server-security.gif";
+const iconSolution = "/frontend/iconWeb/technical-support.png";
+
 export const RichHeadingSection = () => {
   return (
     <>
       <section className="bg-white min-h-[50vh] flex items-center justify-center mt-20 dark:bg-black">
         <RichHeading
-          badge="About Us"
-          description="We're crafting an all-in-one platform designed for modern marketing teams to track and optimize their growth effortlessly."
+          badge="About Me"
+          description="I'm a passionate IT Developer from Indonesia, dedicated to creating innovative digital solutions that combine creativity with technical excellence."
         >
-          {/* Disini kita menyusun Teks dan Image secara Inline */}
-          A passionate team
+          A creative developer
+          <InlineImage src={iconCode} alt="Code Icon" className="bg-white" />
+          passionate about building
           <InlineImage
-            src={iconTeam}
-            alt="Team Icon"
-            className="bg-orange-50"
+            src={iconDesign}
+            alt="Design Icon"
+            className="bg-white"
           />
-          dedicated to driving your
+          modern web applications with cutting-edge
           <InlineImage
-            src={iconTarget}
-            alt="Success Icon"
-            className="bg-red-50"
-          />
-          success with cutting-edge marketing attribution
-          <InlineImage
-            src={iconChart}
-            alt="Chart Icon"
+            src={iconSolution}
+            alt="Solution Icon"
             className="bg-blue-50"
           />
-          solutions.
+          technologies.
         </RichHeading>
       </section>
     </>

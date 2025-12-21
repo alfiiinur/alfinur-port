@@ -18,11 +18,43 @@ function getClientIP(request: NextRequest): string {
   return "127.0.0.1";
 }
 
-// GET - Fetch comments for a blog
+// GET - Fetch comments for a blog or unreplied comments for admin
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const blogId = searchParams.get("blogId");
+  const unreplied = searchParams.get("unreplied");
 
+  // For admin: get unreplied comments count
+  if (unreplied === "true") {
+    try {
+      // Get comments that don't have admin replies
+      const comments = await prisma.comment.findMany({
+        where: {
+          parentId: null, // Only top-level comments
+          isAdminReply: false, // Not admin comments
+          replies: {
+            none: {
+              isAdminReply: true, // No admin reply exists
+            },
+          },
+        },
+        include: {
+          blog: { select: { title: true, slug: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      });
+
+      return NextResponse.json(comments);
+    } catch {
+      return NextResponse.json(
+        { error: "Failed to fetch unreplied comments" },
+        { status: 500 }
+      );
+    }
+  }
+
+  // For public: get comments for specific blog
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID required" }, { status: 400 });
   }

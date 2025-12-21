@@ -1,7 +1,7 @@
 import { GithubProfile } from "@/components/public/shared/githubprofile/GithubProfile";
 import { AboutHero } from "./sections_about/about/aboutHero";
 import { DetailAboutMe } from "./sections_about/about/detailAboutMe";
-import { ServicesSection } from "./sections_about/about/ServicesSection";
+import TechnicalExpertise from "./sections_about/skills/TechnicalExpertise";
 
 export default function AboutPageSection() {
   return (
@@ -11,8 +11,8 @@ export default function AboutPageSection() {
       {/* <PrincipalsSection /> */}
       {/* <Timeline items={timelineData} /> */}
       <DetailAboutMe />
+      <TechnicalExpertise />
       <GithubProfile />
-      <ServicesSection />
     </main>
   );
 }

@@ -2,7 +2,7 @@ export const galleryItems = [
   {
     id: 1,
     type: "image" as const,
-    src: "/img/room.jpg",
+    src: "/frontend/designGraphic/A4 - 20.png",
     alt: "Campaign shoot",
   },
   {
@@ -14,19 +14,19 @@ export const galleryItems = [
   {
     id: 3,
     type: "image" as const,
-    src: "/img/room.jpg",
+    src: "/frontend/designGraphic/A4 - 23.png",
     alt: "Behind the scenes",
   },
   {
     id: 4,
     type: "image" as const,
-    src: "/img/room.jpg",
+    src: "/frontend/designGraphic/A4 - 27.png",
     alt: "Product close-up",
   },
   {
     id: 5,
     type: "image" as const,
-    src: "/img/room.jpg",
+    src: "/frontend/designGraphic/A4 - 26.png",
     alt: "Studio shot",
   },
 ];

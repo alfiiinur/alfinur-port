@@ -10,6 +10,7 @@ import MissionSection from "./sections_about/section_story";
 
 import { awards, testimonials } from "@/components/dataMock/awardsItems";
 import AchievementsSection from "./sections_about/achievements/AchievementsSection";
+import ServicesSection from "../home/sections/services";
 
 export default function AboutPage() {
   const sampleVideoUrl =
@@ -17,67 +18,45 @@ export default function AboutPage() {
   return (
     <section className="min-h-screen bg-white dark:bg-black">
       <RichHeadingSection />
+
       <MissionSection
-        // 1. Label Link di kiri (Sticky)
         labelLink={{
-          text: "Our Story",
+          text: "My Journey",
           href: "/about",
         }}
-        // 2. Badge kecil di atas judul
-        badge="Award Winning Agency"
-        // 3. Judul Utama (Bisa pakai HTML tag untuk styling spesifik seperti bold/light)
-        title={
-          <>
-            <span className="font-semibold">Our Mission Is Simple</span>{" "}
-            <span className="text-gray-400 font-normal">Yet Powerful: To</span>{" "}
-            <span className="text-gray-400 font-normal">
-              Deliver Work That Inspires, Connects, and Leaves a Lasting Impact!
-            </span>
-          </>
-        }
-        // 4. Deskripsi
-        description={
-          <p>
-            Explore a collection where art and design merge to shape what's
-            next.{" "}
-            <strong className="text-gray-900">
-              This gallery isn't just about visuals
-            </strong>
-            , it's about experiencing the future of creativity in motion.
-          </p>
-        }
-        // 5. Media (Campuran Video & Image)
+        badge="IT Developer"
+        title="My Mission Is Simple: To Create Digital Solutions That Make a Real Impact and Drive Success"
+        description="Explore my portfolio where creativity meets technology. Every project showcases my dedication to building innovative web applications that solve real problems and deliver exceptional user experiences."
         mediaItems={[
           {
             type: "video",
             src: sampleVideoUrl,
             alt: "Creative Process Video",
-            // Anda bisa tambah custom class jika perlu
             className:
               "grayscale hover:grayscale-0 transition-all duration-500",
           },
           {
             type: "image",
-            // Ganti dengan import gambar atau URL
             src: "/img/room.jpg",
-            alt: "Team Portrait",
+            alt: "Workspace",
             className:
               "grayscale hover:grayscale-0 transition-all duration-500",
           },
         ]}
       />
       <AboutPageSection />
+      <AchievementsSection
+        label="Carrer"
+        title="My Achievements"
+        awards={awards}
+        testimonials={testimonials}
+      />
       <SocialGallerySection
         titleDescription={titleDesc}
         items={galleryItems}
         socialLinks={socialLinks}
       />
-      <AchievementsSection
-        label="Our Achievements"
-        title="Awards & Recognition"
-        awards={awards}
-        testimonials={testimonials}
-      />
+      <ServicesSection />
     </section>
   );
 }

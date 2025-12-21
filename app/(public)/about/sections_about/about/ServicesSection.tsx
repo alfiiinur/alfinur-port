@@ -40,7 +40,7 @@ export const ServicesSection = () => {
 
           <div className="relative w-full h-[400px] lg:h-[600px] rounded-tl-[4rem] rounded-br-[4rem] overflow-hidden">
             <Image
-              src="/img/room.jpg"
+              src="/frontend/webImg/5.png"
               alt="Services Interior"
               fill
               className="object-cover"

@@ -24,7 +24,7 @@ export const DetailAboutMe = () => {
         </TextReveal>
         <RoundedButton href="/contact">Get in Touch</RoundedButton>
       </div>
-     
+
       <section className="py-20 px-6 md:py-32 bg-white dark:bg-black transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -32,7 +32,7 @@ export const DetailAboutMe = () => {
             <div className="order-2 md:order-1">
               <div className="relative group">
                 <Image
-                  src="/img/room.jpg"
+                  src="/frontend/designGraphic/cover.png"
                   alt="Our workspace / team room"
                   width={800}
                   height={600}
@@ -49,12 +49,10 @@ export const DetailAboutMe = () => {
             <div className="order-1 md:order-2 space-y-10 md:space-y-16">
               <div className="grid grid-cols-3 gap-6 md:gap-8">
                 {[
-                  { number: "15+", label: "Global Clients" },
-                  { number: "50+", label: "Industry Projects" },
-                  { number: "8+", label: "Years Experience" },
-                  { number: "200+", label: "Problems Solved" },
+                  { number: "15+", label: "Clients" },
+                  { number: "2+", label: "Years Experience" },
+                  { number: "5+", label: "Problems Solved" },
                   { number: "98%", label: "Client Satisfaction" },
-                  { number: "3.5x", label: "Avg. Revenue Growth" },
                 ].map((stat, index) => (
                   <div
                     key={index}
@@ -65,7 +63,7 @@ export const DetailAboutMe = () => {
                     <h3
                       className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter
                              bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400
-                             bg-clip-text text-transparent"
+                             bg-clip-text text-transparent cursor-pointer"
                     >
                       {stat.number}
                     </h3>
@@ -90,9 +88,15 @@ export const DetailAboutMe = () => {
         </div>
       </section>
       <div className="">
-        <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-black dark:text-white mb-8 italic">
-          Skills{" "}
-        </h1>
+        <div className="flex justify-between">
+          <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-black dark:text-white mb-8 italic">
+            Technical Expertise{" "}
+          </h1>
+          <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-black dark:text-white mb-8 italic">
+            Skills{" "}
+          </h1>
+        </div>
+
         <MarqueTemp reviews={techstack} size="md" />
       </div>
     </section>

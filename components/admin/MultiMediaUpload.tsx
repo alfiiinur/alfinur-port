@@ -151,6 +151,13 @@ export default function MultiMediaUpload({
               <p className="text-xs text-muted-foreground">
                 Drag & drop or click ({value.length}/{maxFiles})
               </p>
+              {/* Size Guide */}
+              <div className="mt-1 px-3 py-2 bg-muted/50 rounded-md text-xs text-muted-foreground">
+                <p className="font-medium text-foreground">
+                  📐 Recommended: 1920 x 1080px
+                </p>
+                <p>Ratio 16:9 • Gallery / Showcase Images</p>
+              </div>
             </div>
           )}
         </div>

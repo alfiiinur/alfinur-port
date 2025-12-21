@@ -13,6 +13,15 @@ const ALLOWED_IMAGE_TYPES = [
   "image/webp",
 ];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
+const ALLOWED_DOCUMENT_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: NextRequest) {
@@ -35,19 +44,20 @@ export async function POST(request: NextRequest) {
     // Check file type
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
     const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type);
+    const isDocument = ALLOWED_DOCUMENT_TYPES.includes(file.type);
 
-    if (!isImage && !isVideo) {
+    if (!isImage && !isVideo && !isDocument) {
       return NextResponse.json(
         {
           error:
-            "Invalid file type. Allowed: PNG, JPG, GIF, WEBP, MP4, WEBM, OGG",
+            "Invalid file type. Allowed: PNG, JPG, GIF, WEBP, MP4, WEBM, OGG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX",
         },
         { status: 400 }
       );
     }
 
     // Create upload directory if not exists
-    const subDir = isVideo ? "videos" : "images";
+    const subDir = isVideo ? "videos" : isDocument ? "documents" : "images";
     const uploadPath = path.join(UPLOAD_DIR, subDir);
 
     if (!existsSync(uploadPath)) {
@@ -72,7 +82,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       url,
       filename,
-      type: isVideo ? "video" : "image",
+      type: isVideo ? "video" : isDocument ? "document" : "image",
       size: file.size,
     });
   } catch (error) {

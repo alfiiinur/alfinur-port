@@ -1,13 +1,42 @@
+import { prisma } from "@/lib/prisma";
 import ServicesHero from "./components/ServicesHero";
 import ServicesGrid from "./components/ServicesGrid";
 import ServicesShowcase from "./components/ServicesShowcase";
 import WorkProcess from "./components/WorkProcess";
 import HeadingService from "./components/HeadingService";
 import TestimonialPage from "./components/Testimonial";
-import FAQPage from "@/components/public/shared/faq/Faq";
+import FAQSection from "./components/FaqSection";
 import ServicesSite from "./components/ServicesSite";
+import ProcessDetail from "./components/ProcessDetail";
 
-export default function Services() {
+async function getServices() {
+  return prisma.service.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
+}
+
+async function getTestimonials() {
+  return prisma.testimonial.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
+}
+
+async function getFaqs() {
+  return prisma.faq.findMany({
+    where: { isActive: true },
+    orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
+  });
+}
+
+export default async function Services() {
+  const [services, testimonials, faqs] = await Promise.all([
+    getServices(),
+    getTestimonials(),
+    getFaqs(),
+  ]);
+
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       {/* Container */}
@@ -16,7 +45,7 @@ export default function Services() {
           titleLine1="let's talk"
           titleLine2="design"
           topDescription="We transform spaces into timeless experiences through bold ideas and meticulous craftsmanship."
-          bottomDescription="From concept to completion, our interdisciplinary team combines strategy, architecture, and storytelling to create interiors that don’t just look good — they feel alive. Whether it’s a boutique hotel, flagship retail, or a private residence, every project is a signature."
+          bottomDescription="From concept to completion, our interdisciplinary team combines strategy, architecture, and storytelling to create interiors that don't just look good — they feel alive. Whether it's a boutique hotel, flagship retail, or a private residence, every project is a signature."
           badgeText="Featured Project 2025"
           imageSrc="/img/room.jpg"
           imageAlt="Luxury interior design project"
@@ -25,14 +54,17 @@ export default function Services() {
         <ServicesHero />
 
         {/* Services Grid */}
-        <ServicesGrid />
+        <ServicesGrid services={services} />
 
         {/* Work Process */}
         <WorkProcess />
       </div>
+      {/* Process Detail - Full Screen Sections */}
+      <ProcessDetail />
+
       {/* Services Showcase - Bento Grid */}
       <ServicesShowcase />
-      <TestimonialPage />
+      <TestimonialPage testimonials={testimonials} />
       <ServicesSite
         title={
           <>
@@ -52,7 +84,7 @@ export default function Services() {
           {
             id: 2,
             type: "video",
-            src: "/video/videonote.mp4", // pastikan file ada di /public/videos/
+            src: "/video/videonote.mp4",
             alt: "Interactive dashboard demo",
           },
         ]}
@@ -63,7 +95,7 @@ export default function Services() {
           </>
         }
       />
-      <FAQPage />
+      <FAQSection faqs={faqs} />
     </div>
   );
 }

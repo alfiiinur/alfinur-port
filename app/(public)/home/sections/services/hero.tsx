@@ -11,7 +11,7 @@ export const HeroServices = () => {
           {/* Gambar 1 (Kiri Atas - Kecil) */}
           <div className="relative h-[600px]">
             <MediaPolaroid
-              src="/img/room.jpg"
+              src="/frontend/designGraphic/coverbook.png"
               alt="Interior 1"
               rotate="-8deg"
               size="lg"
@@ -31,7 +31,7 @@ export const HeroServices = () => {
             />
 
             <MediaPolaroid
-              src="/img/room.jpg"
+              src="/frontend/webImg/1.png"
               alt="Fun animation"
               rotate="-15deg"
               size="md"
@@ -40,12 +40,20 @@ export const HeroServices = () => {
             />
 
             <MediaPolaroid
-              src="/img/room.jpg"
+              src="/frontend/webImg/18.png"
               alt="Interior 2"
               rotate="6deg"
               size="sm"
               top="6rem"
               left="32rem"
+            />
+            <MediaPolaroid
+              src="/frontend/webImg/26.png"
+              alt="Interior 2"
+              rotate="-12deg"
+              size="xl"
+              top="6rem"
+              left="40rem"
             />
           </div>
         </div>

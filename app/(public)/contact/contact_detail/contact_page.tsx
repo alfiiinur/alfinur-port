@@ -19,13 +19,13 @@ export const ContactSection = () => {
                 Studio
               </h4>
               <p className="text-xs leading-loose text-gray-300 uppercase tracking-wider">
-                StudioPepe
+                Alfinur Studio
                 <br />
-                Viale Abruzzi 20
+                Surabaya, Indonesia
                 <br />
-                20131 Milano
+                East Java 60xxx
                 <br />
-                (+39) 02 36505993
+                (+62) 812 1722 1460
               </p>
             </div>
 
@@ -36,48 +36,48 @@ export const ContactSection = () => {
                   General Enquiries
                 </h4>
                 <Link
-                  href="mailto:info@studiopepe.info"
+                  href="mailto:alfinurdanialin900@gmail.com"
                   className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
                 >
-                  info@studiopepe.info
+                  alfinurdanialin900@gmail.com
                 </Link>
               </div>
 
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
                   New Projects
                 </h4>
                 <Link
-                  href="mailto:project@studiopepe.info"
+                  href="mailto:project@alfinur.dev"
                   className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
                 >
-                  project@studiopepe.info
+                  project@alfinur.dev
                 </Link>
               </div>
 
               <div className="mb-6">
                 <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  Press
+                  Collaboration
                 </h4>
                 <Link
-                  href="mailto:press@studiopepe.info"
+                  href="mailto:collab@alfinur.dev"
                   className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
                 >
-                  press@studiopepe.info
+                  collab@alfinur.dev
                 </Link>
               </div>
 
               <div>
                 <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  Work With Us
+                  Career
                 </h4>
                 <Link
-                  href="mailto:apply@studiopepe.info"
+                  href="mailto:career@alfinur.dev"
                   className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
                 >
-                  apply@studiopepe.info
+                  career@alfinur.dev
                 </Link>
-              </div>
+              </div> */}
             </div>
 
             {/* Kolom 3: Social Media */}
@@ -86,13 +86,29 @@ export const ContactSection = () => {
                 Follow
               </h4>
               <div className="flex flex-col gap-2">
-                {["Instagram", "Pinterest", "Linkedin"].map((social) => (
+                {[
+                  {
+                    name: "Instagram",
+                    href: "https://instagram.com/alfinurnuha",
+                  },
+                  {
+                    name: "LinkedIn",
+                    href: "https://linkedin.com/in/alfinurnuha",
+                  },
+                  { name: "GitHub", href: "https://github.com/alfinurnuha" },
+                  {
+                    name: "Dribbble",
+                    href: "https://dribbble.com/alfinurnuha",
+                  },
+                ].map((social) => (
                   <Link
-                    key={social}
-                    href="#"
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-xs text-white uppercase tracking-wider underline decoration-gray-600 underline-offset-4 hover:decoration-white transition-all w-fit"
                   >
-                    {social}
+                    {social.name}
                   </Link>
                 ))}
               </div>
@@ -102,16 +118,16 @@ export const ContactSection = () => {
           {/* Paragraf Manifesto (Bawah Grid Info) */}
           <div className="max-w-md mt-auto mb-10 lg:mb-0">
             <p className="text-[10px] md:text-xs leading-relaxed uppercase tracking-widest text-gray-300 text-justify">
-              Authorial, Multi-referential, Polytropic — These are the hallmarks
-              for which Studiopepe is internationally recognized. Whether
-              designing standalone objects or pursuing grand-scale projects.
+              Creative Developer & Designer — Passionate about crafting digital
+              experiences that blend aesthetics with functionality. From web
+              applications to brand identities, every project is an opportunity
+              to create something meaningful and impactful.
             </p>
           </div>
         </div>
 
         {/* KANAN: Gambar (5 Kolom) */}
         <div className="lg:col-span-5 relative h-[300px] lg:h-[400px]">
-          {/* Ganti src dengan gambar interior Anda */}
           <Image
             src="/img/room.jpg"
             alt="Studio Interior"

@@ -66,7 +66,7 @@ export default function ServicesShowcase() {
       </div>
 
       {/* Marquee */}
-      <div className="mt-12 bg-primary dark:bg-primary/90 py-4 rotate-3">
+      <div className="mt-12 bg-primary dark:bg-primary/90 py-4 ">
         <Marquee pauseOnHover className="[--duration:20s] [--gap:2rem]">
           {marqueeItems.map((item) => (
             <span

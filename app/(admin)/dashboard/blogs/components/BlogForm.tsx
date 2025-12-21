@@ -126,6 +126,7 @@ export default function BlogForm({ blog }: BlogFormProps) {
                 value={thumbnail}
                 onChange={setThumbnail}
                 accept="image"
+                mediaType="thumbnail"
               />
             </div>
 

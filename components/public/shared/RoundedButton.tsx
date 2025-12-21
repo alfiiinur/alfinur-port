@@ -11,14 +11,10 @@ type RoundedButtonProps = {
   href?: string;
   className?: string;
 } & (
-  | { href: string; onClick?: never } // kalau ada href, onClick tidak boleh ada
+  | { href: string; onClick?: never }
   | { href?: never; onClick?: () => void }
-); // kalau tidak ada href, boleh ada onClick
+);
 
-/**
- * RoundedButton – pakai shadcn/ui Button
- * Otomatis jadi <a> (Link) kalau ada href, jadi <button> kalau ada onClick
- */
 export const RoundedButton = ({
   children,
   href,
@@ -26,31 +22,41 @@ export const RoundedButton = ({
   className,
   ...rest
 }: RoundedButtonProps) => {
+  const textContent = (
+    <span className="relative overflow-hidden h-4 inline-flex items-center">
+      {/* Original text - slides up on hover */}
+      <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-full">
+        {children}
+      </span>
+      {/* Duplicate text - slides in from bottom */}
+      <span className="absolute left-0 inline-block translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0">
+        {children}
+      </span>
+    </span>
+  );
+
   const content = (
     <>
-      <span>{children}</span>
+      {textContent}
       <ArrowUpRight
         size={16}
-        className="transition-transform group-hover:rotate-45"
+        className="transition-transform duration-300 group-hover:rotate-45"
       />
     </>
   );
 
-  // Common button props untuk styling yang sama
   const buttonProps: ComponentPropsWithoutRef<typeof Button> = {
-    variant: "default", // bg-black text-white di shadcn default adalah primary (biru), jadi kita pakai custom variant atau override
+    variant: "default",
     size: "lg",
     className: cn(
-      // Override styling supaya mirip seperti sebelumnya
       "gap-2 rounded-full bg-black px-8 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200",
-      "group inline-flex items-center transition-all duration-300",
+      "group inline-flex items-center transition-all duration-300 overflow-hidden",
       className
     ),
     children: content,
     ...rest,
   };
 
-  // Jika ada href → render sebagai Link yang memakai Button sebagai child
   if (href) {
     return (
       <Button asChild {...buttonProps}>
@@ -59,6 +65,5 @@ export const RoundedButton = ({
     );
   }
 
-  // Jika tidak ada href → render sebagai button biasa
   return <Button onClick={onClick} {...buttonProps} />;
 };

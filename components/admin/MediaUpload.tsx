@@ -6,18 +6,52 @@ import { Upload, X, Loader2, ImageIcon, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+type MediaType = "thumbnail" | "gallery" | "design" | "general";
+
 interface MediaUploadProps {
   value?: string;
   onChange: (url: string) => void;
   accept?: "image" | "video" | "all";
   className?: string;
+  mediaType?: MediaType;
 }
+
+const sizeGuide: Record<
+  MediaType,
+  { width: number; height: number; ratio: string; description: string }
+> = {
+  thumbnail: {
+    width: 1200,
+    height: 630,
+    ratio: "16:9",
+    description: "Thumbnail / Cover",
+  },
+  gallery: {
+    width: 1920,
+    height: 1080,
+    ratio: "16:9",
+    description: "Gallery Image",
+  },
+  design: {
+    width: 1600,
+    height: 1200,
+    ratio: "4:3",
+    description: "Design Showcase",
+  },
+  general: {
+    width: 1200,
+    height: 800,
+    ratio: "3:2",
+    description: "General Image",
+  },
+};
 
 export default function MediaUpload({
   value,
   onChange,
   accept = "all",
   className,
+  mediaType = "general",
 }: MediaUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -165,6 +199,17 @@ export default function MediaUpload({
                   {accept === "image" && "PNG, JPG, GIF, WEBP (max 50MB)"}
                   {accept === "video" && "MP4, WEBM, OGG (max 50MB)"}
                   {accept === "all" && "Images or Videos (max 50MB)"}
+                </p>
+              </div>
+              {/* Size Guide */}
+              <div className="mt-2 px-3 py-2 bg-muted/50 rounded-md text-xs text-muted-foreground">
+                <p className="font-medium text-foreground">
+                  📐 Recommended: {sizeGuide[mediaType].width} x{" "}
+                  {sizeGuide[mediaType].height}px
+                </p>
+                <p>
+                  Ratio {sizeGuide[mediaType].ratio} •{" "}
+                  {sizeGuide[mediaType].description}
                 </p>
               </div>
               <Upload className="w-5 h-5 text-muted-foreground mt-2" />

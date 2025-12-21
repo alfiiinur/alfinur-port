@@ -1,113 +1,126 @@
-import { SocialLink } from "@/components/public/shared/SocialLinks";
+"use client";
+
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Star, Quote } from "lucide-react";
 
 interface TestimonialSlideProps {
   data: {
-    headline: string;
-    signature: string;
-    image: string;
-    socials: { label: string; href: string }[];
-    bodyText: string;
+    id: string;
+    name: string;
+    role: string;
+    avatar: string;
     quote: string;
-    author: string;
+    rating: number;
+    projectType: string | null;
   };
 }
 
 export const TestimonialSlide = ({ data }: TestimonialSlideProps) => {
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-0 ">
-        {/* === BAGIAN ATAS KIRI (Headline) === */}
-        <div className="lg:col-span-7 flex flex-col justify-center px-6 lg:pl-16 lg:pr-8 py-10 lg:py-0 relative z-10 bg-black dark:bg-white">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+    <div className="w-full min-h-[80vh] flex items-center">
+      <div className="container mx-auto px-6 lg:px-16 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left: Quote Section */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className={`font-anton text-6xl md:text-8xl lg:text-[7rem] leading-[0.9] uppercase tracking-tighter text-white mb-6 dark:text-black`}
+            className="relative"
           >
-            {data.headline}
-          </motion.h1>
+            {/* Quote Icon */}
+            <Quote className="w-16 h-16 text-gray-700 dark:text-gray-300 mb-6 opacity-50" />
 
+            {/* Rating Stars */}
+            <div className="flex gap-1 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-6 h-6 ${
+                    star <= data.rating
+                      ? "text-yellow-500 fill-yellow-500"
+                      : "text-gray-600"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Quote Text */}
+            <blockquote className="text-2xl md:text-3xl lg:text-4xl font-medium text-white dark:text-black leading-relaxed mb-8">
+              "{data.quote}"
+            </blockquote>
+
+            {/* Author Info */}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full overflow-hidden relative bg-gray-700 dark:bg-gray-300">
+                {data.avatar && data.avatar !== "/avatars/default.jpg" ? (
+                  <Image
+                    src={data.avatar}
+                    alt={data.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white dark:text-black text-xl font-bold">
+                    {data.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="font-bold text-white dark:text-black text-lg">
+                  {data.name}
+                </p>
+                <p className="text-gray-400 dark:text-gray-600">{data.role}</p>
+              </div>
+            </div>
+
+            {/* Project Type Badge */}
+            {data.projectType && (
+              <div className="mt-6">
+                <span className="inline-block px-4 py-2 bg-gray-800 dark:bg-gray-200 text-gray-300 dark:text-gray-700 rounded-full text-sm">
+                  Project: {data.projectType}
+                </span>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Right: Image Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className={`font-anton text-5xl md:text-6xl text-white -rotate-6 ml-4 dark:text-black`}
+            className="hidden lg:flex items-center justify-center"
           >
-            {data.signature}
-          </motion.div>
-        </div>
-
-        {/* === BAGIAN ATAS KANAN (Foto) === */}
-        <div className="lg:col-span-5 relative h-[400px] lg:h-[600px] bg-gray-100">
-          {/* Background abu-abu separuh bawah untuk efek overlap */}
-          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black z-0 dark:bg-white"></div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="relative w-full h-full z-10"
-          >
-            <Image
-              src={data.image}
-              alt={data.signature}
-              fill
-              className="object-cover object-top"
-              priority
-            />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* === BAGIAN BAWAH (3 Kolom) === */}
-      <div className="bg-black px-6 lg:px-16 py-16 dark:bg-white">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
-          {/* Kolom 1: Social Links */}
-          <div className="flex flex-col gap-2">
-            <h4 className="font-bold text-sm mb-4 text-white dark:text-black">
-              Follow Us
-            </h4>
-            {data.socials.map((social, idx: number) => (
-              <SocialLink key={idx} label={social.label} href={social.href} />
-            ))}
-          </div>
-
-          {/* Kolom 2: Body Text (Drop Cap) */}
-          <div className="text-gray-600 leading-relaxed text-sm md:text-base">
-            <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-white dark:first-letter:text-black first-letter:float-left first-letter:mr-3 first-letter:leading-none">
-              {data.bodyText}
-            </p>
-            <p className="mt-4 text-xs text-gray-500">
-              Laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor
-              sit amet.
-            </p>
-          </div>
-
-          {/* Kolom 3: Testimonial Quote */}
-          <div className="flex flex-col justify-between h-full">
-            <blockquote className="text-sm font-medium italic text-gray-800 mb-6">
-              {data.quote}
-            </blockquote>
-
-            <div className="border-t border-gray-300 pt-4 flex justify-between items-center">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-gray-500">
-                  Testimonial By
-                </p>
-                <p className="font-bold text-white dark:text-black">{data.author}</p>
-              </div>
-              {/* Avatar Kecil (Opsional) */}
-              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-300">
-                <Image
-                  src={data.image}
-                  alt="avatar"
-                  fill
-                  className="object-cover"
-                />
+            <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden">
+              <Image
+                src="/img/room.jpg"
+                alt="Testimonial showcase"
+                fill
+                className="object-cover"
+              />
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              {/* Floating badge */}
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <p className="text-white text-sm font-medium">
+                    Trusted by 100+ clients worldwide
+                  </p>
+                  <div className="flex items-center gap-1 mt-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className="w-4 h-4 text-yellow-500 fill-yellow-500"
+                      />
+                    ))}
+                    <span className="text-white/80 text-xs ml-2">
+                      5.0 Average Rating
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

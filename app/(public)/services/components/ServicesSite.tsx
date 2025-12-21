@@ -1,3 +1,7 @@
+"use client";
+
+import { AnimatedText } from "@/components/public/shared/AnimatedText";
+import { motion } from "motion/react";
 import Image, { StaticImageData } from "next/image";
 
 export type ShowcaseMediaType = "image" | "video";
@@ -7,21 +11,30 @@ export interface ShowcaseMediaItem {
   type: ShowcaseMediaType;
   src: string | StaticImageData;
   alt?: string;
-  className?: string; // Untuk background color khusus jika media transparan
+  className?: string;
 }
 
 interface ServicesSiteProps {
-  title: React.ReactNode; // ReactNode supaya bisa pakai <br/>
+  title: string;
   topDescription: string;
-  mediaItems: [ShowcaseMediaItem, ShowcaseMediaItem]; // Array fix 2 item (kiri & kanan)
+  mediaItems: [ShowcaseMediaItem, ShowcaseMediaItem];
   bottomLabel?: string;
-  bottomContent: React.ReactNode; // Content bawah yang besar
+  bottomContent: string;
 }
 
-// --- Sub-Component: Media Renderer ---
-const MediaCard = ({ item }: { item: ShowcaseMediaItem }) => {
+const MediaCard = ({
+  item,
+  index,
+}: {
+  item: ShowcaseMediaItem;
+  index: number;
+}) => {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.15 }}
       className={`relative w-full h-[300px] md:h-[400px] rounded-[2.5rem] overflow-hidden ${
         item.className || "bg-gray-100"
       }`}
@@ -46,11 +59,10 @@ const MediaCard = ({ item }: { item: ShowcaseMediaItem }) => {
           sizes="(max-width: 768px) 100vw, 50vw"
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 
-// --- Main Component ---
 export default function ServicesSite({
   title,
   topDescription,
@@ -62,35 +74,53 @@ export default function ServicesSite({
     <section className="w-full max-w-7xl mx-auto px-6 py-20 bg-white dark:bg-black">
       {/* 1. Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-gray-900 leading-[1.1] dark:text-white">
+        <AnimatedText
+          as="h2"
+          className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-gray-900 leading-[1.1] dark:text-white"
+        >
           {title}
-        </h2>
+        </AnimatedText>
 
-        <p className="text-gray-500 text-sm md:text-base max-w-xs md:text-right leading-relaxed dark:text-white">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-gray-500 text-sm md:text-base max-w-xs md:text-right leading-relaxed dark:text-white"
+        >
           {topDescription}
-        </p>
+        </motion.p>
       </div>
 
       {/* 2. Media Grid (2 Columns) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-24">
-        {mediaItems.map((item) => (
-          <MediaCard key={item.id} item={item} />
+        {mediaItems.map((item, index) => (
+          <MediaCard key={item.id} item={item} index={index} />
         ))}
       </div>
 
       {/* 3. Bottom Content (Centered Typography) */}
       <div className="max-w-5xl mx-auto text-center">
         {bottomLabel && (
-          <div className="mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            className="mb-6"
+          >
             <span className="text-sm font-medium text-gray-900 dark:text-white">
               /{bottomLabel}
             </span>
-          </div>
+          </motion.div>
         )}
 
-        <div className="text-4xl md:text-6xl leading-snug font-bold text-gray-900 dark:text-white">
+        <AnimatedText
+          as="p"
+          className="text-4xl md:text-6xl leading-snug font-bold text-gray-900 dark:text-white"
+        >
           {bottomContent}
-        </div>
+        </AnimatedText>
       </div>
     </section>
   );
