@@ -2,10 +2,20 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { AnimatedLines } from "@/components/public/shared/AnimatedText";
-import { Search, X, ArrowUpRight, Play, Video } from "lucide-react";
+import {
+  Search,
+  X,
+  ArrowUpRight,
+  Play,
+  Video,
+  LayoutGrid,
+  List,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import ProjectHero from "./ProjectHero";
+import AnimatedSections from "./AnimatedSections";
+import { Highlighter } from "@/components/ui/highlighter";
 
 interface Project {
   id: string;
@@ -32,6 +42,7 @@ export default function ProjectsPage({
 }: ProjectsPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -50,34 +61,34 @@ export default function ProjectsPage({
   }, [projects, searchQuery, activeCategory]);
 
   return (
-    <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-12">
-            <div>
-              <motion.span
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 block"
-              >
-                Selected Work — Vol. {projects.length}
-              </motion.span>
-              <AnimatedLines
-                lines={["Creative", "Projects"]}
-                as="h1"
-                className="text-6xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tighter"
-              />
-            </div>
+    <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white overflow-x-hidden">
+      {/* Hero Section with Carousel */}
+      <ProjectHero />
 
+      {/* Animated Continuous Sections */}
+      <AnimatedSections />
+      <p className="mt-10 mx-5 text-4xl font-bold md:text-5xl leading-[1.3]">
+        <Highlighter action="underline" color="#E03D1B">
+          <span className="text-red-400 italic">Explore my portfolio</span>
+        </Highlighter>
+        where creativity meets technology. Every project showcases my dedication
+        to building innovative that
+        <Highlighter action="circle" color="#61FF74">
+          <span className="text-green-400 italic"> solve real problems</span>
+        </Highlighter>
+        and deliver exceptional{" "}
+        <Highlighter action="box" color="#30A2F2">
+          <span className="text-blue-400 italic">user experiences.</span>
+        </Highlighter>
+      </p>
+
+      {/* Filter Section */}
+      <section className="py-12 px-4 border-t border-white/10 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Search & Filter */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
             {/* Search */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="relative w-full lg:w-80"
-            >
+            <div className="relative w-full lg:w-80">
               <Search
                 size={18}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
@@ -87,74 +98,121 @@ export default function ProjectsPage({
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-3 rounded-full bg-white/10 dark:bg-black/10 border border-white/20 dark:border-black/20 text-white dark:text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full pl-12 pr-12 py-3 rounded-full bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white dark:hover:text-black"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
                 >
                   <X size={18} />
                 </button>
               )}
-            </motion.div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-3">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                    activeCategory === cat
+                      ? "bg-white text-black"
+                      : "bg-white/5 text-white/70 hover:bg-white/10"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex items-center gap-2 bg-white/5 rounded-full p-1">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-full transition-all cursor-pointer ${
+                  viewMode === "list"
+                    ? "bg-white text-black"
+                    : "text-white/70 hover:text-white"
+                }`}
+                title="List View"
+                type="button"
+              >
+                <List size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-full transition-all cursor-pointer ${
+                  viewMode === "grid"
+                    ? "bg-white text-black"
+                    : "text-white/70 hover:text-white"
+                }`}
+                title="Grid View"
+                type="button"
+              >
+                <LayoutGrid size={18} />
+              </button>
+            </div>
           </div>
 
-          {/* Category Filter */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-wrap gap-3"
-          >
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeCategory === cat
-                    ? "bg-white text-black dark:bg-black dark:text-white"
-                    : "bg-white/10 dark:bg-black/10 text-white/70 dark:text-black/70 hover:bg-white/20 dark:hover:bg-black/20"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </motion.div>
+          {/* Results Count */}
+          <p className="text-sm text-gray-500 border-b border-white/10 pb-4">
+            Showing {filteredProjects.length} project
+            {filteredProjects.length !== 1 ? "s" : ""}
+          </p>
         </div>
       </section>
 
-      {/* Projects Section with Scroll Trigger */}
+      {/* Projects Section */}
       <section className="pb-32 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Results Count */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-sm text-gray-400 mb-12 border-b border-gray-800 dark:border-gray-200 pb-4"
-          >
-            Showing {filteredProjects.length} project
-            {filteredProjects.length !== 1 ? "s" : ""}
-          </motion.p>
-
-          {/* Project Rows */}
+          {/* Project Rows/Grid */}
           {filteredProjects.length > 0 ? (
-            <div className="space-y-0">
-              {filteredProjects.map((project, index) => (
-                <ProjectRow
-                  key={project.id}
-                  project={project}
-                  index={index + 1}
-                />
-              ))}
-            </div>
+            <AnimatePresence mode="wait">
+              {viewMode === "list" ? (
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-0"
+                >
+                  {filteredProjects.map((project, index) => (
+                    <ProjectRow
+                      key={project.id}
+                      project={project}
+                      index={index + 1}
+                    />
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  {filteredProjects.map((project, index) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={index + 1}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-20 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-white/10 dark:bg-black/10 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4">
                 <span className="text-2xl">🔍</span>
               </div>
               <h3 className="text-lg font-semibold mb-2">No projects found</h3>
@@ -263,7 +321,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative py-12 md:py-20 border-b border-gray-800 dark:border-gray-200 cursor-pointer"
+        className="group relative py-12 md:py-20 border-b border-white/10 cursor-pointer"
       >
         {/* Popup Images on Hover - Hidden on mobile */}
         <AnimatePresence>
@@ -327,7 +385,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
           <motion.div
             animate={{ scale: isHovered ? 1.02 : 1 }}
             transition={{ duration: 0.5 }}
-            className="relative aspect-video lg:aspect-4/3 rounded-2xl overflow-hidden bg-gray-900 dark:bg-gray-100"
+            className="relative aspect-video lg:aspect-4/3 rounded-2xl overflow-hidden bg-gray-900"
           >
             {project.thumbnail ? (
               thumbnailIsVideo ? (
@@ -413,7 +471,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
                 {project.tags.slice(0, 4).map((tag, idx) => (
                   <span
                     key={idx}
-                    className="text-xs px-3 py-1 rounded-full bg-white/10 dark:bg-black/10 text-gray-300 dark:text-gray-600"
+                    className="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300"
                   >
                     {tag}
                   </span>
@@ -452,6 +510,144 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
               <ArrowUpRight size={20} />
             </motion.div>
           </div>
+        </div>
+      </motion.div>
+    </Link>
+  );
+}
+
+// Grid Card Component
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const thumbnailIsVideo = isVideo(project.thumbnail);
+
+  const handleVideoHover = (e: React.MouseEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    video.play();
+    setIsVideoPlaying(true);
+  };
+
+  const handleVideoLeave = (e: React.MouseEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    video.pause();
+    video.currentTime = 0;
+    setIsVideoPlaying(false);
+  };
+
+  return (
+    <Link href={`/projects/${project.slug}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="group relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300"
+      >
+        {/* Thumbnail */}
+        <div className="relative aspect-4/3 overflow-hidden">
+          {project.thumbnail ? (
+            thumbnailIsVideo ? (
+              <>
+                <video
+                  src={project.thumbnail}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  muted
+                  loop
+                  playsInline
+                  onMouseOver={handleVideoHover}
+                  onMouseOut={handleVideoLeave}
+                />
+                {/* Video Badge */}
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs z-10">
+                  <Video className="w-3 h-3" />
+                  Video
+                </div>
+                {!isVideoPlaying && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <Play className="w-6 h-6 text-white ml-0.5" />
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Image
+                src={project.thumbnail}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-900 text-gray-600">
+              <span className="text-4xl">📁</span>
+            </div>
+          )}
+
+          {/* Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"
+          />
+
+          {/* Index number */}
+          <span className="absolute top-3 right-3 text-xs font-bold text-white/50 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+            {String(index).padStart(2, "0")}
+          </span>
+
+          {/* Hover Arrow */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              scale: isHovered ? 1 : 0.8,
+            }}
+            transition={{ duration: 0.2 }}
+            className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[#C4F135] flex items-center justify-center z-20"
+          >
+            <ArrowUpRight size={18} className="text-black" />
+          </motion.div>
+        </div>
+
+        {/* Content */}
+        <div className="p-5">
+          {/* Category */}
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2 block">
+            {project.category}
+          </span>
+
+          {/* Title */}
+          <h3 className="text-lg font-bold text-white mb-2 line-clamp-1 group-hover:text-[#C4F135] transition-colors">
+            {project.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-sm text-gray-400 line-clamp-2 mb-3">
+            {project.description}
+          </p>
+
+          {/* Tags */}
+          {project.tags && project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {project.tags.slice(0, 3).map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-gray-400"
+                >
+                  {tag}
+                </span>
+              ))}
+              {project.tags.length > 3 && (
+                <span className="text-xs px-2 py-0.5 text-gray-500">
+                  +{project.tags.length - 3}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </Link>
