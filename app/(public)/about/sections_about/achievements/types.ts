@@ -8,6 +8,7 @@ export interface AwardData {
   year: string;
   certificateUrl?: string; // URL to certificate file (PDF/image)
   certificateImage?: string; // Preview image of certificate
+  popupImages?: string[]; // Custom popup images for hover effect
 }
 
 export interface TestimonialData {

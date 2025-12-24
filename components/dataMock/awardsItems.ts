@@ -10,8 +10,12 @@ export const awards: AwardData[] = [
     description:
       "Served as Research Team Leader responsible for the planning, implementation, and coordination of the project across all design and technical aspects. Research entitled  `Penerapan Metode Agile Scrum dan Pengujian  System Usability Scale untuk Pengembangan Media Pembelajaran Sistem Rekomendasi Pemodelan User Based dan Item-Based`",
     year: "2025",
-    certificateUrl: "/frontend/cv/Alfi Nur Danialin-CV (1).pdf",
-    certificateImage: "/frontend/webImg/1.png",
+    certificateUrl: "/frontend/sertifikat/PKM-AI_ALFI NUR.pdf",
+    popupImages: [
+      "/img-alfinur/1733886020011.jpg",
+      "/img-alfinur/1733886019938.jpg",
+      "/img-alfinur/Screenshot 2025-12-24 125821.png",
+    ],
   },
   {
     id: 2,
@@ -19,16 +23,24 @@ export const awards: AwardData[] = [
     description:
       "I am thrilled to announce that my research paper has been accepted for presentation at the 2025 International Conference on Computer Engineering, Network, and Intelligent Multimedia (CENIM), hosted by Institut Teknologi Sepuluh Nopember (ITS)",
     year: "2025",
-    certificateUrl: "/frontend/cv/Alfi Nur Danialin-CV (1).pdf",
-    certificateImage: "/frontend/webImg/1.png",
+    certificateUrl: "/frontend/sertifikat/Alfi Nur Danialin-CENIM.pdf",
+    popupImages: [
+      "/img-alfinur/WhatsApp Image 2025-11-26 at 12.12.58.jpeg",
+      "/img-alfinur/WhatsApp Image 2025-11-26 at 11.55.44 (1).jpeg",
+      "/img-alfinur/WhatsApp Image 2025-11-26 at 13.41.31.jpeg",
+    ],
   },
   {
     id: 3,
     name: "BNSP Young Computer Network Technician Competency Certification",
     description: "Get network certification that is updated by BNSP",
     year: "2023",
-    certificateUrl: "/frontend/cv/Alfi Nur Danialin-CV (1).pdf",
-    certificateImage: "/frontend/webImg/1.png",
+    certificateUrl: "/frontend/sertifikat/AlfiNur Danialin-Jaringan.pdf",
+    popupImages: [
+      "/img-alfinur/IMG_2280.JPG",
+      "/img-alfinur/IMG_2556.JPG",
+      "/img-alfinur/IMG_4762.jpg",
+    ],
   },
   // ...
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { AwardData } from "./types";
@@ -11,38 +11,54 @@ import {
 } from "@/components/ui/hover-card";
 import { Download, Eye, FileText, Award } from "lucide-react";
 
-// Pool of images for random popup
-const popupImages = [
+// Default images for popup (used if no custom images provided)
+const defaultPopupImages = [
   "/img-alfinur/IMG_2280.JPG",
   "/img-alfinur/IMG_2556.JPG",
   "/img-alfinur/IMG_4762.jpg",
 ];
 
-// Random positions for popup images (avoiding center content)
-const positions = [
+// Predefined positions for popup images
+const defaultPositions = [
   { top: "-120px", left: "-80px", rotate: -12 },
   { top: "-100px", right: "-60px", rotate: 8 },
   { bottom: "-100px", left: "-70px", rotate: 15 },
-  { bottom: "-120px", right: "-80px", rotate: -10 },
-  { top: "50%", left: "-100px", rotate: -8 },
-  { top: "50%", right: "-100px", rotate: 12 },
 ];
 
-export default function AwardRow({ data }: { data: AwardData }) {
+interface PopupConfig {
+  image: string;
+  position: {
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+    rotate: number;
+  };
+}
+
+interface AwardRowProps {
+  data: AwardData;
+  popupPositions?: Array<{
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+    rotate: number;
+  }>; // Custom positions (optional override)
+}
+
+export default function AwardRow({ data, popupPositions }: AwardRowProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Generate random images and positions on mount
-  const randomPopups = useMemo(() => {
-    const numPopups = Math.floor(Math.random() * 2) + 2; // 2-3 popups
-    const shuffledPositions = [...positions].sort(() => Math.random() - 0.5);
-    const shuffledImages = [...popupImages].sort(() => Math.random() - 0.5);
+  // Use images from data.popupImages or defaults
+  const images = data.popupImages || defaultPopupImages;
+  const positions = popupPositions || defaultPositions;
 
-    return Array.from({ length: numPopups }, (_, i) => ({
-      image: shuffledImages[i % shuffledImages.length],
-      position: shuffledPositions[i],
-      delay: i * 0.05,
-    }));
-  }, []);
+  // Generate popups based on provided images
+  const popups: PopupConfig[] = images.slice(0, 3).map((image, i) => ({
+    image,
+    position: positions[i % positions.length],
+  }));
 
   const handleDownload = () => {
     if (!data.certificateUrl) return;
@@ -72,7 +88,7 @@ export default function AwardRow({ data }: { data: AwardData }) {
       <AnimatePresence>
         {isHovered && (
           <>
-            {randomPopups.map((popup, index) => (
+            {popups.map((popup, index) => (
               <motion.div
                 key={index}
                 initial={{
@@ -88,7 +104,7 @@ export default function AwardRow({ data }: { data: AwardData }) {
                 exit={{ opacity: 0, scale: 0.6 }}
                 transition={{
                   duration: 0.3,
-                  delay: popup.delay,
+                  delay: index * 0.05,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
                 className="absolute z-50 hidden md:block pointer-events-none"
