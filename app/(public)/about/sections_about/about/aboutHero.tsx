@@ -9,13 +9,28 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { Briefcase, Calendar, ChevronRight } from "lucide-react";
+import WorkHistory from "../work-history/WorkHistory";
+import WorkHistoryWithWrapper from "../work-history/WorkHistoryWithWrapper";
 
-// Auto slider images
-const sliderImages = [
-  "/img-alfinur/IMG_2280.JPG",
-  "/img-alfinur/IMG_2556.JPG",
-  "/img-alfinur/IMG_4762.jpg",
-  "/img-alfinur/IMG_2252.MOV",
+// Auto slider images - Set 1
+const sliderImages1 = [
+  "/img-alfinur/WhatsApp Image 2025-12-09 at 21.33.06.jpeg",
+  "/img-alfinur/WhatsApp Image 2025-12-09 at 21.33.09 (1).jpeg",
+  "/img-alfinur/1765274967201-0h2lm0.JPG",
+  "/img-alfinur/WhatsApp Image 2025-12-03 at 20.17.14.jpeg",
+  "/img-alfinur/WhatsApp Image 2025-12-03 at 20.17.50 (1).jpeg",
+
+  "/img-alfinur/WhatsApp Image 2025-12-06 at 08.10.40.jpeg",
+  "/img-alfinur/WhatsApp Image 2025-12-06 at 17.31.34 (1).jpeg",
+];
+
+// Auto slider images - Set 2
+const sliderImages2 = [
+  "/img-alfinur/WhatsApp Video 2025-12-19 at 21.30.45.mp4",
+  "/img-alfinur/WhatsApp Video 2025-12-03 at 21.21.44.mp4",
+  "/img-alfinur/WhatsApp Video 2025-12-19 at 21.33.00.mp4",
+  "/img-alfinur/IMG_5883.MOV",
+  "img-alfinur/IMG_1879.MOV",
 ];
 
 export const AboutHero = () => {
@@ -40,16 +55,21 @@ export const AboutHero = () => {
                   success.
                 </p>
               </div>
-              <div className="relative h-48 w-full rounded-3xl overflow-hidden">
-                <Image
-                  src="/img-alfinur/IMG_2280.JPG"
-                  alt="Detail"
-                  fill
-                  className="object-cover"
+              <div className="relative h-[352px] w-full rounded-3xl overflow-hidden bg-[#121212]">
+                {/* Spotify Embed */}
+                <iframe
+                  src="https://open.spotify.com/embed/playlist/46si4G4cpWVDWf0MJLQ0Uq?utm_source=generator"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="rounded-3xl"
                 />
               </div>
               {/* Auto Slider */}
-              <AutoImageSlider />
+              <AutoImageSlider images={sliderImages1} />
+              <AutoImageSlider images={sliderImages2} />
             </div>
           </div>
 
@@ -76,7 +96,7 @@ export const AboutHero = () => {
               {/* Large Photo */}
               <div className="col-span-2 relative h-48 rounded-2xl overflow-hidden group">
                 <Image
-                  src="/img-alfinur/IMG_2280.JPG"
+                  src="/img-alfinur/WhatsApp Image 2025-12-06 at 17.39.36 (1).jpeg"
                   alt="Work Environment"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -87,7 +107,7 @@ export const AboutHero = () => {
               {/* Small Photo */}
               <div className="relative h-48 rounded-2xl overflow-hidden group">
                 <Image
-                  src="/img-alfinur/IMG_2556.JPG"
+                  src="/img-alfinur/WhatsApp Image 2025-11-26 at 13.41.31.jpeg"
                   alt="Creative Work"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -110,7 +130,7 @@ export const AboutHero = () => {
               {/* Medium Photo */}
               <div className="col-span-2 relative h-32 rounded-2xl overflow-hidden group">
                 <Image
-                  src="/img-alfinur/IMG_4762.jpg"
+                  src="/img-alfinur/WhatsApp Image 2025-11-26 at 11.55.44 (1).jpeg"
                   alt="Portfolio"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -124,7 +144,7 @@ export const AboutHero = () => {
           <div className="md:col-span-3 flex flex-col gap-10">
             <div className="relative h-48 w-full rounded-3xl overflow-hidden">
               <Image
-                src="/img-alfinur/IMG_2556.JPG"
+                src="/img-alfinur/WhatsApp Image 2025-11-26 at 12.12.58.jpeg"
                 alt="Detail"
                 fill
                 className="object-cover"
@@ -210,10 +230,8 @@ export const AboutHero = () => {
             </div>
           </div>
         </div>
+        <WorkHistoryWithWrapper />
       </section>
-
-      {/* Work History Section */}
-      <WorkHistorySection />
     </>
   );
 };
@@ -334,17 +352,27 @@ function WorkHistorySection() {
   );
 }
 
-// Auto Image Slider Component
-function AutoImageSlider() {
+// Helper function to check if URL is a video
+function isVideoUrl(url: string): boolean {
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".avi", ".mkv"];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some((ext) => lowerUrl.endsWith(ext));
+}
+
+// Auto Image Slider Component with Video Support
+function AutoImageSlider({ images }: { images: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % sliderImages.length);
-    }, 3000); // Change image every 3 seconds
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [images.length]);
+
+  const currentMedia = images[currentIndex];
+  const isVideo = isVideoUrl(currentMedia);
 
   return (
     <div className="relative h-64 w-full rounded-3xl overflow-hidden">
@@ -357,18 +385,37 @@ function AutoImageSlider() {
           transition={{ duration: 0.7, ease: "easeInOut" }}
           className="absolute inset-0"
         >
-          <Image
-            src={sliderImages[currentIndex]}
-            alt={`Slide ${currentIndex + 1}`}
-            fill
-            className="object-cover"
-          />
+          {isVideo ? (
+            <video
+              src={currentMedia}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Image
+              src={currentMedia}
+              alt={`Slide ${currentIndex + 1}`}
+              fill
+              className="object-cover"
+            />
+          )}
         </motion.div>
       </AnimatePresence>
 
+      {/* Video Badge */}
+      {isVideo && (
+        <div className="absolute top-3 right-3 z-10 bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          Video
+        </div>
+      )}
+
       {/* Progress Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {sliderImages.map((_, index) => (
+        {images.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
@@ -382,7 +429,7 @@ function AutoImageSlider() {
       </div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent pointer-events-none" />
     </div>
   );
 }

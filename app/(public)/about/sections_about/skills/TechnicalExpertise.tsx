@@ -115,54 +115,6 @@ const skillCategories: SkillCategory[] = [
     ],
   },
   {
-    name: "Mobile",
-    bgColor:
-      "bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30",
-    borderColor: "border-orange-200 dark:border-orange-800",
-    skills: [
-      {
-        name: "React Native",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
-      },
-      {
-        name: "Flutter",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
-      },
-      {
-        name: "Android",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-original.svg",
-      },
-      {
-        name: "iOS",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg",
-      },
-    ],
-  },
-  {
-    name: "Other",
-    bgColor:
-      "bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30",
-    borderColor: "border-slate-200 dark:border-slate-800",
-    skills: [
-      {
-        name: "Python",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
-      },
-      {
-        name: "GraphQL",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
-      },
-      {
-        name: "Redis",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg",
-      },
-      {
-        name: "MongoDB",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
-      },
-    ],
-  },
-  {
     name: "IT Support",
     bgColor:
       "bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30",
@@ -315,7 +267,7 @@ function CategoryView({ categories }: { categories: SkillCategory[] }) {
               <motion.div
                 key={skill.name}
                 whileHover={{ scale: 1.1, y: -5 }}
-                className="flex items-center justify-center p-4  dark:bg-gray-800  transition-all cursor-pointer"
+                className="flex items-center justify-center p-4    transition-all cursor-pointer"
               >
                 <Image
                   src={skill.icon}

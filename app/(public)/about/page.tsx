@@ -11,6 +11,8 @@ import MissionSection from "./sections_about/section_story";
 import { awards, testimonials } from "@/components/dataMock/awardsItems";
 import AchievementsSection from "./sections_about/achievements/AchievementsSection";
 import ServicesSection from "../home/sections/services";
+import WorkHistoryWithWrapper from "./sections_about/work-history/WorkHistoryWithWrapper";
+import GsapScrollHeader from "./sections_about/gsapScrollHeading";
 
 export default function AboutPage() {
   const sampleVideoUrl =
@@ -18,6 +20,7 @@ export default function AboutPage() {
   return (
     <section className="min-h-screen bg-white dark:bg-black">
       <RichHeadingSection />
+      <GsapScrollHeader />
 
       <MissionSection
         labelLink={{
@@ -44,6 +47,7 @@ export default function AboutPage() {
           },
         ]}
       />
+
       <AboutPageSection />
       <AchievementsSection
         label="Carrer"
