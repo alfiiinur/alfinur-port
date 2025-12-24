@@ -14,7 +14,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Loader2, Star, Quote } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Loader2,
+  Star,
+  Quote,
+  X,
+  ImageIcon,
+  Video,
+} from "lucide-react";
+import MediaUpload from "@/components/admin/MediaUpload";
 
 interface Testimonial {
   id: string;
@@ -25,9 +36,15 @@ interface Testimonial {
   content: string;
   rating: number;
   projectType: string | null;
+  media: string[];
   isActive: boolean;
   isFeatured: boolean;
   sortOrder: number;
+}
+
+// Helper to check if URL is video
+function isVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|ogg|mov)$/i.test(url);
 }
 
 export default function TestimonialsTab() {
@@ -44,6 +61,7 @@ export default function TestimonialsTab() {
     content: "",
     rating: 5,
     projectType: "",
+    media: [] as string[],
     isActive: true,
     isFeatured: false,
     sortOrder: 0,
@@ -100,6 +118,7 @@ export default function TestimonialsTab() {
       content: item.content,
       rating: item.rating,
       projectType: item.projectType || "",
+      media: item.media || [],
       isActive: item.isActive,
       isFeatured: item.isFeatured,
       sortOrder: item.sortOrder,
@@ -127,9 +146,23 @@ export default function TestimonialsTab() {
       content: "",
       rating: 5,
       projectType: "",
+      media: [],
       isActive: true,
       isFeatured: false,
       sortOrder: 0,
+    });
+  };
+
+  const addMedia = (url: string) => {
+    if (url && !formData.media.includes(url)) {
+      setFormData({ ...formData, media: [...formData.media, url] });
+    }
+  };
+
+  const removeMedia = (index: number) => {
+    setFormData({
+      ...formData,
+      media: formData.media.filter((_, i) => i !== index),
     });
   };
 
@@ -156,13 +189,16 @@ export default function TestimonialsTab() {
               <Plus className="h-4 w-4" /> Add Testimonial
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
                 {editing ? "Edit Testimonial" : "Add Testimonial"}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 max-h-[70vh] overflow-y-auto pr-2"
+            >
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Name *</Label>
@@ -206,16 +242,18 @@ export default function TestimonialsTab() {
                   />
                 </div>
               </div>
+
+              {/* Avatar Upload */}
               <div className="space-y-2">
-                <Label>Avatar URL</Label>
-                <Input
+                <Label>Avatar</Label>
+                <MediaUpload
                   value={formData.avatar}
-                  onChange={(e) =>
-                    setFormData({ ...formData, avatar: e.target.value })
-                  }
-                  placeholder="/avatars/client.jpg"
+                  onChange={(url) => setFormData({ ...formData, avatar: url })}
+                  accept="image"
+                  mediaType="general"
                 />
               </div>
+
               <div className="space-y-2">
                 <Label>Testimonial Content *</Label>
                 <textarea
@@ -227,6 +265,54 @@ export default function TestimonialsTab() {
                   required
                 />
               </div>
+
+              {/* Showcase Media Gallery */}
+              <div className="space-y-2">
+                <Label>Showcase Media (Images/Videos for Carousel)</Label>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {formData.media.map((url, index) => (
+                    <div
+                      key={index}
+                      className="relative aspect-video rounded-lg overflow-hidden border bg-muted group"
+                    >
+                      {isVideoUrl(url) ? (
+                        <video
+                          src={url}
+                          className="w-full h-full object-cover"
+                          muted
+                        />
+                      ) : (
+                        <img
+                          src={url}
+                          alt={`Media ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute top-1 left-1">
+                        {isVideoUrl(url) ? (
+                          <Video className="w-4 h-4 text-white drop-shadow" />
+                        ) : (
+                          <ImageIcon className="w-4 h-4 text-white drop-shadow" />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeMedia(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <MediaUpload
+                  value=""
+                  onChange={addMedia}
+                  accept="all"
+                  mediaType="general"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Rating (1-5)</Label>
@@ -284,7 +370,7 @@ export default function TestimonialsTab() {
                   <Label>Active</Label>
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-4 border-t">
                 <Button
                   type="button"
                   variant="outline"
@@ -370,6 +456,12 @@ export default function TestimonialsTab() {
                   {item.isFeatured && <Badge>Featured</Badge>}
                   {item.projectType && (
                     <Badge variant="outline">{item.projectType}</Badge>
+                  )}
+                  {item.media && item.media.length > 0 && (
+                    <Badge variant="secondary" className="gap-1">
+                      <ImageIcon className="w-3 h-3" />
+                      {item.media.length} media
+                    </Badge>
                   )}
                   {!item.isActive && (
                     <Badge variant="secondary">Inactive</Badge>

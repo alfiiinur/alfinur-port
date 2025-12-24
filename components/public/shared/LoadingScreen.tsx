@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
+import { LightRays } from "@/components/ui/light-rays";
+import { Meteors } from "@/components/ui/meteors";
 
 const sliderImages = [
   "/frontend/webImg/1.png",
@@ -18,11 +20,13 @@ interface LoadingScreenProps {
 export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const percentRef = useRef<HTMLDivElement>(null);
+  const loadingTextRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const [currentImage, setCurrentImage] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const bottomTextRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
 
   // Image slider
   useEffect(() => {
@@ -35,7 +39,7 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
 
   // Loading progress
   useEffect(() => {
-    const duration = 3000; // 3 seconds loading
+    const duration = 3000;
     const interval = 30;
     const increment = 100 / (duration / interval);
 
@@ -60,31 +64,23 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
         onComplete: onLoadingComplete,
       });
 
-      tl.to(logoRef.current, {
-        y: -50,
+      tl.to([loadingTextRef.current, imageRef.current], {
+        y: -30,
         opacity: 0,
-        duration: 0.5,
+        duration: 0.4,
         ease: "power2.in",
+        stagger: 0.1,
       })
         .to(
-          taglineRef.current,
+          [logoRef.current, percentRef.current],
           {
-            y: -30,
+            y: 30,
             opacity: 0,
             duration: 0.4,
             ease: "power2.in",
+            stagger: 0.1,
           },
-          "-=0.3"
-        )
-        .to(
-          imageRef.current,
-          {
-            scale: 0.8,
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.in",
-          },
-          "-=0.3"
+          "-=0.2"
         )
         .to(containerRef.current, {
           yPercent: -100,
@@ -98,27 +94,45 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        logoRef.current,
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "power4.out", delay: 0.2 }
-      );
-
-      gsap.fromTo(
-        taglineRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.6 }
+        loadingTextRef.current,
+        { y: -30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.2 }
       );
 
       gsap.fromTo(
         imageRef.current,
         { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1, ease: "power3.out", delay: 0.4 }
+        { scale: 1, opacity: 1, duration: 1, ease: "power4.out", delay: 0.3 }
       );
 
       gsap.fromTo(
-        progressRef.current,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 0.5, ease: "power2.out", delay: 0.3 }
+        logoRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
+      );
+
+      gsap.fromTo(
+        percentRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.5 }
+      );
+
+      gsap.fromTo(
+        progressBarRef.current,
+        { scaleX: 0, opacity: 0 },
+        {
+          scaleX: 1,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.5,
+        }
+      );
+
+      gsap.fromTo(
+        bottomTextRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.6 }
       );
     }, containerRef);
 
@@ -130,11 +144,30 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
       ref={containerRef}
       className="fixed inset-0 z-9999 bg-black flex flex-col justify-between overflow-hidden"
     >
-      {/* Image Slider - Top Right */}
-      <div className="absolute top-6 right-6 md:top-10 md:right-10">
+      {/* Light Rays Effect */}
+      <LightRays
+        className="z-0"
+        count={8}
+        color="rgba(196, 241, 53, 0.15)"
+        blur={40}
+        speed={12}
+        length="80vh"
+      />
+      <Meteors number={30} />
+      {/* Top Section */}
+      <div className="flex justify-between items-start p-6 md:p-10">
+        {/* Loading Text - Top Left */}
+        <div ref={loadingTextRef} className="text-left">
+          <p className="text-white font-black text-md md:text-xl ">Loading</p>
+          <p className="text-white font-black text-md md:text-xl ">
+            your experience...
+          </p>
+        </div>
+
+        {/* Image Carousel - Top Right */}
         <div
           ref={imageRef}
-          className="w-24 h-24 md:w-40 md:h-40 rounded-2xl overflow-hidden"
+          className="relative w-24 h-24 md:w-40 md:h-40 rounded-2xl overflow-hidden"
         >
           {sliderImages.map((src, index) => (
             <Image
@@ -150,61 +183,72 @@ export const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-end px-6 md:px-12 pb-8">
-        <div ref={logoRef}>
-          <h1 className="font-anton text-[80px] sm:text-[120px] md:text-[180px] lg:text-[220px] font-bold text-white leading-none tracking-tighter">
-            ALFI NUR
-          </h1>
-        </div>
-      </div>
+      {/* Center - Empty */}
+      <div className="flex-1" />
 
       {/* Bottom Section */}
-      <div className="px-6 md:px-12 pb-8 md:pb-12">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          {/* Tagline */}
-          <p
-            ref={taglineRef}
-            className="text-white/60 text-xs md:text-sm tracking-widest uppercase"
-          >
-            (FrontEnd Developer + IT Infrastructure)
-          </p>
-
-          {/* Progress */}
-          <div className="flex items-center gap-4">
-            <div className="w-32 md:w-48 h-[2px] bg-white/20 rounded-full overflow-hidden">
-              <div
-                ref={progressRef}
-                className="h-full bg-white origin-left transition-transform duration-100"
-                style={{ transform: `scaleX(${progress / 100})` }}
-              />
+      <div className="p-6 md:p-10 space-y-4">
+        {/* Logo (Bottom Left) & Percentage (Bottom Right) */}
+        <div className="flex justify-between items-end pt-4">
+          {/* Logo - Bottom Left */}
+          <div ref={logoRef} className="flex items-center gap-3">
+            {/* Logo Text */}
+            <div className="flex items-baseline">
+              <span className="text-white font-extrabold text-4xl md:text-6xl lg:text-7xl  tracking-tight">
+                ALFI NUR DANIALIN
+              </span>
             </div>
-            <span className="text-white/60 text-xs md:text-sm font-mono w-12">
+          </div>
+
+          {/* Percentage - Bottom Right */}
+          <div ref={percentRef}>
+            <span
+              className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-gradient-to-tl
+                        from-slate-800
+                        via-violet-500
+                        to-black
+                        bg-clip-text
+                        text-transparent"
+              style={{ fontFamily: "system-ui, sans-serif" }}
+            >
               {Math.round(progress)}%
             </span>
           </div>
         </div>
+        {/* Progress Bar */}
+        <div
+          ref={progressBarRef}
+          className="w-full h-[2px] bg-[#1a2a3a] rounded-full overflow-hidden origin-left"
+        >
+          <div
+            className="h-full bg-linear-to-r from-[#4a9eff] to-[#6b8aad] transition-all duration-100 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        {/* Bottom Info Text */}
+        <div
+          ref={bottomTextRef}
+          className="flex justify-between items-center text-[#4a6a8a] text-xs md:text-sm"
+        >
+          <span>Frontend Developer</span>
+          <span className="hidden md:block">
+            Crafting digital experiences with passion
+          </span>
+          <span>Ready to innovate</span>
+        </div>
       </div>
 
-      {/* Decorative Circle - Bottom Right */}
-      {/* <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12">
-        <svg
-          className="w-6 h-6 md:w-8 md:h-8 text-white/40"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-            className="animate-spin-slow"
-            style={{ animationDuration: "3s" }}
-          />
-          <path d="M12 6v6l4 2" />
-        </svg>
-      </div> */}
+      {/* Subtle Grid Overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-5"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(74, 158, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(74, 158, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "50px 50px",
+        }}
+      />
     </div>
   );
 };

@@ -10,6 +10,7 @@ interface Testimonial {
   content: string;
   rating: number;
   projectType: string | null;
+  media?: string[];
   isFeatured: boolean;
 }
 

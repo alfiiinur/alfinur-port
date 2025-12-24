@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontAnton.variable} ${fontLibre.variable} ${fontPoppins.variable} ${fontSpaceGrotesk.variable} antialiased`}
+        className={`${fontAnton.variable} ${fontLibre.variable} ${fontPoppins.variable} ${fontSpaceGrotesk.variable} antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"

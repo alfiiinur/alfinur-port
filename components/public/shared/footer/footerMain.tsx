@@ -26,11 +26,11 @@ export default function FooterMain() {
         <div className="md:col-span-5 flex flex-col justify-between h-full mt-10">
           <div>
             <h2 className="text-black font-libre-baskerville text-4xl italic mb-6 dark:text-white">
-              Hello.
+              Hello Everyone 🙌.
             </h2>
             <p className="font-poppins text-black text-sm max-w-xs leading-relaxed dark:text-white">
-              From bases in London and Melbourne I work remotely with start-ups
-              and famous names from all over the world.
+              From bases in Indonesia I work remotely with start-ups and famous
+              names from all over the world.
             </p>
           </div>
         </div>
@@ -84,13 +84,13 @@ export default function FooterMain() {
         <Separator className="my-8" />
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <p className="text-black text-center md:text-left dark:text-white ">
-            © 2025 Helo Claps. All rights reserved.
+            © 2025 Helo. Alfi Nur Daniali - All rights reserved.
           </p>
 
           <div className="flex items-center gap-5">
             <span className="text-black dark:text-white">Built with</span>
             <span className="text-black dark:text-white">
-              Next.js • Tailwind • shadcn/ui
+              Next.js • Tailwind • shadcn/ui • gsap • framer
             </span>
           </div>
         </div>

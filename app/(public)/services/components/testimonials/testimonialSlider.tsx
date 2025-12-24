@@ -14,6 +14,7 @@ interface Testimonial {
   content: string;
   rating: number;
   projectType: string | null;
+  media?: string[];
   isFeatured: boolean;
 }
 
@@ -57,6 +58,7 @@ export const TestimonialSlider = ({ testimonials }: TestimonialSliderProps) => {
     quote: currentTestimonial.content,
     rating: currentTestimonial.rating,
     projectType: currentTestimonial.projectType,
+    media: currentTestimonial.media || [],
   };
 
   return (

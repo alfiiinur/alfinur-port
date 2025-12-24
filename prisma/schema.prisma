@@ -516,6 +516,7 @@ model Testimonial {
   content     String
   rating      Int      @default(5) // 1-5 stars
   projectType String?  // e.g., "Website", "Mobile App"
+  media       String[] // Showcase images/videos for carousel
   isActive    Boolean  @default(true)
   isFeatured  Boolean  @default(false)
   sortOrder   Int      @default(0)

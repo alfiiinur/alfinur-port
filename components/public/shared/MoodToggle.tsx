@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -12,11 +13,12 @@ export const MoodToggle = () => {
   };
   return (
     <div>
-      <Button variant="outline" size="icon" onClick={toggleTheme}>
+      {/* <Button variant="outline" size="icon" onClick={toggleTheme}>
         <Sun className="h-[1.2rem] w-[1.2rem] transition-all dark:hidden" />
         <Moon className="hidden h-[1.2rem] w-[1.2rem] transition-all dark:block" />
         <span className="sr-only">Toggle theme</span>
-      </Button>
+      </Button> */}
+      <AnimatedThemeToggler />
     </div>
   );
 };

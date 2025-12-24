@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Star, Quote, ChevronLeft, ChevronRight, Play } from "lucide-react";
 
 interface TestimonialSlideProps {
   data: {
@@ -13,10 +14,42 @@ interface TestimonialSlideProps {
     quote: string;
     rating: number;
     projectType: string | null;
+    media?: string[];
   };
 }
 
+// Helper to check if URL is video
+function isVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|ogg|mov)$/i.test(url);
+}
+
 export const TestimonialSlide = ({ data }: TestimonialSlideProps) => {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const mediaItems =
+    data.media && data.media.length > 0 ? data.media : ["/img/room.jpg"]; // Fallback to default image
+
+  // Auto-advance carousel
+  useEffect(() => {
+    if (mediaItems.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentMediaIndex((prev) => (prev + 1) % mediaItems.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [mediaItems.length]);
+
+  const nextMedia = () => {
+    setCurrentMediaIndex((prev) => (prev + 1) % mediaItems.length);
+  };
+
+  const prevMedia = () => {
+    setCurrentMediaIndex(
+      (prev) => (prev - 1 + mediaItems.length) % mediaItems.length
+    );
+  };
+
+  const currentMedia = mediaItems[currentMediaIndex];
+  const isVideo = isVideoUrl(currentMedia);
+
   return (
     <div className="w-full min-h-[80vh] flex items-center">
       <div className="container mx-auto px-6 lg:px-16 py-16">
@@ -47,7 +80,7 @@ export const TestimonialSlide = ({ data }: TestimonialSlideProps) => {
 
             {/* Quote Text */}
             <blockquote className="text-2xl md:text-3xl lg:text-4xl font-medium text-white dark:text-black leading-relaxed mb-8">
-              "{data.quote}"
+              &ldquo;{data.quote}&rdquo;
             </blockquote>
 
             {/* Author Info */}
@@ -84,22 +117,73 @@ export const TestimonialSlide = ({ data }: TestimonialSlideProps) => {
             )}
           </motion.div>
 
-          {/* Right: Image Section */}
+          {/* Right: Media Carousel Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
             className="hidden lg:flex items-center justify-center"
           >
-            <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden">
-              <Image
-                src="/img/room.jpg"
-                alt="Testimonial showcase"
-                fill
-                className="object-cover"
-              />
+            <div className="relative w-full max-w-md aspect-4/5 rounded-2xl overflow-hidden group">
+              {/* Media Carousel */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentMediaIndex}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0"
+                >
+                  {isVideo ? (
+                    <video
+                      src={currentMedia}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={currentMedia}
+                      alt="Testimonial showcase"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Video Badge */}
+              {isVideo && (
+                <div className="absolute top-4 left-4 z-10 bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                  <Play className="w-3 h-3 fill-current" />
+                  Video
+                </div>
+              )}
+
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent pointer-events-none" />
+
+              {/* Navigation Arrows (show if multiple media) */}
+              {mediaItems.length > 1 && (
+                <>
+                  <button
+                    onClick={prevMedia}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={nextMedia}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
               {/* Floating badge */}
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
@@ -113,12 +197,26 @@ export const TestimonialSlide = ({ data }: TestimonialSlideProps) => {
                         className="w-4 h-4 text-yellow-500 fill-yellow-500"
                       />
                     ))}
-                    <span className="text-white/80 text-xs ml-2">
-                      5.0 Average Rating
-                    </span>
                   </div>
                 </div>
               </div>
+
+              {/* Carousel Dots */}
+              {mediaItems.length > 1 && (
+                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {mediaItems.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentMediaIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === currentMediaIndex
+                          ? "bg-white w-6"
+                          : "bg-white/50 hover:bg-white/80"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
