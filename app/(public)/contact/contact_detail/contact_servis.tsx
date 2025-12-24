@@ -53,8 +53,8 @@ export default function ContactServis() {
             Together
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl">
-            Punya ide project atau ingin berkolaborasi? Saya siap membantu
-            mewujudkan visi digital Anda.
+            Have a project idea or want to collaborate? I'm ready to help you
+            realize your digital vision.
           </p>
         </div>
 

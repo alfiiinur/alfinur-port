@@ -89,16 +89,16 @@ export const ContactSection = () => {
                 {[
                   {
                     name: "Instagram",
-                    href: "https://instagram.com/alfinurnuha",
+                    href: "https://instagram.com/alfii_nur1",
                   },
                   {
                     name: "LinkedIn",
-                    href: "https://linkedin.com/in/alfinurnuha",
+                    href: "https://www.linkedin.com/in/alfinur/",
                   },
-                  { name: "GitHub", href: "https://github.com/alfinurnuha" },
+                  { name: "GitHub", href: "https://github.com/alfiiinur" },
                   {
                     name: "Dribbble",
-                    href: "https://dribbble.com/alfinurnuha",
+                    href: "https://dribbble.com/alfiii2",
                   },
                 ].map((social) => (
                   <Link
