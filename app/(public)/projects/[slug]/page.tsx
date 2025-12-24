@@ -85,6 +85,24 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  // Normalize sections to a JS array or null so downstream components receive expected shape
+  const parseSections = () => {
+    const raw = project.sections as any;
+    if (!raw) return null;
+    try {
+      if (typeof raw === "string") return JSON.parse(raw);
+      return raw;
+    } catch (e) {
+      console.error("Failed to parse project.sections", e);
+      return null;
+    }
+  };
+
+  const projectData = {
+    ...project,
+    sections: parseSections(),
+  };
+
   const [relatedProjects, { previous, next }] = await Promise.all([
     getRelatedProjects(slug, project.category),
     getAdjacentProjects(project.createdAt),
@@ -92,8 +110,8 @@ export default async function ProjectDetailPage({
 
   return (
     <main className="min-h-screen bg-background">
-      <ProjectDetailHero project={project} />
-      <ProjectDetailContent project={project} />
+      <ProjectDetailHero project={projectData} />
+      <ProjectDetailContent project={projectData} />
 
       {/* Previous/Next Navigation */}
       <div className="container mx-auto px-4 pb-12">

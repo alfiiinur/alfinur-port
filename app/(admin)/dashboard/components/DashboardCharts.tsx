@@ -19,17 +19,20 @@ interface ContentItem {
   name: string;
   value: number;
   color: string;
+  [key: string]: string | number;
 }
 
 interface BlogItem {
   name: string;
   views: number;
   comments: number;
+  [key: string]: string | number;
 }
 
 interface ReactionItem {
   name: string;
   value: number;
+  [key: string]: string | number;
 }
 
 interface DashboardChartsProps {

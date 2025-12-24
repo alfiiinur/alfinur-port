@@ -239,14 +239,16 @@ export default function BillsPage() {
   const exportToExcel = async () => {
     setExporting(true);
     try {
-      const data = filteredBills.map((bill) => ({
-        Name: bill.name,
-        Category: bill.category,
-        "Due Date": new Date(bill.dueDate).toLocaleDateString("id-ID"),
-        Amount: bill.amount,
-        Status: bill.status,
-        Recurring: bill.isRecurring ? bill.recurringType : "No",
-      }));
+      const data: Record<string, string | number>[] = filteredBills.map(
+        (bill) => ({
+          Name: bill.name,
+          Category: bill.category,
+          "Due Date": new Date(bill.dueDate).toLocaleDateString("id-ID"),
+          Amount: bill.amount,
+          Status: bill.status,
+          Recurring: bill.isRecurring ? bill.recurringType ?? "Yes" : "No",
+        })
+      );
 
       data.push({
         Name: "",

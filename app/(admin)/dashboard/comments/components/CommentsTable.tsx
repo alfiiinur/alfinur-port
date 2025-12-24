@@ -40,7 +40,7 @@ interface ReplyType {
   name: string;
   message: string;
   isAdminReply: boolean;
-  createdAt: string;
+  createdAt: string | Date;
   admin?: { name: string } | null;
   reactions?: Reaction[];
 }
@@ -52,7 +52,7 @@ interface Comment {
   ipAddress: string;
   isAdminReply: boolean;
   approved: boolean;
-  createdAt: string;
+  createdAt: string | Date;
   blog: { title: string; slug: string };
   replies: ReplyType[];
   reactions?: Reaction[];

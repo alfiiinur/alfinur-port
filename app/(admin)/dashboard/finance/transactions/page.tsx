@@ -272,14 +272,16 @@ export default function MoneyTrackPage() {
   const exportToExcel = async () => {
     setExporting(true);
     try {
-      const data = filteredTransactions.map((tx) => ({
-        Date: new Date(tx.date).toLocaleDateString("id-ID"),
-        Type: tx.type,
-        Category: tx.category,
-        Description: tx.description || "-",
-        Wallet: tx.walletName,
-        Amount: tx.amount,
-      }));
+      const data: Record<string, string | number>[] = filteredTransactions.map(
+        (tx) => ({
+          Date: new Date(tx.date).toLocaleDateString("id-ID"),
+          Type: tx.type,
+          Category: tx.category,
+          Description: tx.description || "-",
+          Wallet: tx.walletName,
+          Amount: tx.amount,
+        })
+      );
 
       // Add summary row
       data.push({

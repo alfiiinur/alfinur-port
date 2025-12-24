@@ -37,9 +37,8 @@ export const titleDesc =
 
 // 3. Link sosial di footer
 export const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com/yourbrand" },
-  { label: "TikTok", href: "https://tiktok.com/@yourbrand" },
-  { label: "Twitter / X", href: "https://x.com/yourbrand" },
-  { label: "YouTube", href: "https://youtube.com/@yourbrand" },
-  { label: "Pinterest", href: "https://pinterest.com/yourbrand" },
+  { label: "Instagram", href: "https://instagram.com/alfii_nur" },
+  { label: "Github", href: "https://github.com/alfiiinur" },
+  { label: "Dribble", href: "https://dribbble.com/alfiii2" },
+  { label: "Linkedin", href: "https://www.linkedin.com/in/alfinur/" },
 ];
