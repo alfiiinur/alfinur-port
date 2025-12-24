@@ -1,8 +1,8 @@
 "use client";
 
-import { AnimatedText } from "@/components/public/shared/AnimatedText";
 import { motion } from "motion/react";
 import Image, { StaticImageData } from "next/image";
+import { ReactNode } from "react";
 
 export type ShowcaseMediaType = "image" | "video";
 
@@ -15,11 +15,11 @@ export interface ShowcaseMediaItem {
 }
 
 interface ServicesSiteProps {
-  title: string;
+  title: ReactNode;
   topDescription: string;
   mediaItems: [ShowcaseMediaItem, ShowcaseMediaItem];
   bottomLabel?: string;
-  bottomContent: string;
+  bottomContent: ReactNode;
 }
 
 const MediaCard = ({
@@ -74,12 +74,15 @@ export default function ServicesSite({
     <section className="w-full max-w-7xl mx-auto px-6 py-20 bg-white dark:bg-black">
       {/* 1. Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
-        <AnimatedText
-          as="h2"
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-gray-900 leading-[1.1] dark:text-white"
         >
           {title}
-        </AnimatedText>
+        </motion.h2>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -115,12 +118,15 @@ export default function ServicesSite({
           </motion.div>
         )}
 
-        <AnimatedText
-          as="p"
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-4xl md:text-6xl leading-snug font-bold text-gray-900 dark:text-white"
         >
           {bottomContent}
-        </AnimatedText>
+        </motion.p>
       </div>
     </section>
   );

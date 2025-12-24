@@ -111,16 +111,12 @@ export default function DesignHero({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4">
-            Discover the
-            <br />
-            World&apos;s Top
-            <br />
-            <span className="text-primary">Designers</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground leading-tight mb-4 uppercase">
+            Find Design Inspiration Here
           </h1>
-          <p className="text-muted-foreground text-base sm:text-lg mb-6 max-w-md">
-            Explore work from the most talented and accomplished designers ready
-            to take on your next project.
+          <p className="text-gray-700 font-medium text-base sm:text-lg mb-6 max-w-md">
+            Explore our work here and find talented and experienced designers
+            ready to work on your next project.
           </p>
 
           {/* Tabs */}

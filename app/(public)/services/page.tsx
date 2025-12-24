@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getSiteSettings } from "@/lib/settings";
 import ServicesHero from "./components/ServicesHero";
 import ServicesGrid from "./components/ServicesGrid";
 import ServicesShowcase from "./components/ServicesShowcase";
@@ -31,10 +32,11 @@ async function getFaqs() {
 }
 
 export default async function Services() {
-  const [services, testimonials, faqs] = await Promise.all([
+  const [services, testimonials, faqs, settings] = await Promise.all([
     getServices(),
     getTestimonials(),
     getFaqs(),
+    getSiteSettings(),
   ]);
 
   return (
@@ -64,7 +66,9 @@ export default async function Services() {
 
       {/* Services Showcase - Bento Grid */}
       <ServicesShowcase />
-      <TestimonialPage testimonials={testimonials} />
+      {settings.showTestimonials && (
+        <TestimonialPage testimonials={testimonials} />
+      )}
       <ServicesSite
         title={
           <>
@@ -95,7 +99,7 @@ export default async function Services() {
           </>
         }
       />
-      <FAQSection faqs={faqs} />
+      {settings.showFaq && <FAQSection faqs={faqs} />}
     </div>
   );
 }

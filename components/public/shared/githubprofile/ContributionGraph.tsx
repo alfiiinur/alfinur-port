@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,12 @@ interface ContributedRepo {
   url: string;
 }
 
+interface ContributionGraphProps {
+  activityStats?: ActivityStats;
+  contributedRepos?: ContributedRepo[];
+  totalRepos?: number;
+}
+
 const GITHUB_USERNAME = "alfiiinur";
 const MONTHS = [
   "Dec",
@@ -48,14 +54,65 @@ const MONTHS = [
 ];
 const DAYS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
-// Seeded random for consistent results across renders
+// Fetch real contribution data from GitHub
+const fetchContributions = async (
+  username: string,
+  year: number
+): Promise<ContributionData> => {
+  try {
+    // Use GitHub's contribution calendar scraper API
+    const res = await fetch(
+      `https://github-contributions-api.jogruber.de/v4/${username}?y=${year}`
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+      const weeks: ContributionWeek[] = [];
+      let total = 0;
+
+      // Group contributions by week
+      const contributions = data.contributions || [];
+      let currentWeek: ContributionDay[] = [];
+
+      contributions.forEach(
+        (
+          day: { date: string; count: number; level: number },
+          index: number
+        ) => {
+          const level = Math.min(day.level, 4) as 0 | 1 | 2 | 3 | 4;
+          total += day.count;
+
+          currentWeek.push({
+            date: day.date,
+            count: day.count,
+            level,
+          });
+
+          // Start new week every 7 days
+          if (currentWeek.length === 7 || index === contributions.length - 1) {
+            weeks.push({ days: [...currentWeek] });
+            currentWeek = [];
+          }
+        }
+      );
+
+      return { total: data.total?.lastYear || total, weeks };
+    }
+    throw new Error("API failed");
+  } catch {
+    // Fallback to generated data if API fails
+    return generateFallbackContributions(year);
+  }
+};
+
+// Seeded random for consistent fallback results
 const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 };
 
-// Generate contribution data with seed for consistency
-const generateContributions = (year: number): ContributionData => {
+// Generate fallback contribution data
+const generateFallbackContributions = (year: number): ContributionData => {
   const weeks: ContributionWeek[] = [];
   const startDate = new Date(year - 1, 11, 1);
   const endDate = new Date(year, 11, 31);
@@ -74,7 +131,6 @@ const generateContributions = (year: number): ContributionData => {
         let level: 0 | 1 | 2 | 3 | 4 = 0;
         let count = 0;
 
-        // More realistic distribution
         if (random > 0.7) {
           if (random > 0.95) {
             level = 4;
@@ -110,7 +166,7 @@ const generateContributions = (year: number): ContributionData => {
   return { total: totalContributions, weeks };
 };
 
-const CONTRIBUTED_REPOS: ContributedRepo[] = [
+const DEFAULT_CONTRIBUTED_REPOS: ContributedRepo[] = [
   {
     name: "Riset-Sistem-Rekomendasi-CF/Fro...",
     url: "https://github.com/alfiiinur",
@@ -125,7 +181,11 @@ const CONTRIBUTED_REPOS: ContributedRepo[] = [
   },
 ];
 
-export const ContributionGraph = () => {
+export const ContributionGraph = ({
+  activityStats: propActivityStats,
+  contributedRepos: propContributedRepos,
+  totalRepos: propTotalRepos,
+}: ContributionGraphProps) => {
   const [selectedYear, setSelectedYear] = useState(2025);
   const [contributions, setContributions] = useState<ContributionData | null>(
     null
@@ -136,24 +196,26 @@ export const ContributionGraph = () => {
 
   const years = [2025, 2024, 2023, 2022, 2021];
 
-  const activityStats: ActivityStats = useMemo(
-    () => ({
-      commits: 87,
-      issues: 0,
-      pullRequests: 13,
-      codeReview: 0,
-    }),
-    []
-  );
+  // Use props or defaults
+  const activityStats = propActivityStats || {
+    commits: 87,
+    issues: 0,
+    pullRequests: 13,
+    codeReview: 0,
+  };
+
+  const contributedRepos = propContributedRepos || DEFAULT_CONTRIBUTED_REPOS;
+  const totalRepos = propTotalRepos || 19;
 
   useEffect(() => {
     setLoading(true);
-    // Simulate API call with slight delay
-    const timer = setTimeout(() => {
-      setContributions(generateContributions(selectedYear));
-      setLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
+    fetchContributions(GITHUB_USERNAME, selectedYear)
+      .then((data) => {
+        setContributions(data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [selectedYear]);
 
   const getLevelColor = useCallback((level: number) => {
@@ -310,7 +372,7 @@ export const ContributionGraph = () => {
               <div>
                 <span>Contributed to</span>
                 <div className="mt-1 space-y-0.5">
-                  {CONTRIBUTED_REPOS.map((repo, i) => (
+                  {contributedRepos.map((repo, i) => (
                     <a
                       key={i}
                       href={repo.url}
@@ -320,7 +382,7 @@ export const ContributionGraph = () => {
                     </a>
                   ))}
                   <span className="text-[#8b949e]">
-                    and 19 other repositories
+                    and {totalRepos} other repositories
                   </span>
                 </div>
               </div>

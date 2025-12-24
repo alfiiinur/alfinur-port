@@ -3,8 +3,10 @@
 import { processSteps } from "@/components/dataMock/processList";
 import { ProcessList } from "@/components/public/shared/ProcessList";
 import { RoundedButton } from "@/components/public/shared/RoundedButton";
-import { motion } from "motion/react";
+import { Highlighter } from "@/components/ui/highlighter";
+import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 // Animation variants for lines
 const lineVariant = {
@@ -44,13 +46,49 @@ const scaleIn = {
   },
 };
 
-// Split text into lines
-const headlineLines = [
-  "Welcome to my portfolio where I",
-  "showcase my journey as an IT Developer,",
-  "turning ideas into digital solutions",
-  "that make a real impact.",
+// Rotating roles
+const roles = [
+  "IT Developer",
+  "Web Developer",
+  "UI/UX Designer",
+  "Frontend Dev",
+  "Graphic Designer",
 ];
+
+// Rotating text component
+const RotatingText = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % roles.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="relative inline-block min-w-[280px] md:min-w-[340px]">
+      <AnimatePresence mode="wait">
+        <Highlighter action="box" color="#499CF5">
+          <motion.span
+            key={currentIndex}
+            initial={{ y: 30, opacity: 0, rotateX: -90 }}
+            animate={{ y: 0, opacity: 1, rotateX: 0 }}
+            exit={{ y: -30, opacity: 0, rotateX: 90 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            className="inline-block text-[#499CF5] dark:text-[#499CF5]"
+            style={{ transformOrigin: "center" }}
+          >
+            {roles[currentIndex]}
+          </motion.span>
+        </Highlighter>
+      </AnimatePresence>
+    </span>
+  );
+};
 
 const descriptionLines = [
   "From web development to system design,",
@@ -103,21 +141,48 @@ export const ProcessSection = () => {
         {/* === KOLOM KANAN === */}
         <div className="lg:col-span-8 flex flex-col justify-between pt-4">
           <div className="space-y-12">
-            {/* Headline - per line animation */}
+            {/* Headline - with rotating role text */}
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-medium leading-[1.1] tracking-tight text-black dark:text-white">
-              {headlineLines.map((line, i) => (
-                <motion.span
-                  key={i}
-                  variants={lineVariant}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.8 }}
-                  custom={i}
-                  className="block"
-                >
-                  {line}
-                </motion.span>
-              ))}
+              <motion.span
+                variants={lineVariant}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.8 }}
+                custom={0}
+                className="block"
+              >
+                Welcome to my portfolio where I
+              </motion.span>
+              <motion.span
+                variants={lineVariant}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.8 }}
+                custom={1}
+                className="block"
+              >
+                showcase my journey as a <RotatingText />,
+              </motion.span>
+              <motion.span
+                variants={lineVariant}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.8 }}
+                custom={2}
+                className="block"
+              >
+                turning ideas into digital solutions
+              </motion.span>
+              <motion.span
+                variants={lineVariant}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.8 }}
+                custom={3}
+                className="block"
+              >
+                that make a real impact.
+              </motion.span>
             </h2>
 
             {/* Description - per line animation */}

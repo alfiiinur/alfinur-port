@@ -18,11 +18,7 @@ const services = [
     label: "UI/UX Design",
     description: "Interface & Experience Design",
   },
-  {
-    id: "mobile-app",
-    label: "Mobile App",
-    description: "iOS & Android Development",
-  },
+
   {
     id: "it-consulting",
     label: "IT Consulting",

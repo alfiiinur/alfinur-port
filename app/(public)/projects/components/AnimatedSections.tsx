@@ -15,8 +15,8 @@ interface SectionData {
 
 const sectionsData: SectionData[] = [
   {
-    heading: "Scroll down",
-    bgImage: "/frontend/webImg/2.png",
+    heading: "IT Support",
+    bgImage: "/frontend/webImg/10.png",
   },
   {
     heading: "Creative Projects",
@@ -24,15 +24,15 @@ const sectionsData: SectionData[] = [
   },
   {
     heading: "Web Development",
-    bgImage: "/frontend/webImg/18.png",
+    bgImage: "/frontend/webImg/14.png",
   },
   {
     heading: "UI/UX Design",
-    bgImage: "/frontend/webImg/25.png",
+    bgImage: "/frontend/webImg/1.png",
   },
   {
-    heading: "Keep scrolling",
-    bgImage: "/frontend/webImg/2.png",
+    heading: "Keep Explore",
+    bgImage: "/frontend/webImg/6.png",
   },
 ];
 

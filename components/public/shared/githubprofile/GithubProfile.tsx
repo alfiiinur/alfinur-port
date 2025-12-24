@@ -33,25 +33,47 @@ interface PinnedRepo {
   forks: number;
 }
 
-const GITHUB_USERNAME = "alfiiinur";
+interface GitHubData {
+  user: {
+    login: string;
+    name: string;
+    avatar: string;
+    bio: string;
+    publicRepos: number;
+    followers: number;
+    following: number;
+    url: string;
+  };
+  repos: PinnedRepo[];
+  activityStats: {
+    commits: number;
+    issues: number;
+    pullRequests: number;
+    codeReview: number;
+  };
+  contributedRepos: { name: string; url: string }[];
+  totalRepos: number;
+}
+
 const INITIAL_DISPLAY_COUNT = 6;
 
 export const GithubProfile = () => {
   const [pinnedRepos, setPinnedRepos] = useState<PinnedRepo[]>([]);
   const [loading, setLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
+  const [githubData, setGithubData] = useState<GitHubData | null>(null);
 
   useEffect(() => {
-    const fetchPinned = async () => {
+    const fetchGitHubData = async () => {
       try {
-        const res = await fetch(
-          `https://gh-pinned-repos.egoist.dev/?username=${GITHUB_USERNAME}`
-        );
+        // Fetch from our API route
+        const res = await fetch("/api/github");
         if (res.ok) {
-          const data = await res.json();
-          setPinnedRepos(data.length > 0 ? data : FALLBACK_REPOS);
+          const data: GitHubData = await res.json();
+          setGithubData(data);
+          setPinnedRepos(data.repos.length > 0 ? data.repos : FALLBACK_REPOS);
         } else {
-          throw new Error("API down");
+          throw new Error("API error");
         }
       } catch {
         console.log("Using fallback repos");
@@ -61,7 +83,7 @@ export const GithubProfile = () => {
       }
     };
 
-    fetchPinned();
+    fetchGitHubData();
   }, []);
 
   // Get repos to display
@@ -205,7 +227,11 @@ export const GithubProfile = () => {
           Contribution Graph
         </h2>
 
-        <ContributionGraph />
+        <ContributionGraph
+          activityStats={githubData?.activityStats}
+          contributedRepos={githubData?.contributedRepos}
+          totalRepos={githubData?.totalRepos}
+        />
 
         <p className="text-center text-sm text-muted-foreground block sm:hidden">
           Scroll horizontally to see full contribution history

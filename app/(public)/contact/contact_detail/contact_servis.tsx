@@ -32,10 +32,10 @@ const contactInfo = [
 ];
 
 const socialLinks = [
-  { name: "Instagram", href: "https://instagram.com/alfiii_nur1" },
-  { name: "LinkedIn", href: "https://linkedin.com/in/alfinur" },
-  { name: "GitHub", href: "https://github.com/alfiii_nur11" },
-  { name: "Dribbble", href: "https://dribbble.com/alfiii_nur11" },
+  { name: "Instagram", href: "https://www.instagram.com/alfii_nur1/" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/alfinur/" },
+  { name: "GitHub", href: "https://github.com/alfiiinur" },
+  { name: "Dribbble", href: "https://dribbble.com/alfiii2" },
 ];
 
 export default function ContactServis() {

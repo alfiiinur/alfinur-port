@@ -131,7 +131,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <div className="mt-6 text-center space-y-2">
+        {/* <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             Demo credentials available upon request
           </p>
@@ -144,7 +144,7 @@ export default function LoginPage() {
               Sign up
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
