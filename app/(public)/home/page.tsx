@@ -21,7 +21,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="bg-white dark:bg-black min-h-screen pb-20">
+      <section className="bg-white dark:bg-black min-h-screen pb-20 overflow-x-hidden">
         {/* Light Rays Effect */}
         <LightRays
           className="z-0"
@@ -31,7 +31,7 @@ export default async function HomePage() {
           speed={12}
           length="80vh"
         />
-        <div>
+        <div className="overflow-x-hidden">
           <SectionHeader />
           <HeroGrids />
           <PortfolioSection />

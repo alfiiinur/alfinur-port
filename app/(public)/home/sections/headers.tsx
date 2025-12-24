@@ -3,12 +3,122 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/moving-border";
+import { motion } from "framer-motion";
 
-const roles = [
-  "IT Infrastructure",
-  "UI/UX Designer",
-  "FrontEnd Developer",
-  "Graphic Designer",
+type HighlightAction =
+  | "underline"
+  | "circle"
+  | "box"
+  | "highlight"
+  | "strikethrough";
+
+interface HighlighterProps {
+  children: React.ReactNode;
+  action: HighlightAction;
+  color: string;
+}
+
+const Highlighter = ({ children, action, color }: HighlighterProps) => {
+  const getHighlightStyle = () => {
+    switch (action) {
+      case "underline":
+        return (
+          <span className="relative inline-block">
+            {children}
+            <motion.span
+              className="absolute bottom-0 left-0 w-full h-[3px] rounded-full"
+              style={{ backgroundColor: color }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </span>
+        );
+      case "circle":
+        return (
+          <span className="relative inline-block px-2">
+            {children}
+            <motion.svg
+              className="absolute -inset-2 w-[calc(100%+16px)] h-[calc(100%+16px)] pointer-events-none"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <motion.ellipse
+                cx="50"
+                cy="50"
+                rx="48"
+                ry="45"
+                fill="none"
+                stroke={color}
+                strokeWidth="3"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              />
+            </motion.svg>
+          </span>
+        );
+      case "box":
+        return (
+          <motion.span
+            className="relative inline-block px-3 py-1 rounded-lg"
+            style={{ border: `2px solid ${color}` }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            {children}
+          </motion.span>
+        );
+      case "highlight":
+        return (
+          <span className="relative inline-block">
+            <motion.span
+              className="absolute inset-0 -mx-1 rounded-md -z-10"
+              style={{ backgroundColor: color }}
+              initial={{ scaleX: 0, opacity: 0.3 }}
+              animate={{ scaleX: 1, opacity: 0.3 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+            {children}
+          </span>
+        );
+      case "strikethrough":
+        return (
+          <span className="relative inline-block">
+            {children}
+            <motion.span
+              className="absolute top-1/2 left-0 w-full h-[2px] -translate-y-1/2"
+              style={{ backgroundColor: color }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </span>
+        );
+      default:
+        return <span>{children}</span>;
+    }
+  };
+
+  return <>{getHighlightStyle()}</>;
+};
+
+interface RoleItem {
+  text: string;
+  action: HighlightAction;
+  color: string;
+}
+
+const roles: RoleItem[] = [
+  { text: "IT Infrastructure", action: "underline", color: "#FF9800" },
+  { text: "UI/UX Designer", action: "circle", color: "#E91E63" },
+  { text: "FrontEnd Developer", action: "box", color: "#4CAF50" },
+  { text: "Graphic Designer", action: "highlight", color: "#9C27B0" },
 ];
 
 const sentences = [
@@ -158,8 +268,13 @@ export const SectionHeader = () => {
           <span className="inline-block">
             a{" "}
             <span className="font-Libre_Baskerville italic text-primary">
-              <span ref={roleRef} className="inline-block">
-                {roles[currentRoleIndex]}
+              <span ref={roleRef} className="inline-block relative">
+                <Highlighter
+                  action={roles[currentRoleIndex].action}
+                  color={roles[currentRoleIndex].color}
+                >
+                  {roles[currentRoleIndex].text}
+                </Highlighter>
               </span>
             </span>
           </span>
