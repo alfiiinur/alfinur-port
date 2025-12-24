@@ -24,15 +24,23 @@ async function getStats() {
     where: { parentId: null },
   });
 
-  const blogStats = blogs.map((blog) => ({
-    id: blog.id,
-    title:
-      blog.title.length > 25 ? blog.title.substring(0, 25) + "..." : blog.title,
-    fullTitle: blog.title,
-    slug: blog.slug,
-    views: blog._count.views,
-    comments: blog._count.comments,
-  }));
+  const blogStats = blogs.map(
+    (blog: {
+      id: string;
+      title: string;
+      slug: string;
+      createdAt: Date;
+      _count: { views: number; comments: number };
+    }) => ({
+      id: blog.id,
+      title:
+        blog.title.length > 25 ? blog.title.substring(0, 25) + "..." : blog.title,
+      fullTitle: blog.title,
+      slug: blog.slug,
+      views: blog._count.views,
+      comments: blog._count.comments,
+    })
+  );
 
   const topBlogs = [...blogStats]
     .sort((a, b) => b.views - a.views)
