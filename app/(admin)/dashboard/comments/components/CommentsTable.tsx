@@ -29,6 +29,7 @@ import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Reaction {
   id: string;
@@ -79,6 +80,18 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
   const [replyMessage, setReplyMessage] = useState("");
   const [editMessage, setEditMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    type: "comment" | "reply";
+    id: string | null;
+    name: string;
+  }>({
+    open: false,
+    type: "comment",
+    id: null,
+    name: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleReply = async (commentId: string) => {
     if (!replyMessage.trim()) return;
@@ -126,11 +139,12 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
     }
   };
 
-  const handleDeleteReply = async (replyId: string) => {
-    if (!confirm("Yakin ingin menghapus balasan ini?")) return;
+  const handleDeleteReply = async () => {
+    if (!deleteModal.id || deleteModal.type !== "reply") return;
+    setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/comments/${replyId}`, {
+      const res = await fetch(`/api/comments/${deleteModal.id}`, {
         method: "DELETE",
       });
 
@@ -139,17 +153,18 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
       }
     } catch (error) {
       console.error("Failed to delete reply");
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, type: "comment", id: null, name: "" });
     }
   };
 
-  const handleDeleteComment = async (commentId: string) => {
-    if (
-      !confirm("Yakin ingin menghapus komentar ini beserta semua balasannya?")
-    )
-      return;
+  const handleDeleteComment = async () => {
+    if (!deleteModal.id || deleteModal.type !== "comment") return;
+    setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/comments/${commentId}`, {
+      const res = await fetch(`/api/comments/${deleteModal.id}`, {
         method: "DELETE",
       });
 
@@ -158,6 +173,17 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
       }
     } catch (error) {
       console.error("Failed to delete");
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, type: "comment", id: null, name: "" });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deleteModal.type === "reply") {
+      await handleDeleteReply();
+    } else {
+      await handleDeleteComment();
     }
   };
 
@@ -282,7 +308,14 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteReply(reply.id)}
+                          onClick={() =>
+                            setDeleteModal({
+                              open: true,
+                              type: "reply",
+                              id: reply.id,
+                              name: reply.name,
+                            })
+                          }
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
@@ -381,7 +414,14 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => handleDeleteComment(comment.id)}
+                onClick={() =>
+                  setDeleteModal({
+                    open: true,
+                    type: "comment",
+                    id: comment.id,
+                    name: comment.name,
+                  })
+                }
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 Hapus
@@ -427,6 +467,22 @@ export default function CommentsTable({ comments }: CommentsTableProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) => setDeleteModal({ ...deleteModal, open })}
+        onConfirm={handleDelete}
+        title={
+          deleteModal.type === "comment" ? "Hapus Komentar" : "Hapus Balasan"
+        }
+        description={
+          deleteModal.type === "comment"
+            ? `Yakin ingin menghapus komentar dari "${deleteModal.name}" beserta semua balasannya?`
+            : `Yakin ingin menghapus balasan ini?`
+        }
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -9,6 +9,13 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Settings,
   Globe,
   Navigation,
@@ -18,12 +25,17 @@ import {
   Save,
   Loader2,
   Share2,
+  Camera,
+  Image,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 type SiteSettings = {
   siteName: string;
   siteTagline: string;
   siteDescription: string;
+  siteLogo: string;
   contactEmail: string;
   contactPhone: string;
   contactAddress: string;
@@ -46,6 +58,7 @@ type SiteSettings = {
   showFaq: boolean;
   showGallery: boolean;
   showFooter: boolean;
+  contactFormType: string;
   metaTitle: string;
   metaDescription: string;
   googleAnalyticsId: string;
@@ -57,6 +70,10 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "error">("success");
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
     fetchSettings();
@@ -67,11 +84,18 @@ export default function SettingsPage() {
       const res = await fetch("/api/settings");
       const data = await res.json();
       setSettings(data);
+      setLogoPreview(data.siteLogo || "");
     } catch (error) {
       console.error("Error fetching settings:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const showModal = (type: "success" | "error", message: string) => {
+    setModalType(type);
+    setModalMessage(message);
+    setModalOpen(true);
   };
 
   const handleSave = async () => {
@@ -81,14 +105,36 @@ export default function SettingsPage() {
       await fetch("/api/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
+        body: JSON.stringify({ ...settings, siteLogo: logoPreview }),
       });
-      alert("Settings saved successfully!");
+
+      // Clear logo cache so it refreshes immediately
+      localStorage.removeItem("siteLogo");
+      localStorage.removeItem("siteLogoCacheTime");
+
+      // Update favicon immediately if logo changed
+      if (logoPreview) {
+        localStorage.setItem("siteLogo", logoPreview);
+        localStorage.setItem("siteLogoCacheTime", Date.now().toString());
+      }
+
+      showModal("success", "Settings saved successfully!");
     } catch (error) {
       console.error("Error saving settings:", error);
-      alert("Failed to save settings");
+      showModal("error", "Failed to save settings. Please try again.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -163,70 +209,125 @@ export default function SettingsPage() {
 
         {/* General Tab */}
         <TabsContent value="general">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">General Information</h2>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="siteName">Site Name</Label>
-                <Input
-                  id="siteName"
-                  value={settings.siteName}
-                  onChange={(e) => updateSetting("siteName", e.target.value)}
-                />
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Logo Upload Card */}
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold mb-4">
+                Site Logo / Favicon
+              </h2>
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-xl bg-muted flex items-center justify-center overflow-hidden border-2 border-dashed border-muted-foreground/30">
+                    {logoPreview ? (
+                      <img
+                        src={logoPreview}
+                        alt="Site Logo"
+                        className="w-full h-full object-contain p-2"
+                      />
+                    ) : (
+                      <Image className="w-10 h-10 text-muted-foreground" />
+                    )}
+                  </div>
+                  <label
+                    htmlFor="logo-upload"
+                    className="absolute -bottom-2 -right-2 p-2 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition shadow-lg"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </label>
+                  <input
+                    id="logo-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleLogoChange}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  Upload logo untuk favicon browser. Rekomendasi: 512x512px,
+                  format PNG/ICO
+                </p>
+                {logoPreview && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLogoPreview("")}
+                  >
+                    Remove Logo
+                  </Button>
+                )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="siteTagline">Tagline</Label>
-                <Input
-                  id="siteTagline"
-                  value={settings.siteTagline}
-                  onChange={(e) => updateSetting("siteTagline", e.target.value)}
-                />
+            </Card>
+
+            {/* Site Info Card */}
+            <Card className="p-6 md:col-span-2">
+              <h2 className="text-xl font-semibold mb-4">
+                General Information
+              </h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="siteName">Site Name</Label>
+                  <Input
+                    id="siteName"
+                    value={settings.siteName}
+                    onChange={(e) => updateSetting("siteName", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="siteTagline">Tagline</Label>
+                  <Input
+                    id="siteTagline"
+                    value={settings.siteTagline}
+                    onChange={(e) =>
+                      updateSetting("siteTagline", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="siteDescription">Site Description</Label>
+                  <Textarea
+                    id="siteDescription"
+                    value={settings.siteDescription}
+                    onChange={(e) =>
+                      updateSetting("siteDescription", e.target.value)
+                    }
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactEmail">Contact Email</Label>
+                  <Input
+                    id="contactEmail"
+                    type="email"
+                    value={settings.contactEmail}
+                    onChange={(e) =>
+                      updateSetting("contactEmail", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactPhone">Contact Phone</Label>
+                  <Input
+                    id="contactPhone"
+                    value={settings.contactPhone}
+                    onChange={(e) =>
+                      updateSetting("contactPhone", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="contactAddress">Address</Label>
+                  <Textarea
+                    id="contactAddress"
+                    value={settings.contactAddress}
+                    onChange={(e) =>
+                      updateSetting("contactAddress", e.target.value)
+                    }
+                    rows={2}
+                  />
+                </div>
               </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="siteDescription">Site Description</Label>
-                <Textarea
-                  id="siteDescription"
-                  value={settings.siteDescription}
-                  onChange={(e) =>
-                    updateSetting("siteDescription", e.target.value)
-                  }
-                  rows={3}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactEmail">Contact Email</Label>
-                <Input
-                  id="contactEmail"
-                  type="email"
-                  value={settings.contactEmail}
-                  onChange={(e) =>
-                    updateSetting("contactEmail", e.target.value)
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactPhone">Contact Phone</Label>
-                <Input
-                  id="contactPhone"
-                  value={settings.contactPhone}
-                  onChange={(e) =>
-                    updateSetting("contactPhone", e.target.value)
-                  }
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="contactAddress">Address</Label>
-                <Textarea
-                  id="contactAddress"
-                  value={settings.contactAddress}
-                  onChange={(e) =>
-                    updateSetting("contactAddress", e.target.value)
-                  }
-                  rows={2}
-                />
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Social Tab */}
@@ -370,6 +471,61 @@ export default function SettingsPage() {
                 </div>
               ))}
             </div>
+
+            {/* Contact Form Type */}
+            <div className="mt-8 pt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4">Contact Form Type</h3>
+              <p className="text-muted-foreground mb-4">
+                Choose which contact form to display on the contact page
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    settings.contactFormType === "detail"
+                      ? "border-primary bg-primary/5"
+                      : "border-muted hover:border-primary/50"
+                  }`}
+                  onClick={() => updateSetting("contactFormType", "detail")}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 ${
+                        settings.contactFormType === "detail"
+                          ? "border-primary bg-primary"
+                          : "border-muted-foreground"
+                      }`}
+                    />
+                    <span className="font-medium">Detail Form</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground ml-7">
+                    Multi-step form with service selection, budget, timeline,
+                    and detailed project information
+                  </p>
+                </div>
+                <div
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    settings.contactFormType === "simple"
+                      ? "border-primary bg-primary/5"
+                      : "border-muted hover:border-primary/50"
+                  }`}
+                  onClick={() => updateSetting("contactFormType", "simple")}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 ${
+                        settings.contactFormType === "simple"
+                          ? "border-primary bg-primary"
+                          : "border-muted-foreground"
+                      }`}
+                    />
+                    <span className="font-medium">Simple Form</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground ml-7">
+                    Basic form with name, email, phone, and message fields only
+                  </p>
+                </div>
+              </div>
+            </div>
           </Card>
         </TabsContent>
 
@@ -451,6 +607,39 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Success/Error Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto mb-4">
+              {modalType === "success" ? (
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <XCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+              )}
+            </div>
+            <DialogTitle className="text-xl">
+              {modalType === "success" ? "Success!" : "Error"}
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              {modalMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setModalOpen(false)}
+              className="min-w-[100px]"
+            >
+              OK
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

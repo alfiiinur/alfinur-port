@@ -78,31 +78,31 @@ export const TestimonialSlider = ({ testimonials }: TestimonialSliderProps) => {
       </AnimatePresence>
 
       {/* Navigation Buttons */}
-      <div className="absolute top-1/2 md:top-[40%] right-4 md:right-10 flex flex-col gap-4 z-20">
+      <div className="absolute top-1/2 md:top-[40%] right-2 sm:right-4 md:right-10 flex flex-col gap-2 sm:gap-4 z-20">
         <button
           onClick={handlePrev}
-          className="bg-white hover:bg-black hover:text-white text-black p-4 rounded-full border border-gray-200 shadow-lg transition-all"
+          className="bg-white hover:bg-black hover:text-white text-black p-2 sm:p-3 md:p-4 rounded-full border border-gray-200 shadow-lg transition-all"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={16} className="sm:w-5 sm:h-5" />
         </button>
         <button
           onClick={handleNext}
-          className="bg-black text-white p-4 rounded-full border border-black shadow-lg hover:scale-110 transition-transform"
+          className="bg-black text-white p-2 sm:p-3 md:p-4 rounded-full border border-black shadow-lg hover:scale-110 transition-transform"
         >
-          <ArrowRight size={20} />
+          <ArrowRight size={16} className="sm:w-5 sm:h-5" />
         </button>
       </div>
 
       {/* Pagination Indicator */}
-      <div className="absolute bottom-10 left-6 lg:left-16 flex gap-2">
+      <div className="absolute bottom-6 sm:bottom-10 left-4 sm:left-6 lg:left-16 flex gap-1.5 sm:gap-2 flex-wrap max-w-[80%]">
         {testimonials.map((_, idx) => (
           <div
             key={idx}
             onClick={() => setCurrentIndex(idx)}
-            className={`h-1 w-8 rounded-full cursor-pointer transition-all ${
+            className={`h-1 rounded-full cursor-pointer transition-all ${
               idx === currentIndex
-                ? "bg-white dark:bg-black w-12"
-                : "bg-gray-600 dark:bg-gray-300"
+                ? "bg-white dark:bg-black w-8 sm:w-12"
+                : "bg-gray-600 dark:bg-gray-300 w-6 sm:w-8"
             }`}
           />
         ))}

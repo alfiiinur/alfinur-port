@@ -1,14 +1,23 @@
 "use client";
+
 import { ArrowDown, Heart, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 
 interface AccordionItemProps {
   question: string;
   answer: string;
+  language: "en" | "id";
 }
 
-export const AccordionItem = ({ question, answer }: AccordionItemProps) => {
+export const AccordionItem = ({
+  question,
+  answer,
+  language,
+}: AccordionItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const helpfulText =
+    language === "id" ? "Apakah ini membantu?" : "Is this helpful?";
 
   return (
     <div className="border border-gray-100 rounded-lg overflow-hidden mb-3 transition-colors duration-300">
@@ -45,7 +54,7 @@ export const AccordionItem = ({ question, answer }: AccordionItemProps) => {
             {/* Helper Action (Is this helpful?) */}
             <div className="flex items-center gap-4 border-t border-gray-200 pt-4">
               <span className="text-xs font-bold text-gray-500">
-                Is this helpful?
+                {helpfulText}
               </span>
               <div className="flex gap-3">
                 <button className="text-gray-400 hover:text-red-500 transition-colors">

@@ -1,35 +1,9 @@
 "use client";
 
-import ContactFormSlider from "./ContactFormSlider";
+import ContactFormWrapper from "./ContactFormWrapper";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 import Link from "next/link";
-
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "alfinurdanialin900@gmail.com",
-    href: "mailto:alfinurdanialin900@gmail.com",
-  },
-  {
-    icon: Phone,
-    label: "WhatsApp",
-    value: "+62 81217221460",
-    href: "https://wa.me/6281217221460",
-  },
-  {
-    icon: MapPin,
-    label: "Lokasi",
-    value: "Surabaya, Indonesia",
-    href: null,
-  },
-  {
-    icon: Clock,
-    label: "Jam Kerja",
-    value: "Sen - Jum, 09:00 - 18:00",
-    href: null,
-  },
-];
 
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/alfii_nur1/" },
@@ -39,22 +13,85 @@ const socialLinks = [
 ];
 
 export default function ContactServis() {
+  const { language } = useLanguage();
+
+  const texts = {
+    en: {
+      label: "Contact",
+      title1: "Let's Work",
+      title2: "Together",
+      subtitle:
+        "Have a project idea or want to collaborate? I'm ready to help you realize your digital vision.",
+      contactMe: "Contact Me",
+      followMe: "Follow Me",
+      quickResponse: "Quick Response ⚡",
+      quickResponseDesc:
+        "I usually respond within 24 hours. For urgent projects, contact via WhatsApp.",
+      location: "Location",
+      workHours: "Work Hours",
+      workHoursValue: "Mon - Fri, 09:00 - 18:00",
+    },
+    id: {
+      label: "Kontak",
+      title1: "Mari Bekerja",
+      title2: "Bersama",
+      subtitle:
+        "Punya ide proyek atau ingin berkolaborasi? Saya siap membantu mewujudkan visi digital Anda.",
+      contactMe: "Hubungi Saya",
+      followMe: "Ikuti Saya",
+      quickResponse: "Respon Cepat ⚡",
+      quickResponseDesc:
+        "Saya biasanya merespons dalam 24 jam. Untuk project urgent, hubungi via WhatsApp.",
+      location: "Lokasi",
+      workHours: "Jam Kerja",
+      workHoursValue: "Sen - Jum, 09:00 - 18:00",
+    },
+  };
+
+  const t = texts[language];
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: "alfinurdanialin900@gmail.com",
+      href: "mailto:alfinurdanialin900@gmail.com",
+    },
+    {
+      icon: Phone,
+      label: "WhatsApp",
+      value: "+62 81217221460",
+      href: "https://wa.me/6281217221460",
+    },
+    {
+      icon: MapPin,
+      label: t.location,
+      value: "Surabaya, Indonesia",
+      href: null,
+    },
+    {
+      icon: Clock,
+      label: t.workHours,
+      value: t.workHoursValue,
+      href: null,
+    },
+  ];
+
   return (
     <section className="min-h-screen bg-white dark:bg-black py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
         {/* Header */}
         <div className="mb-16">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">
-            Contact
+            {t.label}
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-black dark:text-white leading-tight mb-6">
-            Let&apos;s Work
+            {t.title1}
             <br />
-            Together
+            {t.title2}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl">
-            Have a project idea or want to collaborate? I'm ready to help you
-            realize your digital vision.
+            {t.subtitle}
           </p>
         </div>
 
@@ -65,7 +102,7 @@ export default function ContactServis() {
             {/* Contact Details */}
             <div className="space-y-6">
               <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                Hubungi Saya
+                {t.contactMe}
               </h3>
               <div className="space-y-4">
                 {contactInfo.map((item) => (
@@ -98,7 +135,7 @@ export default function ContactServis() {
             {/* Social Links */}
             <div className="space-y-6">
               <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                Follow Me
+                {t.followMe}
               </h3>
               <div className="flex flex-wrap gap-3">
                 {socialLinks.map((social) => (
@@ -118,18 +155,17 @@ export default function ContactServis() {
             {/* Quick Response */}
             <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl">
               <h4 className="font-semibold text-black dark:text-white mb-2">
-                Respon Cepat ⚡
+                {t.quickResponse}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Saya biasanya merespons dalam 24 jam. Untuk project urgent,
-                hubungi via WhatsApp.
+                {t.quickResponseDesc}
               </p>
             </div>
           </div>
 
           {/* Right: Contact Form */}
           <div className="lg:col-span-2">
-            <ContactFormSlider />
+            <ContactFormWrapper />
           </div>
         </div>
       </div>

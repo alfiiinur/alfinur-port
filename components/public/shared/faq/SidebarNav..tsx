@@ -1,18 +1,21 @@
+"use client";
+
 interface SidebarNavProps {
   topics: { id: string; title: string }[];
+  language: "en" | "id";
 }
 
-export const SidebarNav = ({ topics }: SidebarNavProps) => {
+export const SidebarNav = ({ topics, language }: SidebarNavProps) => {
+  const topicsLabel = language === "id" ? "Topik" : "Topics";
+
   return (
     <nav className="hidden md:block sticky top-24 h-fit">
       <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-6">
-        Topics
+        {topicsLabel}
       </h3>
       <ul className="flex flex-col gap-3">
         {topics.map((topic) => (
           <li key={topic.id}>
-            {/* Menggunakan tag <a> biasa dengan scroll-behavior: smooth di CSS global, 
-                atau library react-scroll */}
             <a
               href={`#${topic.id}`}
               className="text-sm text-gray-400 hover:text-gray-900 hover:underline transition-colors block"

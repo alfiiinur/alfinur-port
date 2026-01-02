@@ -28,7 +28,7 @@ interface TaskGroupProps {
   selectedTasks: Set<string>;
   onSelectTask: (id: string, checked: boolean) => void;
   onEditTask: (task: Task) => void;
-  onDeleteTask: (id: string) => void;
+  onDeleteTask: (task: Task) => void;
   onViewTask: (task: Task) => void;
   onToggleComplete: (id: string, isCompleted: boolean) => void;
   onReorder: (status: TaskStatus, oldIndex: number, newIndex: number) => void;
@@ -96,47 +96,47 @@ export function TaskGroup({
 
       {/* Task Table */}
       {!collapsed && (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/30 text-xs text-muted-foreground">
-                <th className="w-24 px-2 py-2 text-left"></th>
-                <th className="px-3 py-2 text-left font-medium">Task Name</th>
-                <th className="px-3 py-2 text-left font-medium hidden md:table-cell">
-                  Description
-                </th>
-                <th className="px-3 py-2 text-left font-medium hidden lg:table-cell">
-                  Assigned to
-                </th>
-                <th className="px-3 py-2 text-left font-medium hidden sm:table-cell">
-                  Start Date
-                </th>
-                <th className="px-3 py-2 text-left font-medium">Priority</th>
-                <th className="px-3 py-2 text-left font-medium hidden xl:table-cell">
-                  Status
-                </th>
-                <th className="px-3 py-2 text-left font-medium hidden lg:table-cell">
-                  Tags
-                </th>
-                <th className="px-3 py-2 text-left font-medium w-12"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={9}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
-                    No tasks in this category
-                  </td>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b bg-muted/30 text-xs text-muted-foreground">
+                  <th className="w-24 px-2 py-2 text-left"></th>
+                  <th className="px-3 py-2 text-left font-medium">Task Name</th>
+                  <th className="px-3 py-2 text-left font-medium hidden md:table-cell">
+                    Description
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium hidden lg:table-cell">
+                    Assigned to
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium hidden sm:table-cell">
+                    Start Date
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">Priority</th>
+                  <th className="px-3 py-2 text-left font-medium hidden xl:table-cell">
+                    Status
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium hidden lg:table-cell">
+                    Tags
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium w-12"></th>
                 </tr>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
+              </thead>
+              <tbody>
+                {tasks.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className="px-4 py-8 text-center text-muted-foreground"
+                    >
+                      No tasks in this category
+                    </td>
+                  </tr>
+                ) : (
                   <SortableContext
                     items={tasks.map((t) => t.id)}
                     strategy={verticalListSortingStrategy}
@@ -154,11 +154,11 @@ export function TaskGroup({
                       />
                     ))}
                   </SortableContext>
-                </DndContext>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </DndContext>
       )}
     </div>
   );

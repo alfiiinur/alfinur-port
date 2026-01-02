@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface ContactSubmission {
   id: string;
@@ -75,8 +76,17 @@ export default function ContactSubmissionsTab() {
     useState<ContactSubmission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterFormType, setFilterFormType] = useState<string>("all");
   const [notes, setNotes] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    submission: ContactSubmission | null;
+  }>({
+    open: false,
+    submission: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchSubmissions = async () => {
     setLoading(true);
@@ -98,6 +108,14 @@ export default function ContactSubmissionsTab() {
   useEffect(() => {
     fetchSubmissions();
   }, [filterStatus]);
+
+  // Filter submissions by form type
+  const filteredSubmissions = submissions.filter((s) => {
+    if (filterFormType === "all") return true;
+    if (filterFormType === "simple") return s.service === "General Inquiry";
+    if (filterFormType === "detail") return s.service !== "General Inquiry";
+    return true;
+  });
 
   const handleViewDetail = (submission: ContactSubmission) => {
     setSelectedSubmission(submission);
@@ -150,20 +168,32 @@ export default function ContactSubmissionsTab() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Yakin ingin menghapus submission ini?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.submission) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/contact/${id}`, { method: "DELETE" });
+      await fetch(`/api/contact/${deleteModal.submission.id}`, {
+        method: "DELETE",
+      });
       fetchSubmissions();
-      if (selectedSubmission?.id === id) {
+      if (selectedSubmission?.id === deleteModal.submission.id) {
         setIsDetailOpen(false);
       }
     } catch (error) {
       console.error("Error deleting submission:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, submission: null });
     }
   };
 
-  const newCount = submissions.filter((s) => s.status === "NEW").length;
+  const newCount = filteredSubmissions.filter((s) => s.status === "NEW").length;
+  const simpleCount = submissions.filter(
+    (s) => s.service === "General Inquiry"
+  ).length;
+  const detailCount = submissions.filter(
+    (s) => s.service !== "General Inquiry"
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -177,10 +207,22 @@ export default function ContactSubmissionsTab() {
                 {newCount} pesan baru •{" "}
               </span>
             )}
-            Total {submissions.length} submissions
+            Total {filteredSubmissions.length} submissions
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Form Type Filter */}
+          <Select value={filterFormType} onValueChange={setFilterFormType}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Form type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Form</SelectItem>
+              <SelectItem value="detail">Detail ({detailCount})</SelectItem>
+              <SelectItem value="simple">Simple ({simpleCount})</SelectItem>
+            </SelectContent>
+          </Select>
+          {/* Status Filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Filter status" />
@@ -219,7 +261,7 @@ export default function ContactSubmissionsTab() {
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                 </TableCell>
               </TableRow>
-            ) : submissions.length === 0 ? (
+            ) : filteredSubmissions.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={6}
@@ -229,7 +271,7 @@ export default function ContactSubmissionsTab() {
                 </TableCell>
               </TableRow>
             ) : (
-              submissions.map((submission) => (
+              filteredSubmissions.map((submission) => (
                 <TableRow
                   key={submission.id}
                   className={
@@ -246,7 +288,16 @@ export default function ContactSubmissionsTab() {
                       </p>
                     </div>
                   </TableCell>
-                  <TableCell>{submission.service}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span>{submission.service}</span>
+                      {submission.service === "General Inquiry" && (
+                        <Badge variant="secondary" className="text-xs">
+                          Simple
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>{submission.budget || "-"}</TableCell>
                   <TableCell>
                     <Badge
@@ -275,7 +326,9 @@ export default function ContactSubmissionsTab() {
                         size="icon"
                         variant="ghost"
                         className="text-red-500"
-                        onClick={() => handleDelete(submission.id)}
+                        onClick={() =>
+                          setDeleteModal({ open: true, submission })
+                        }
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -437,6 +490,21 @@ export default function ContactSubmissionsTab() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({
+            open,
+            submission: open ? deleteModal.submission : null,
+          })
+        }
+        onConfirm={handleDelete}
+        title="Hapus Submission"
+        itemName={deleteModal.submission?.name}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

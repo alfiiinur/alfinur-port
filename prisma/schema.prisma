@@ -103,6 +103,7 @@ model Blog {
   category    String
   tags        String[]
   published   Boolean  @default(false)
+  sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -110,6 +111,25 @@ model Blog {
   author   User     @relation(fields: [authorId], references: [id])
   comments Comment[]
   views    BlogView[]
+  
+  // Section grouping
+  sectionId String?
+  section   BlogSection? @relation(fields: [sectionId], references: [id])
+}
+
+model BlogSection {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String   @default("folder")
+  color       String   @default("#3b82f6")
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  blogs Blog[]
 }
 
 model BlogView {
@@ -485,16 +505,21 @@ model FinanceCategory {
 model Service {
   id          String   @id @default(uuid())
   name        String
+  nameId      String?  // Indonesian translation
   slug        String   @unique
   description String
+  descriptionId String? // Indonesian translation
   icon        String   @default("code")
   price       Float?
   priceType   PriceType @default(FIXED)
   currency    String   @default("IDR")
   features    String[]
+  featuresId  String[] // Indonesian translation
   category    String   // e.g., "Web Development", "Design", "Consulting"
+  categoryId  String?  // Indonesian translation
   isPopular   Boolean  @default(false)
   isActive    Boolean  @default(true)
+  showPrice   Boolean  @default(true) // Admin can toggle price visibility
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -570,6 +595,7 @@ model SiteSettings {
   siteName        String   @default("MyPortfolio")
   siteTagline     String   @default("Creative Developer")
   siteDescription String   @default("Personal portfolio website")
+  siteLogo        String   @default("")  // Logo/favicon URL from admin profile
   contactEmail    String   @default("")
   contactPhone    String   @default("")
   contactAddress  String   @default("")
@@ -598,6 +624,9 @@ model SiteSettings {
   showFaq               Boolean  @default(true)
   showGallery           Boolean  @default(true)
   showFooter            Boolean  @default(true)
+  
+  // Contact Form Type
+  contactFormType       String   @default("detail") // "detail" or "simple"
   
   // SEO
   metaTitle       String   @default("")

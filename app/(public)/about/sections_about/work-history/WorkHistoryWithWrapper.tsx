@@ -5,15 +5,17 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import WorkHistory from "./WorkHistory";
 import { RoundedButton } from "@/components/public/shared/RoundedButton";
-import { TextReveal } from "@/components/public/shared/TextGenerateEffect";
 import { Highlighter } from "@/components/ui/highlighter";
 import { Boxes } from "@/components/ui/background-boxes";
+import { useLanguage } from "@/lib/hooks/useLanguage";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function WorkHistoryWithWrapper() {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperLineRef = useRef<SVGPathElement>(null);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -43,6 +45,9 @@ export default function WorkHistoryWithWrapper() {
     return () => ctx.revert();
   }, []);
 
+  // Get bio text based on language
+  const bioText = t("alfiNurBio");
+
   return (
     <div ref={containerRef} className="relative bg-white dark:bg-black">
       {/* Work History Section */}
@@ -51,19 +56,19 @@ export default function WorkHistoryWithWrapper() {
       {/* Connecting line from timeline to wrapper */}
       <div className="relative">
         {/* Vertical line connecting to wrapper */}
-        <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-[2px] h-32 bg-gradient-to-b from-pink-500 to-red-500" />
+        <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-[2px] h-32 bg-linear-to-b from-pink-500 to-red-500" />
       </div>
 
-      {/* Alfi Nur Section with wrapping progress line */}
-      <section className="alfi-section relative py-20 px-4 md:px-8 overflow-hidden">
-        {/* Background Boxes */}
+      {/* Alfi Nur Section with wrapping progress line - Full width background */}
+      <section className="alfi-section relative py-20 overflow-hidden">
+        {/* Background Boxes - Full width */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <Boxes className="opacity-50" />
           {/* Gradient overlay to fade boxes */}
-          <div className="absolute inset-0 dark:bg-gradient-to-t dark:from-black dark:via-black/80 dark:to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-t from-white via-white/80 to-transparent dark:from-black dark:via-black/80 dark:to-transparent z-10 pointer-events-none" />
         </div>
 
-        <div className="max-w-4xl mx-auto relative z-20">
+        <div className="max-w-4xl mx-auto relative z-20 px-4 md:px-8">
           {/* SVG Wrapper Line */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
@@ -110,18 +115,14 @@ export default function WorkHistoryWithWrapper() {
               </h2>
             </Highlighter>
 
-            <TextReveal className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-              I&apos;m Alfi Nur Danialin, a passionate Full-Stack Developer with
-              over 8 years of experience in crafting dynamic web applications.
-              My journey began with a fascination for coding, which has since
-              evolved into a career dedicated to building seamless digital
-              experiences. I thrive on turning complex problems into elegant
-              solutions, leveraging the latest technologies to deliver
-              high-quality results. Let&apos;s connect and create something
-              amazing together!
-            </TextReveal>
+            {/* Use key to force re-render when language changes */}
+            <TextGenerateEffect
+              key={language}
+              words={bioText}
+              className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed"
+            />
 
-            <RoundedButton href="/contact">Get in Touch</RoundedButton>
+            <RoundedButton href="/contact">{t("getInTouchBtn")}</RoundedButton>
           </div>
         </div>
       </section>

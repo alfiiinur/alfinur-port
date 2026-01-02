@@ -29,6 +29,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Faq {
   id: string;
@@ -54,6 +55,14 @@ export default function FaqsTab() {
   const [editing, setEditing] = useState<Faq | null>(null);
   const [saving, setSaving] = useState(false);
   const [expandedFaqs, setExpandedFaqs] = useState<Set<string>>(new Set());
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    faq: Faq | null;
+  }>({
+    open: false,
+    faq: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     question: "",
     answer: "",
@@ -113,13 +122,17 @@ export default function FaqsTab() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this FAQ?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.faq) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/faqs/${id}`, { method: "DELETE" });
+      await fetch(`/api/faqs/${deleteModal.faq.id}`, { method: "DELETE" });
       fetchFaqs();
     } catch (error) {
       console.error("Failed to delete:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, faq: null });
     }
   };
 
@@ -310,7 +323,7 @@ export default function FaqsTab() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDelete(faq.id)}
+                            onClick={() => setDeleteModal({ open: true, faq })}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -335,6 +348,17 @@ export default function FaqsTab() {
           </div>
         )}
       </CardContent>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, faq: open ? deleteModal.faq : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete FAQ"
+        itemName={deleteModal.faq?.question}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 }

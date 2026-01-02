@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import Image, { StaticImageData } from "next/image";
 import { ReactNode } from "react";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 export type ShowcaseMediaType = "image" | "video";
 
@@ -16,10 +17,14 @@ export interface ShowcaseMediaItem {
 
 interface ServicesSiteProps {
   title: ReactNode;
+  titleId?: ReactNode;
   topDescription: string;
+  topDescriptionId?: string;
   mediaItems: [ShowcaseMediaItem, ShowcaseMediaItem];
   bottomLabel?: string;
+  bottomLabelId?: string;
   bottomContent: ReactNode;
+  bottomContentId?: ReactNode;
 }
 
 const MediaCard = ({
@@ -65,11 +70,25 @@ const MediaCard = ({
 
 export default function ServicesSite({
   title,
+  titleId,
   topDescription,
+  topDescriptionId,
   mediaItems,
   bottomLabel,
+  bottomLabelId,
   bottomContent,
+  bottomContentId,
 }: ServicesSiteProps) {
+  const { language } = useLanguage();
+
+  const displayTitle = language === "id" && titleId ? titleId : title;
+  const displayTopDesc =
+    language === "id" && topDescriptionId ? topDescriptionId : topDescription;
+  const displayBottomLabel =
+    language === "id" && bottomLabelId ? bottomLabelId : bottomLabel;
+  const displayBottomContent =
+    language === "id" && bottomContentId ? bottomContentId : bottomContent;
+
   return (
     <section className="w-full max-w-7xl mx-auto px-6 py-20 bg-white dark:bg-black">
       {/* 1. Header Section */}
@@ -81,7 +100,7 @@ export default function ServicesSite({
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-gray-900 leading-[1.1] dark:text-white"
         >
-          {title}
+          {displayTitle}
         </motion.h2>
 
         <motion.p
@@ -91,7 +110,7 @@ export default function ServicesSite({
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-gray-500 text-sm md:text-base max-w-xs md:text-right leading-relaxed dark:text-white"
         >
-          {topDescription}
+          {displayTopDesc}
         </motion.p>
       </div>
 
@@ -104,7 +123,7 @@ export default function ServicesSite({
 
       {/* 3. Bottom Content (Centered Typography) */}
       <div className="max-w-5xl mx-auto text-center">
-        {bottomLabel && (
+        {displayBottomLabel && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -113,7 +132,7 @@ export default function ServicesSite({
             className="mb-6"
           >
             <span className="text-sm font-medium text-gray-900 dark:text-white">
-              /{bottomLabel}
+              /{displayBottomLabel}
             </span>
           </motion.div>
         )}
@@ -125,7 +144,7 @@ export default function ServicesSite({
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-4xl md:text-6xl leading-snug font-bold text-gray-900 dark:text-white"
         >
-          {bottomContent}
+          {displayBottomContent}
         </motion.p>
       </div>
     </section>

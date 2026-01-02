@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 interface ProcessStep {
   id: number;
@@ -12,64 +13,130 @@ interface ProcessStep {
   image: string;
 }
 
-const processSteps: ProcessStep[] = [
-  {
-    id: 1,
-    number: "01",
-    title: "DISKUSI & ANALISIS",
-    description:
-      "Kita mulai dengan sesi konsultasi untuk memahami visi, kebutuhan, dan tujuan bisnis Anda. Saya akan menganalisis requirement secara mendalam, mengidentifikasi peluang dan tantangan teknis, serta menentukan scope proyek yang jelas.",
-    image: "/img/room.jpg",
+const processStepsContent = {
+  en: {
+    heroTitle: ["OVERVIEW OF", " 7-STAGE", "PROCESS"],
+    steps: [
+      {
+        id: 1,
+        number: "01",
+        title: "DISCUSSION & ANALYSIS",
+        description:
+          "We start with a consultation session to understand your vision, needs, and business goals. I will analyze requirements in depth, identify technical opportunities and challenges, and determine a clear project scope.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 2,
+        number: "02",
+        title: "PROPOSAL & ESTIMATION",
+        description:
+          "Based on the analysis results, I prepare a complete proposal that includes technical solutions, transparent cost estimates, and realistic timelines. Each milestone is clearly explained so you have a full picture of the development process.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 3,
+        number: "03",
+        title: "UI/UX DESIGN",
+        description:
+          "The visual creation phase begins. I design wireframes and interactive mockups that prioritize user experience. Every design goes through a review and iteration process with you until achieving perfect results.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 4,
+        number: "04",
+        title: "DEVELOPMENT",
+        description:
+          "Code is written with the best industry standards using modern technologies like Next.js, React, and TypeScript. Clean code, optimal performance, and scalability are top priorities in every line of code.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 5,
+        number: "05",
+        title: "TESTING & QA",
+        description:
+          "Before launch, every feature is thoroughly tested. Unit testing, integration testing, and user acceptance testing ensure the application runs perfectly across various devices and browsers.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 6,
+        number: "06",
+        title: "LAUNCH & TRAINING",
+        description:
+          "Deployment is done with a zero-downtime strategy. I also provide training sessions and complete documentation so your team can manage the system with confidence.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 7,
+        number: "07",
+        title: "MAINTENANCE & SUPPORT",
+        description:
+          "The relationship doesn't end after launch. I provide ongoing maintenance services, performance monitoring, and technical support to ensure your application always runs optimally.",
+        image: "/img/room.jpg",
+      },
+    ],
   },
-  {
-    id: 2,
-    number: "02",
-    title: "PROPOSAL & ESTIMASI",
-    description:
-      "Berdasarkan hasil analisis, saya menyusun proposal lengkap yang mencakup solusi teknis, estimasi biaya transparan, dan timeline realistis. Setiap milestone dijelaskan dengan jelas agar Anda memiliki gambaran penuh tentang proses pengembangan.",
-    image: "/img/room.jpg",
+  id: {
+    heroTitle: ["GAMBARAN", "7 TAHAP", "PROSES PENGERJAAN"],
+    steps: [
+      {
+        id: 1,
+        number: "01",
+        title: "DISKUSI & ANALISIS",
+        description:
+          "Kita mulai dengan sesi konsultasi untuk memahami visi, kebutuhan, dan tujuan bisnis Anda. Saya akan menganalisis requirement secara mendalam, mengidentifikasi peluang dan tantangan teknis, serta menentukan scope proyek yang jelas.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 2,
+        number: "02",
+        title: "PROPOSAL & ESTIMASI",
+        description:
+          "Berdasarkan hasil analisis, saya menyusun proposal lengkap yang mencakup solusi teknis, estimasi biaya transparan, dan timeline realistis. Setiap milestone dijelaskan dengan jelas agar Anda memiliki gambaran penuh tentang proses pengembangan.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 3,
+        number: "03",
+        title: "DESAIN UI/UX",
+        description:
+          "Tahap kreasi visual dimulai. Saya merancang wireframe dan mockup interaktif yang mengutamakan user experience. Setiap desain melalui proses review dan iterasi bersama Anda hingga mencapai hasil yang sempurna.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 4,
+        number: "04",
+        title: "DEVELOPMENT",
+        description:
+          "Kode ditulis dengan standar industri terbaik menggunakan teknologi modern seperti Next.js, React, dan TypeScript. Clean code, performa optimal, dan skalabilitas menjadi prioritas utama dalam setiap baris kode.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 5,
+        number: "05",
+        title: "TESTING & QA",
+        description:
+          "Sebelum launch, setiap fitur diuji secara menyeluruh. Unit testing, integration testing, dan user acceptance testing memastikan aplikasi berjalan sempurna di berbagai device dan browser.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 6,
+        number: "06",
+        title: "LAUNCH & TRAINING",
+        description:
+          "Deployment dilakukan dengan zero-downtime strategy. Saya juga menyediakan sesi training dan dokumentasi lengkap agar tim Anda dapat mengelola sistem dengan percaya diri.",
+        image: "/img/room.jpg",
+      },
+      {
+        id: 7,
+        number: "07",
+        title: "MAINTENANCE & SUPPORT",
+        description:
+          "Hubungan tidak berakhir setelah launch. Saya menyediakan layanan maintenance berkelanjutan, monitoring performa, dan support teknis untuk memastikan aplikasi Anda selalu berjalan optimal.",
+        image: "/img/room.jpg",
+      },
+    ],
   },
-  {
-    id: 3,
-    number: "03",
-    title: "DESAIN UI/UX",
-    description:
-      "Tahap kreasi visual dimulai. Saya merancang wireframe dan mockup interaktif yang mengutamakan user experience. Setiap desain melalui proses review dan iterasi bersama Anda hingga mencapai hasil yang sempurna.",
-    image: "/img/room.jpg",
-  },
-  {
-    id: 4,
-    number: "04",
-    title: "DEVELOPMENT",
-    description:
-      "Kode ditulis dengan standar industri terbaik menggunakan teknologi modern seperti Next.js, React, dan TypeScript. Clean code, performa optimal, dan skalabilitas menjadi prioritas utama dalam setiap baris kode.",
-    image: "/img/room.jpg",
-  },
-  {
-    id: 5,
-    number: "05",
-    title: "TESTING & QA",
-    description:
-      "Sebelum launch, setiap fitur diuji secara menyeluruh. Unit testing, integration testing, dan user acceptance testing memastikan aplikasi berjalan sempurna di berbagai device dan browser.",
-    image: "/img/room.jpg",
-  },
-  {
-    id: 6,
-    number: "06",
-    title: "LAUNCH & TRAINING",
-    description:
-      "Deployment dilakukan dengan zero-downtime strategy. Saya juga menyediakan sesi training dan dokumentasi lengkap agar tim Anda dapat mengelola sistem dengan percaya diri.",
-    image: "/img/room.jpg",
-  },
-  {
-    id: 7,
-    number: "07",
-    title: "MAINTENANCE & SUPPORT",
-    description:
-      "Hubungan tidak berakhir setelah launch. Saya menyediakan layanan maintenance berkelanjutan, monitoring performa, dan support teknis untuk memastikan aplikasi Anda selalu berjalan optimal.",
-    image: "/img/room.jpg",
-  },
-];
+};
 
 function ProcessStep({ step, index }: { step: ProcessStep; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -134,6 +201,9 @@ function ProcessStep({ step, index }: { step: ProcessStep; index: number }) {
 
 export default function ProcessDetail() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
+
+  const content = processStepsContent[language];
 
   return (
     <div id="process" ref={containerRef} className="relative">
@@ -159,11 +229,11 @@ export default function ProcessDetail() {
             viewport={{ once: true }}
           >
             <h1 className="text-5xl md:text-7xl lg:text-[120px] font-bold leading-[0.9] tracking-tight">
-              OVERVIEW OF
+              {content.heroTitle[0]}
               <br />
-              OUR 7-STAGE
+              {content.heroTitle[1]}
               <br />
-              PROCESS
+              {content.heroTitle[2]}
             </h1>
           </motion.div>
 
@@ -194,7 +264,7 @@ export default function ProcessDetail() {
 
       {/* Process Steps */}
       <div className="relative">
-        {processSteps.map((step, index) => (
+        {content.steps.map((step, index) => (
           <ProcessStep key={step.id} step={step} index={index} />
         ))}
       </div>

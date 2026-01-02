@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { deleteProject } from "../actions";
 import Image from "next/image";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Project {
   id: string;
@@ -86,6 +87,13 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    project: Project | null;
+  }>({
+    open: false,
+    project: null,
+  });
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -142,12 +150,13 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
     }
   };
 
-  async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+  async function handleDelete() {
+    if (!deleteModal.project) return;
 
-    setIsDeleting(id);
-    await deleteProject(id);
+    setIsDeleting(deleteModal.project.id);
+    await deleteProject(deleteModal.project.id);
     setIsDeleting(null);
+    setDeleteModal({ open: false, project: null });
   }
 
   if (projects.length === 0) {
@@ -303,7 +312,7 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDelete(project.id)}
+                        onClick={() => setDeleteModal({ open: true, project })}
                         disabled={isDeleting === project.id}
                         className="text-destructive focus:text-destructive"
                       >
@@ -318,6 +327,17 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, project: open ? deleteModal.project : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Project"
+        itemName={deleteModal.project?.title}
+        isLoading={isDeleting === deleteModal.project?.id}
+      />
     </div>
   );
 }

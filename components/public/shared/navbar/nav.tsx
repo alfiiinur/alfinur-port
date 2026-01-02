@@ -9,15 +9,19 @@ import {
   Copy,
   FileDown,
   GalleryVerticalEnd,
+  Globe,
   Home,
   Mail,
   Menu,
+  Moon,
   PenTool,
   Search,
+  Sun,
   User,
   Wrench,
 } from "lucide-react";
 import { CVHoverCard } from "../CVHoverCard";
+import { LanguageToggle } from "../LanguageToggle";
 import { useEffect, useState } from "react";
 import { Dock, DockIcon } from "@/components/ui/dock";
 import {
@@ -44,6 +48,8 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/hooks/useLanguage";
+import { useTheme } from "next-themes";
 
 type NavItem = {
   name: string;
@@ -125,6 +131,8 @@ export const Navbar = () => {
   const [copied, setCopied] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [designExpanded, setDesignExpanded] = useState(false);
+  const { language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   // Copy email to clipboard
   const handleCopyEmail = async () => {
@@ -256,7 +264,8 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Right Actions */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-4">
+            <LanguageToggle />
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -284,6 +293,7 @@ export const Navbar = () => {
 
           {/* Mobile Hamburger Menu */}
           <div className="flex lg:hidden items-center gap-3">
+            <LanguageToggle />
             <MoodToggle />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -428,7 +438,116 @@ export const Navbar = () => {
               : "translate-y-24 opacity-0 pointer-events-none"
           }`}
         >
-          <Dock className="bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl">
+          {/* Mobile Dock - Simplified: Home, About, Projects, Search, Theme */}
+          <Dock className="md:hidden bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl">
+            {/* Home */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon>
+                  <Link href="/">
+                    <Home
+                      className={`size-5 transition-all ${
+                        pathname === "/"
+                          ? "text-blue-600 dark:text-blue-400 scale-125"
+                          : "text-black dark:text-white"
+                      } hover:scale-125`}
+                    />
+                  </Link>
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1.5 rounded-lg"
+              >
+                Home
+              </TooltipContent>
+            </Tooltip>
+
+            {/* About */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon>
+                  <Link href="/about">
+                    <User
+                      className={`size-5 transition-all ${
+                        pathname === "/about" || pathname.startsWith("/about/")
+                          ? "text-blue-600 dark:text-blue-400 scale-125"
+                          : "text-black dark:text-white"
+                      } hover:scale-125`}
+                    />
+                  </Link>
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1.5 rounded-lg"
+              >
+                About
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Projects */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon>
+                  <Link href="/projects">
+                    <Briefcase
+                      className={`size-5 transition-all ${
+                        pathname === "/projects" ||
+                        pathname.startsWith("/projects/")
+                          ? "text-blue-600 dark:text-blue-400 scale-125"
+                          : "text-black dark:text-white"
+                      } hover:scale-125`}
+                    />
+                  </Link>
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1.5 rounded-lg"
+              >
+                Projects
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Search */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon
+                  onClick={() => setOpenCommand(true)}
+                  className="cursor-pointer"
+                >
+                  <Search className="size-5 text-black dark:text-white hover:scale-125 transition-transform" />
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium"
+              >
+                Search
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Theme Toggle */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon>
+                  <div className="scale-90">
+                    <MoodToggle />
+                  </div>
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium"
+              >
+                Toggle Theme
+              </TooltipContent>
+            </Tooltip>
+          </Dock>
+
+          {/* Desktop Dock - Full navigation */}
+          <Dock className="hidden md:flex bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl">
             {/* Nav Items dengan Tooltip */}
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
@@ -511,6 +630,23 @@ export const Navbar = () => {
             {/* Separator */}
             <div className="w-px h-10 bg-white/20 mx-3" />
 
+            {/* Language Toggle di Dock */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DockIcon>
+                  <div className="scale-75">
+                    <LanguageToggle />
+                  </div>
+                </DockIcon>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black dark:bg-white text-white dark:text-black text-xs font-medium"
+              >
+                Switch Language
+              </TooltipContent>
+            </Tooltip>
+
             {/* Command Palette Button */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -551,7 +687,11 @@ export const Navbar = () => {
         {/* C. COMMAND DIALOG */}
         <CommandDialog open={openCommand} onOpenChange={setOpenCommand}>
           <CommandInput
-            placeholder="Search pages or actions..."
+            placeholder={
+              language === "id"
+                ? "Cari halaman atau aksi..."
+                : "Search pages or actions..."
+            }
             illustration={
               <motion.div
                 initial={{ y: 10, opacity: 0 }}
@@ -618,26 +758,96 @@ export const Navbar = () => {
             }
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Navigation">
-              {filteredNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpenCommand(false)}
-                >
-                  <CommandItem className="cursor-pointer">
-                    <item.icon className="mr-3 h-4 w-4" />
-                    <span>{item.name}</span>
-                  </CommandItem>
-                </Link>
-              ))}
+            <CommandEmpty>
+              {language === "id" ? "Tidak ada hasil." : "No results found."}
+            </CommandEmpty>
+            <CommandGroup
+              heading={language === "id" ? "Navigasi" : "Navigation"}
+            >
+              {filteredNavItems.map((item) => {
+                // Special handling for Design - show submenu
+                if (item.name === "Design") {
+                  return (
+                    <div key={item.href}>
+                      <Link
+                        href="/design"
+                        onClick={() => setOpenCommand(false)}
+                      >
+                        <CommandItem className="cursor-pointer">
+                          <item.icon className="mr-3 h-4 w-4" />
+                          <span>{item.name} - Grid</span>
+                        </CommandItem>
+                      </Link>
+                      <Link
+                        href="/design/showcase"
+                        onClick={() => setOpenCommand(false)}
+                      >
+                        <CommandItem className="cursor-pointer pl-10">
+                          <GalleryVerticalEnd className="mr-3 h-4 w-4" />
+                          <span>{item.name} - Showcase</span>
+                        </CommandItem>
+                      </Link>
+                    </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpenCommand(false)}
+                  >
+                    <CommandItem className="cursor-pointer">
+                      <item.icon className="mr-3 h-4 w-4" />
+                      <span>{item.name}</span>
+                    </CommandItem>
+                  </Link>
+                );
+              })}
             </CommandGroup>
             <CommandSeparator />
-            <CommandGroup heading="Actions">
+            <CommandGroup
+              heading={language === "id" ? "Pengaturan" : "Settings"}
+            >
+              <CommandItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  setLanguage(language === "id" ? "en" : "id");
+                }}
+              >
+                <Globe className="mr-3 h-4 w-4" />
+                <span>
+                  {language === "id"
+                    ? "Ganti ke English"
+                    : "Switch to Bahasa Indonesia"}
+                </span>
+              </CommandItem>
+              <CommandItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  setTheme(theme === "dark" ? "light" : "dark");
+                }}
+              >
+                {theme === "dark" ? (
+                  <Sun className="mr-3 h-4 w-4" />
+                ) : (
+                  <Moon className="mr-3 h-4 w-4" />
+                )}
+                <span>
+                  {theme === "dark"
+                    ? language === "id"
+                      ? "Mode Terang"
+                      : "Light Mode"
+                    : language === "id"
+                    ? "Mode Gelap"
+                    : "Dark Mode"}
+                </span>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading={language === "id" ? "Aksi" : "Actions"}>
               <CommandItem className="cursor-pointer">
                 <FileDown className="mr-3 h-4 w-4" />
-                <span>Download CV</span>
+                <span>{language === "id" ? "Unduh CV" : "Download CV"}</span>
               </CommandItem>
             </CommandGroup>
           </CommandList>

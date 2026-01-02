@@ -13,7 +13,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, Save, Loader2, Camera } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  User,
+  Save,
+  Loader2,
+  Camera,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 
 type Profile = {
   id: string;
@@ -43,6 +57,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "error">("success");
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -61,6 +78,12 @@ export default function ProfilePage() {
     }
   };
 
+  const showModal = (type: "success" | "error", message: string) => {
+    setModalType(type);
+    setModalMessage(message);
+    setModalOpen(true);
+  };
+
   const handleSave = async () => {
     if (!profile) return;
     setSaving(true);
@@ -76,13 +99,13 @@ export default function ProfilePage() {
         }),
       });
       if (res.ok) {
-        alert("Profile updated successfully!");
+        showModal("success", "Profile updated successfully!");
       } else {
-        alert("Failed to update profile");
+        showModal("error", "Failed to update profile. Please try again.");
       }
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Failed to save profile");
+      showModal("error", "Failed to save profile. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -245,6 +268,39 @@ export default function ProfilePage() {
           </div>
         </Card>
       </div>
+
+      {/* Success/Error Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto mb-4">
+              {modalType === "success" ? (
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <XCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+              )}
+            </div>
+            <DialogTitle className="text-xl">
+              {modalType === "success" ? "Success!" : "Error"}
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              {modalMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setModalOpen(false)}
+              className="min-w-[100px]"
+            >
+              OK
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -21,7 +21,38 @@ export interface Calendar {
   isDefault: boolean;
 }
 
-export type ViewMode = "day" | "week" | "month";
+export type ViewMode = "day" | "3day" | "week" | "month" | "agenda";
+
+export type FirstDayOfWeek = "sunday" | "monday";
+export type TimeFormat = "12h" | "24h";
+
+export interface CalendarSettings {
+  firstDayOfWeek: FirstDayOfWeek;
+  timezone: string;
+  timeFormat: TimeFormat;
+  defaultView: ViewMode;
+  showWeekNumbers: boolean;
+  hideDeclinedEvents: boolean;
+  highlightShortEvents: boolean;
+  showNationalHolidays: boolean;
+  showCutiBersama: boolean;
+  showHijriCalendar: boolean;
+  showJavaneseCalendar: boolean;
+}
+
+export const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
+  firstDayOfWeek: "monday",
+  timezone: "auto",
+  timeFormat: "24h",
+  defaultView: "month",
+  showWeekNumbers: false,
+  hideDeclinedEvents: false,
+  highlightShortEvents: true,
+  showNationalHolidays: true,
+  showCutiBersama: true,
+  showHijriCalendar: false,
+  showJavaneseCalendar: false,
+};
 
 export interface EventFormData {
   title: string;

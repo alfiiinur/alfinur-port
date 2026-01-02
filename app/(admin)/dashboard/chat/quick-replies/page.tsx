@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Zap, Save, X } from "lucide-react";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface QuickReply {
   id: string;
@@ -148,6 +149,14 @@ export default function QuickRepliesPage() {
     content: "",
     category: "general",
   });
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    reply: QuickReply | null;
+  }>({
+    open: false,
+    reply: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchReplies();
@@ -189,18 +198,22 @@ export default function QuickRepliesPage() {
     }
   };
 
-  const deleteReply = async (id: string) => {
-    if (!confirm("Hapus quick reply ini?")) return;
+  const deleteReply = async () => {
+    if (!deleteModal.reply) return;
+    setIsDeleting(true);
 
     try {
       await fetch("/api/chat/quick-replies", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: deleteModal.reply.id }),
       });
       await fetchReplies();
     } catch (error) {
       console.error("Failed to delete reply:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, reply: null });
     }
   };
 
@@ -371,7 +384,7 @@ export default function QuickRepliesPage() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => deleteReply(reply.id)}
+                          onClick={() => setDeleteModal({ open: true, reply })}
                           className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-neutral-800 rounded"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -387,6 +400,18 @@ export default function QuickRepliesPage() {
           </div>
         ))
       )}
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, reply: open ? deleteModal.reply : null })
+        }
+        onConfirm={deleteReply}
+        title="Hapus Quick Reply"
+        itemName={deleteModal.reply?.title}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

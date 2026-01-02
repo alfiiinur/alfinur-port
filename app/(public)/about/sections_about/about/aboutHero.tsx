@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { Briefcase, Calendar, ChevronRight } from "lucide-react";
-import WorkHistory from "../work-history/WorkHistory";
 import WorkHistoryWithWrapper from "../work-history/WorkHistoryWithWrapper";
+import { useLanguage } from "@/lib/hooks/useLanguage";
+import HoverArrowLabel from "@/components/public/shared/HoverArrowLabel";
 
 // Auto slider images - Set 1
 const sliderImages1 = [
@@ -34,28 +35,48 @@ const sliderImages2 = [
 ];
 
 export const AboutHero = () => {
+  const { language } = useLanguage();
+
+  const bioEn =
+    "I am an IT Developer based in Indonesia, passionate about creating innovative and efficient IT solutions that drive success.";
+  const bioId =
+    "Saya adalah Developer IT berbasis di Indonesia, bersemangat dalam menciptakan solusi IT yang inovatif dan efisien untuk kesuksesan.";
+
+  const aboutMeEn = { line1: "About", line2: "Me" };
+  const aboutMeId = { line1: "Tentang", line2: "Saya" };
+
+  const workNowEn = "WORK NOW";
+  const workNowId = "PEKERJAAN SEKARANG";
+
+  const techStackLabel = language === "id" ? "Tech Stack" : "Tech Stack";
+  const keyTasksEn = "Key Tasks";
+  const keyTasksId = "Tugas Utama";
+
+  const aboutMe = language === "id" ? aboutMeId : aboutMeEn;
+  const bio = language === "id" ? bioId : bioEn;
+  const workNowLabel = language === "id" ? workNowId : workNowEn;
+  const keyTasks = language === "id" ? keyTasksId : keyTasksEn;
+
   return (
     <>
-      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
           {/* Kiri: Judul About Me + Nama & Bio */}
           <div className="md:col-span-3 flex flex-col justify-between">
-            <h1 className="text-anton text-[5rem] md:text-[7rem] font-black leading-none tracking-tighter uppercase italic text-black dark:text-white">
-              About <br /> Me
+            <h1 className="text-anton text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[7rem] font-black leading-none tracking-tighter uppercase italic text-black dark:text-white">
+              {aboutMe.line1} <br /> {aboutMe.line2}
             </h1>
 
-            <div className="mt-12 md:mt-0 space-y-6 max-w-[280px]">
+            <div className="mt-8 md:mt-12 lg:mt-0 space-y-4 sm:space-y-6 max-w-full md:max-w-[280px]">
               <div>
-                <h2 className="text-anton text-3xl md:text-3xl font-black uppercase tracking-tighter italic text-black dark:text-white">
+                <h2 className="text-anton text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-tighter italic text-black dark:text-white">
                   ALFI NUR DANIALIN
                 </h2>
-                <p className="mt-4 text-sm md:text-base text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                  I am an IT Developer based in Indonesia, passionate about
-                  creating innovative and efficient IT solutions that drive
-                  success.
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                  {bio}
                 </p>
               </div>
-              <div className="relative h-[352px] w-full rounded-3xl overflow-hidden bg-[#121212]">
+              <div className="relative h-[280px] sm:h-[320px] md:h-[352px] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#121212]">
                 {/* Spotify Embed */}
                 <iframe
                   src="https://open.spotify.com/embed/playlist/46si4G4cpWVDWf0MJLQ0Uq?utm_source=generator"
@@ -64,7 +85,7 @@ export const AboutHero = () => {
                   frameBorder="0"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
-                  className="rounded-3xl"
+                  className="rounded-2xl sm:rounded-3xl"
                 />
               </div>
               {/* Auto Slider */}
@@ -74,14 +95,14 @@ export const AboutHero = () => {
           </div>
 
           {/* Tengah: Foto utama + Bento Grid */}
-          <div className="md:col-span-6 flex flex-col gap-6">
+          <div className="md:col-span-6 flex flex-col gap-4 sm:gap-6">
             {/* Foto Utama */}
-            <div className="relative h-[400px] md:h-[600px] mt-20 md:mt-40">
+            <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mt-8 sm:mt-12 md:mt-20 lg:mt-40">
               <Image
                 src="/img-alfinur/IMG_4762.jpg"
                 alt="ALFI NUR DANIALIN"
                 fill
-                className="object-cover rounded-[3rem]"
+                className="object-cover rounded-[2rem] sm:rounded-[3rem]"
                 priority
               />
             </div>
@@ -91,32 +112,45 @@ export const AboutHero = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="grid grid-cols-3 gap-3"
+              className="grid grid-cols-3 gap-2 sm:gap-3"
             >
-              {/* Large Photo */}
-              <div className="col-span-2 relative h-48 rounded-2xl overflow-hidden group">
-                <Image
-                  src="/img-alfinur/WhatsApp Image 2025-12-06 at 17.39.36 (1).jpeg"
-                  alt="Work Environment"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-              </div>
+              {/* Large Photo - Graduation */}
+              <HoverArrowLabel
+                label="Graduation Day 🎓"
+                arrowDirection="top-right"
+                arrowColor="#3B82F6"
+                className="col-span-2"
+              >
+                <div className="relative h-32 sm:h-40 md:h-48 rounded-xl sm:rounded-2xl overflow-hidden group">
+                  <Image
+                    src="/img-alfinur/WhatsApp Image 2025-12-06 at 17.39.36 (1).jpeg"
+                    alt="Graduation Day"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                </div>
+              </HoverArrowLabel>
 
-              {/* Small Photo */}
-              <div className="relative h-48 rounded-2xl overflow-hidden group">
-                <Image
-                  src="/img-alfinur/WhatsApp Image 2025-11-26 at 13.41.31.jpeg"
-                  alt="Creative Work"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-              </div>
+              {/* Small Photo - CENIM */}
+              <HoverArrowLabel
+                label="CENIM 2025 🎤"
+                arrowDirection="top-right"
+                arrowColor="#FF6B35"
+              >
+                <div className="relative h-32 sm:h-40 md:h-48 rounded-xl sm:rounded-2xl overflow-hidden group">
+                  <Image
+                    src="/img-alfinur/WhatsApp Image 2025-11-26 at 13.41.31.jpeg"
+                    alt="CENIM Conference"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                </div>
+              </HoverArrowLabel>
 
-              {/* Small Photo */}
-              <div className="relative h-32 rounded-2xl overflow-hidden group">
+              {/* Small Photo - Video */}
+              <div className="relative h-24 sm:h-28 md:h-32 rounded-xl sm:rounded-2xl overflow-hidden group">
                 <video
                   src="/img-alfinur/IMG_2252.MOV"
                   autoPlay
@@ -127,35 +161,48 @@ export const AboutHero = () => {
                 />
               </div>
 
-              {/* Medium Photo */}
-              <div className="col-span-2 relative h-32 rounded-2xl overflow-hidden group">
-                <Image
-                  src="/img-alfinur/WhatsApp Image 2025-11-26 at 11.55.44 (1).jpeg"
-                  alt="Portfolio"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-              </div>
+              {/* Medium Photo - Presentation */}
+              <HoverArrowLabel
+                label="Presenting Research 📊"
+                arrowDirection="bottom-right"
+                arrowColor="#10B981"
+                className="col-span-2"
+              >
+                <div className="relative h-24 sm:h-28 md:h-32 rounded-xl sm:rounded-2xl overflow-hidden group">
+                  <Image
+                    src="/img-alfinur/WhatsApp Image 2025-11-26 at 11.55.44 (1).jpeg"
+                    alt="Research Presentation"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                </div>
+              </HoverArrowLabel>
             </motion.div>
           </div>
 
           {/* Kanan: Foto kecil + Work Now */}
-          <div className="md:col-span-3 flex flex-col gap-10">
-            <div className="relative h-48 w-full rounded-3xl overflow-hidden">
-              <Image
-                src="/img-alfinur/WhatsApp Image 2025-11-26 at 12.12.58.jpeg"
-                alt="Detail"
-                fill
-                className="object-cover"
-              />
-            </div>
+          <div className="md:col-span-3 flex flex-col gap-6 sm:gap-10">
+            <HoverArrowLabel
+              label="CENIM 2025"
+              arrowDirection="top-right"
+              arrowColor="#FF6B35"
+            >
+              <div className="relative h-36 sm:h-40 md:h-48 w-full rounded-2xl sm:rounded-3xl overflow-hidden">
+                <Image
+                  src="/img-alfinur/WhatsApp Image 2025-11-26 at 12.12.58.jpeg"
+                  alt="Nature Trip"
+                  fill
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+            </HoverArrowLabel>
 
             {/* Work Now Section */}
-            <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4 italic text-black dark:text-white flex items-center gap-2">
-                <Briefcase size={30} />
-                WORK NOW
+            <div className="mt-4 sm:mt-8">
+              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 italic text-black dark:text-white flex items-center gap-2">
+                <Briefcase size={24} className="sm:w-[30px] sm:h-[30px]" />
+                {workNowLabel}
               </h3>
               {workNowData.map((work, index) => (
                 <motion.div
@@ -164,37 +211,37 @@ export const AboutHero = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="rounded-2xl p-4 bg-black dark:bg-white mb-4 shadow-lg hover:shadow-2xl transition-shadow"
+                  className="rounded-xl sm:rounded-2xl p-3 sm:p-4 bg-black dark:bg-white mb-3 sm:mb-4 shadow-lg hover:shadow-2xl transition-shadow"
                 >
                   {/* Company & Period */}
-                  <h4 className="text-lg font-bold mb-1 italic text-white dark:text-black text-center">
+                  <h4 className="text-base sm:text-lg font-bold mb-1 italic text-white dark:text-black text-center">
                     {work.company.toUpperCase()}
                   </h4>
-                  <div className="flex justify-center items-center gap-2 mb-3 flex-wrap">
-                    <Badge className="bg-[#C4F135] text-black font-bold">
+                  <div className="flex justify-center items-center gap-1 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
+                    <Badge className="bg-[#C4F135] text-black font-bold text-xs">
                       {work.title}
                     </Badge>
-                    <Badge className="bg-blue-500 text-white">
+                    <Badge className="bg-blue-500 text-white text-xs">
                       {work.period}
                     </Badge>
                   </div>
 
                   {/* Description */}
-                  <p className="text-white/80 text-sm leading-relaxed dark:text-black/80 mb-3">
+                  <p className="text-white/80 text-xs sm:text-sm leading-relaxed dark:text-black/80 mb-2 sm:mb-3">
                     {work.description}
                   </p>
 
                   {/* Tech Stack */}
                   {work.techStack && (
-                    <div className="mb-3">
-                      <span className="text-xs font-bold text-[#C4F135] uppercase tracking-wider mb-2 block">
-                        Tech Stack
+                    <div className="mb-2 sm:mb-3">
+                      <span className="text-[10px] sm:text-xs font-bold text-[#C4F135] uppercase tracking-wider mb-1 sm:mb-2 block">
+                        {techStackLabel}
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {work.techStack.map((tech, tIndex) => (
                           <span
                             key={tIndex}
-                            className="text-xs px-2 py-1 bg-white/10 dark:bg-black/10 text-white dark:text-black rounded-full"
+                            className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-white/10 dark:bg-black/10 text-white dark:text-black rounded-full"
                           >
                             {tech}
                           </span>
@@ -206,18 +253,18 @@ export const AboutHero = () => {
                   {/* Responsibilities */}
                   {work.responsibilities && (
                     <div>
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
-                        Key Tasks
+                      <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 sm:mb-2 block">
+                        {keyTasks}
                       </span>
-                      <ul className="space-y-1">
+                      <ul className="space-y-0.5 sm:space-y-1">
                         {work.responsibilities.map((resp, rIndex) => (
                           <li
                             key={rIndex}
-                            className="text-xs text-white/70 dark:text-black/70 flex items-start gap-1"
+                            className="text-[10px] sm:text-xs text-white/70 dark:text-black/70 flex items-start gap-1"
                           >
                             <ChevronRight
-                              size={12}
-                              className="mt-0.5 shrink-0 text-[#C4F135]"
+                              size={10}
+                              className="mt-0.5 shrink-0 text-[#C4F135] sm:w-3 sm:h-3"
                             />
                             {resp}
                           </li>
@@ -238,6 +285,19 @@ export const AboutHero = () => {
 
 // Work History Section Component
 function WorkHistorySection() {
+  const { language } = useLanguage();
+
+  const experienceEn = "Experience";
+  const experienceId = "Pengalaman";
+
+  const workHistoryEn = "Work History";
+  const workHistoryId = "Riwayat Kerja";
+
+  const descEn =
+    "My professional journey through various roles in technology and development.";
+  const descId =
+    "Perjalanan profesional saya melalui berbagai peran di teknologi dan pengembangan.";
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
       {/* Section Header */}
@@ -248,14 +308,13 @@ function WorkHistorySection() {
         className="mb-12"
       >
         <span className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">
-          Experience
+          {language === "id" ? experienceId : experienceEn}
         </span>
         <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-black dark:text-white">
-          Work History
+          {language === "id" ? workHistoryId : workHistoryEn}
         </h2>
         <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl">
-          My professional journey through various roles in technology and
-          development.
+          {language === "id" ? descId : descEn}
         </p>
       </motion.div>
 

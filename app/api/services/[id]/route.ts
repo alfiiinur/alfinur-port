@@ -39,6 +39,7 @@ export async function PUT(
       category,
       isPopular,
       isActive,
+      showPrice,
       sortOrder,
     } = body;
 
@@ -61,6 +62,7 @@ export async function PUT(
         category,
         isPopular,
         isActive,
+        showPrice,
         sortOrder,
       },
     });

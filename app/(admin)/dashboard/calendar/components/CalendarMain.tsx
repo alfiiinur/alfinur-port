@@ -9,12 +9,15 @@ import MonthView from "./MonthView";
 import WeekView from "./WeekView";
 import DayView from "./DayView";
 import EventModal from "./EventModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import {
   CalendarEvent,
   Calendar,
   ViewMode,
   EventFormData,
   CalendarNote,
+  CalendarSettings,
+  DEFAULT_CALENDAR_SETTINGS,
   DEFAULT_CALENDARS as CALENDAR_TYPES,
 } from "../types";
 
@@ -40,6 +43,37 @@ export default function CalendarMain() {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [settings, setSettings] = useState<CalendarSettings>(
+    DEFAULT_CALENDAR_SETTINGS
+  );
+
+  // Load settings from localStorage
+  useEffect(() => {
+    const savedSettings = localStorage.getItem("calendarSettings");
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings(parsed);
+        // Apply default view from settings
+        if (parsed.defaultView) {
+          setViewMode(parsed.defaultView);
+        }
+      } catch (e) {
+        console.error("Failed to parse calendar settings:", e);
+      }
+    }
+  }, []);
+
+  // Handle settings change
+  const handleSettingsChange = (newSettings: CalendarSettings) => {
+    setSettings(newSettings);
+    // Apply view mode if changed
+    if (newSettings.defaultView !== settings.defaultView) {
+      setViewMode(newSettings.defaultView);
+    }
+  };
 
   // Fetch events
   const fetchEvents = useCallback(async () => {
@@ -248,6 +282,7 @@ export default function CalendarMain() {
   // Delete event
   const handleDeleteEvent = async () => {
     if (!selectedEvent) return;
+    setIsDeleting(true);
 
     try {
       const res = await fetch(`/api/calendar/events/${selectedEvent.id}`, {
@@ -259,10 +294,17 @@ export default function CalendarMain() {
       }
     } catch (error) {
       console.error("Failed to delete event:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal(false);
+      setIsModalOpen(false);
+      setSelectedEvent(null);
     }
+  };
 
-    setIsModalOpen(false);
-    setSelectedEvent(null);
+  // Open delete confirmation
+  const openDeleteModal = () => {
+    setDeleteModal(true);
   };
 
   // Save as Note
@@ -336,9 +378,11 @@ export default function CalendarMain() {
         currentDate={currentDate}
         viewMode={viewMode}
         searchQuery={searchQuery}
+        settings={settings}
         onSearchChange={setSearchQuery}
         onViewModeChange={setViewMode}
         onNavigate={handleNavigate}
+        onSettingsChange={handleSettingsChange}
       />
 
       <div className="flex flex-col lg:flex-row gap-4">
@@ -415,9 +459,19 @@ export default function CalendarMain() {
         }}
         onSave={handleSaveEvent}
         onSaveAsNote={handleSaveAsNote}
-        onDelete={selectedEvent ? handleDeleteEvent : undefined}
+        onDelete={selectedEvent ? openDeleteModal : undefined}
         event={selectedEvent}
         selectedDate={selectedDate}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal}
+        onOpenChange={setDeleteModal}
+        onConfirm={handleDeleteEvent}
+        title="Delete Event"
+        itemName={selectedEvent?.title}
+        isLoading={isDeleting}
       />
     </div>
   );

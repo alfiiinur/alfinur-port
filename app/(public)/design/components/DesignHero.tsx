@@ -15,6 +15,7 @@ import {
   Pause,
   Video,
 } from "lucide-react";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 interface FeaturedItem {
   image: string;
@@ -30,16 +31,10 @@ interface DesignHeroProps {
 
 const popularTags = [
   "dashboard",
-  "landing page",
-  "e-commerce",
+  "landingPage",
+  "ecommerce",
   "logo",
-  "mobile app",
-];
-
-const tabs = [
-  { id: "shots", label: "Shots", icon: Grid3X3 },
-  { id: "designers", label: "Designers", icon: Users },
-  { id: "services", label: "Services", icon: Briefcase },
+  "mobileApp",
 ];
 
 function isVideo(url: string) {
@@ -51,11 +46,19 @@ export default function DesignHero({
   onSearch,
   onTagClick,
 }: DesignHeroProps) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("shots");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+
+  // Build tabs with translations
+  const tabs = [
+    { id: "shots", label: t("shots"), icon: Grid3X3 },
+    { id: "designers", label: t("designers"), icon: Users },
+    { id: "services", label: t("services"), icon: Briefcase },
+  ];
 
   const hasMultiple = featuredDesigns.length > 1;
   const currentItem = featuredDesigns[currentIndex];
@@ -112,11 +115,10 @@ export default function DesignHero({
           transition={{ duration: 0.5 }}
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground leading-tight mb-4 uppercase">
-            Find Design Inspiration Here
+            {t("findDesignInspiration")}
           </h1>
           <p className="text-gray-700 font-medium text-base sm:text-lg mb-6 max-w-md">
-            Explore our work here and find talented and experienced designers
-            ready to work on your next project.
+            {t("exploreOurWork")}
           </p>
 
           {/* Tabs */}
@@ -142,7 +144,7 @@ export default function DesignHero({
             <div className="relative flex items-center max-w-md">
               <input
                 type="text"
-                placeholder="What type of design are you interested in?"
+                placeholder={t("whatTypeDesign")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-4 pr-12 py-3 rounded-full border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -159,15 +161,15 @@ export default function DesignHero({
           {/* Popular Tags */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted-foreground font-medium">
-              Popular:
+              {t("popular")}:
             </span>
             {popularTags.map((tag) => (
               <button
                 key={tag}
-                onClick={() => onTagClick?.(tag)}
+                onClick={() => onTagClick?.(t(tag))}
                 className="px-3 py-1 rounded-full border text-sm hover:bg-muted transition-colors"
               >
-                {tag}
+                {t(tag)}
               </button>
             ))}
           </div>
@@ -356,15 +358,14 @@ export default function DesignHero({
             </span>
           </div>
           <span className="font-semibold text-sm sm:text-base">
-            Get Matched Now
+            {t("getMatchedNow")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground text-center sm:text-left flex-1">
-          Tell us what you need and instantly get matched with world-class
-          talent ready to work on your project.
+          {t("tellUsWhatYouNeed")}
         </p>
         <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap">
-          Get Started
+          {t("getStarted")}
         </button>
       </motion.div>
     </div>

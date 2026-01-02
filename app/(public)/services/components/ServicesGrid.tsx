@@ -1,17 +1,25 @@
+"use client";
+
+import { useLanguage } from "@/lib/hooks/useLanguage";
 import ServiceCard from "./ServiceCard";
 
 interface Service {
   id: string;
   name: string;
+  nameId?: string | null;
   slug: string;
   description: string;
+  descriptionId?: string | null;
   icon: string;
   price: number | null;
   priceType: string;
   currency: string;
   features: string[];
+  featuresId?: string[];
   category: string;
+  categoryId?: string | null;
   isPopular: boolean;
+  showPrice?: boolean;
 }
 
 interface ServicesGridProps {
@@ -19,10 +27,14 @@ interface ServicesGridProps {
 }
 
 export default function ServicesGrid({ services }: ServicesGridProps) {
+  const { language } = useLanguage();
+
   if (services.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        No services available at the moment.
+        {language === "id"
+          ? "Tidak ada layanan tersedia saat ini."
+          : "No services available at the moment."}
       </div>
     );
   }

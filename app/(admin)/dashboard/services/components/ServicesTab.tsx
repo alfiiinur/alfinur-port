@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Loader2, Star } from "lucide-react";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Service {
   id: string;
@@ -44,6 +45,7 @@ interface Service {
   category: string;
   isPopular: boolean;
   isActive: boolean;
+  showPrice: boolean;
   sortOrder: number;
 }
 
@@ -68,6 +70,14 @@ export default function ServicesTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    service: Service | null;
+  }>({
+    open: false,
+    service: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -79,6 +89,7 @@ export default function ServicesTab() {
     category: "Web Development",
     isPopular: false,
     isActive: true,
+    showPrice: true,
     sortOrder: 0,
   });
 
@@ -145,18 +156,25 @@ export default function ServicesTab() {
       category: service.category,
       isPopular: service.isPopular,
       isActive: service.isActive,
+      showPrice: service.showPrice,
       sortOrder: service.sortOrder,
     });
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this service?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.service) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/services/${id}`, { method: "DELETE" });
+      await fetch(`/api/services/${deleteModal.service.id}`, {
+        method: "DELETE",
+      });
       fetchServices();
+      setDeleteModal({ open: false, service: null });
     } catch (error) {
       console.error("Failed to delete service:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -173,6 +191,7 @@ export default function ServicesTab() {
       category: "Web Development",
       isPopular: false,
       isActive: true,
+      showPrice: true,
       sortOrder: 0,
     });
   };
@@ -336,6 +355,15 @@ export default function ServicesTab() {
                   />
                   <Label>Active</Label>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={formData.showPrice}
+                    onCheckedChange={(v) =>
+                      setFormData({ ...formData, showPrice: v })
+                    }
+                  />
+                  <Label>Show Price</Label>
+                </div>
               </div>
               <div className="flex justify-end gap-2">
                 <Button
@@ -361,6 +389,7 @@ export default function ServicesTab() {
               <TableHead>Service</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead>Show Price</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -381,6 +410,11 @@ export default function ServicesTab() {
                 </TableCell>
                 <TableCell>{formatPrice(service)}</TableCell>
                 <TableCell>
+                  <Badge variant={service.showPrice ? "default" : "secondary"}>
+                    {service.showPrice ? "Visible" : "Hidden"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
                   <Badge variant={service.isActive ? "default" : "outline"}>
                     {service.isActive ? "Active" : "Inactive"}
                   </Badge>
@@ -396,7 +430,7 @@ export default function ServicesTab() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(service.id)}
+                    onClick={() => setDeleteModal({ open: true, service })}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
@@ -406,7 +440,7 @@ export default function ServicesTab() {
             {services.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No services yet. Add your first service.
@@ -416,6 +450,17 @@ export default function ServicesTab() {
           </TableBody>
         </Table>
       </CardContent>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, service: open ? deleteModal.service : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Service"
+        itemName={deleteModal.service?.name}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 }

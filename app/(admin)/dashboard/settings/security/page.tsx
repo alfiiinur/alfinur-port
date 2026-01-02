@@ -20,6 +20,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 type Session = {
   id: string;
@@ -54,6 +55,16 @@ export default function SecurityPage() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [revokeModal, setRevokeModal] = useState<{
+    open: boolean;
+    sessionId: string | null;
+    isAll: boolean;
+  }>({
+    open: false,
+    sessionId: null,
+    isAll: false,
+  });
+  const [isRevoking, setIsRevoking] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -115,24 +126,40 @@ export default function SecurityPage() {
     }
   };
 
-  const revokeSession = async (sessionId: string) => {
-    if (!confirm("Are you sure you want to revoke this session?")) return;
+  const revokeSession = async () => {
+    if (!revokeModal.sessionId) return;
+    setIsRevoking(true);
     try {
-      await fetch(`/api/user/sessions?id=${sessionId}`, { method: "DELETE" });
-      setSessions(sessions.filter((s) => s.id !== sessionId));
+      await fetch(`/api/user/sessions?id=${revokeModal.sessionId}`, {
+        method: "DELETE",
+      });
+      setSessions(sessions.filter((s) => s.id !== revokeModal.sessionId));
     } catch (error) {
       console.error("Error revoking session:", error);
+    } finally {
+      setIsRevoking(false);
+      setRevokeModal({ open: false, sessionId: null, isAll: false });
     }
   };
 
   const revokeAllSessions = async () => {
-    if (!confirm("Are you sure you want to log out from all other devices?"))
-      return;
+    setIsRevoking(true);
     try {
       await fetch("/api/user/sessions?id=all", { method: "DELETE" });
       setSessions(sessions.filter((s) => s.isCurrentSession));
     } catch (error) {
       console.error("Error revoking sessions:", error);
+    } finally {
+      setIsRevoking(false);
+      setRevokeModal({ open: false, sessionId: null, isAll: false });
+    }
+  };
+
+  const handleRevoke = async () => {
+    if (revokeModal.isAll) {
+      await revokeAllSessions();
+    } else {
+      await revokeSession();
     }
   };
 
@@ -281,7 +308,13 @@ export default function SecurityPage() {
               Active Sessions
             </h2>
             {sessions.length > 1 && (
-              <Button variant="outline" size="sm" onClick={revokeAllSessions}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setRevokeModal({ open: true, sessionId: null, isAll: true })
+                }
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Log out all other devices
               </Button>
@@ -327,7 +360,13 @@ export default function SecurityPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => revokeSession(session.id)}
+                      onClick={() =>
+                        setRevokeModal({
+                          open: true,
+                          sessionId: session.id,
+                          isAll: false,
+                        })
+                      }
                     >
                       <LogOut className="h-4 w-4" />
                     </Button>
@@ -378,6 +417,20 @@ export default function SecurityPage() {
           )}
         </Card>
       </div>
+
+      {/* Revoke Session Modal */}
+      <DeleteConfirmModal
+        open={revokeModal.open}
+        onOpenChange={(open) => setRevokeModal({ ...revokeModal, open })}
+        onConfirm={handleRevoke}
+        title={revokeModal.isAll ? "Log Out All Devices" : "Revoke Session"}
+        description={
+          revokeModal.isAll
+            ? "Are you sure you want to log out from all other devices? You will remain logged in on this device."
+            : "Are you sure you want to revoke this session? The device will be logged out immediately."
+        }
+        isLoading={isRevoking}
+      />
     </div>
   );
 }

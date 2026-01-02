@@ -46,3 +46,6 @@ next-env.d.ts
 /public/uploads/images/*
 /public/uploads/videos/*
 !/public/uploads/.gitkeep
+
+# kiro
+.kiro/

@@ -2,6 +2,7 @@
 
 import {
   services,
+  servicesId,
   serviceDetails,
   defaultServiceContent,
 } from "@/components/dataMock/servicessList";
@@ -9,19 +10,38 @@ import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 export const ServiceDetail = () => {
+  const { language } = useLanguage();
   const [activeService, setActiveService] = useState<string | null>(null);
 
+  // Get current service list based on language
+  const currentServices = language === "id" ? servicesId : services;
+
   // Get current content based on active service
-  const currentContent = activeService
-    ? serviceDetails.find((s) => s.name === activeService)
-    : null;
+  const activeIndex = activeService
+    ? (language === "id" ? servicesId : services).indexOf(activeService)
+    : -1;
+  const currentContent = activeIndex >= 0 ? serviceDetails[activeIndex] : null;
 
   // Display values with fallback to default
-  const displayTitle = currentContent?.title ?? defaultServiceContent.title;
-  const displayDescription =
-    currentContent?.description ?? defaultServiceContent.description;
+  const displayTitle = currentContent
+    ? language === "id"
+      ? currentContent.titleId
+      : currentContent.title
+    : language === "id"
+    ? defaultServiceContent.titleId
+    : defaultServiceContent.title;
+
+  const displayDescription = currentContent
+    ? language === "id"
+      ? currentContent.descriptionId
+      : currentContent.description
+    : language === "id"
+    ? defaultServiceContent.descriptionId
+    : defaultServiceContent.description;
+
   const displayImage = currentContent?.image ?? defaultServiceContent.image;
   const displayLabel = currentContent?.label ?? defaultServiceContent.label;
   const displayNumber = currentContent?.id
@@ -124,7 +144,7 @@ export const ServiceDetail = () => {
 
             {/* List Services */}
             <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm md:text-base font-medium">
-              {services.map((item, index) => {
+              {currentServices.map((item, index) => {
                 const isActive = activeService === item;
                 return (
                   <motion.div

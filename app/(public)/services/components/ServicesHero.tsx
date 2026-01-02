@@ -3,16 +3,29 @@
 import SectionLabel from "@/components/public/shared/SectionLabel";
 import { AnimatedLines } from "@/components/public/shared/AnimatedText";
 import { motion } from "motion/react";
-
-const titleLines = ["What I Can Do", "For You"];
-
-const descLines = [
-  "Professional IT services tailored to your needs.",
-  "From web design to consulting, I deliver quality",
-  "solutions with a proven process.",
-];
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 export default function ServicesHero() {
+  const { language, t } = useLanguage();
+
+  const titleLinesEn = ["What I Can Do", "For You"];
+  const titleLinesId = ["Yang Bisa Saya Lakukan", "Untuk Anda"];
+
+  const descLinesEn = [
+    "Professional IT services tailored to your needs.",
+    "From web design to consulting, I deliver quality",
+    "solutions with a proven process.",
+  ];
+
+  const descLinesId = [
+    "Layanan IT profesional yang disesuaikan dengan kebutuhan Anda.",
+    "Dari desain web hingga konsultasi, saya memberikan",
+    "solusi berkualitas dengan proses yang terbukti.",
+  ];
+
+  const titleLines = language === "id" ? titleLinesId : titleLinesEn;
+  const descLines = language === "id" ? descLinesId : descLinesEn;
+
   return (
     <div className="text-center mb-16">
       <motion.div
@@ -22,7 +35,7 @@ export default function ServicesHero() {
         transition={{ duration: 0.5 }}
         className="flex justify-center mb-4"
       >
-        <SectionLabel text="SERVICES" />
+        <SectionLabel text={t("services").toUpperCase()} />
       </motion.div>
 
       <AnimatedLines

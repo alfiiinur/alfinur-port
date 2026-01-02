@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
       category,
       isPopular,
       isActive,
+      showPrice,
       sortOrder,
     } = body;
 
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
         category,
         isPopular: isPopular || false,
         isActive: isActive !== false,
+        showPrice: showPrice !== false,
         sortOrder: sortOrder || 0,
       },
     });

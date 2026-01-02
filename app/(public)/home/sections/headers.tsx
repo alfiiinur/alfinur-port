@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/moving-border";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 type HighlightAction =
   | "underline"
@@ -121,13 +122,27 @@ const roles: RoleItem[] = [
   { text: "Graphic Designer", action: "highlight", color: "#9C27B0" },
 ];
 
-const sentences = [
+const rolesId: RoleItem[] = [
+  { text: "Infrastruktur IT", action: "underline", color: "#FF9800" },
+  { text: "Desainer UI/UX", action: "circle", color: "#E91E63" },
+  { text: "Developer Frontend", action: "box", color: "#4CAF50" },
+  { text: "Desainer Grafis", action: "highlight", color: "#9C27B0" },
+];
+
+const sentencesEn = [
   "Welcome to my portfolio website!",
   "I'm passionate about crafting innovative and efficient IT solutions that drive success.",
   "Explore my projects, skills, and experiences as you get to know more about my journey in the tech world.",
 ];
 
+const sentencesId = [
+  "Selamat datang di website portfolio saya!",
+  "Saya bersemangat dalam menciptakan solusi IT yang inovatif dan efisien untuk kesuksesan.",
+  "Jelajahi proyek, keahlian, dan pengalaman saya saat Anda mengenal lebih jauh perjalanan saya di dunia teknologi.",
+];
+
 export const SectionHeader = () => {
+  const { language, t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const roleRef = useRef<HTMLSpanElement>(null);
@@ -135,6 +150,9 @@ export const SectionHeader = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [sentenceIndex, setSentenceIndex] = useState(0);
+
+  const currentRoles = language === "id" ? rolesId : roles;
+  const sentences = language === "id" ? sentencesId : sentencesEn;
 
   // Split text animation on mount
   useEffect(() => {
@@ -176,7 +194,7 @@ export const SectionHeader = () => {
         duration: 0.4,
         ease: "power2.in",
         onComplete: () => {
-          setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+          setCurrentRoleIndex((prev) => (prev + 1) % currentRoles.length);
           gsap.set(roleRef.current, { y: 30 });
           gsap.to(roleRef.current, {
             y: 0,
@@ -189,7 +207,7 @@ export const SectionHeader = () => {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentRoles.length]);
 
   // Go to next sentence
   const goToNextSentence = useCallback(() => {
@@ -212,7 +230,7 @@ export const SectionHeader = () => {
         },
       });
     }
-  }, []);
+  }, [sentences.length]);
 
   // Typing animation
   useEffect(() => {
@@ -252,7 +270,7 @@ export const SectionHeader = () => {
           borderRadius="1.75rem"
           className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200 dark:border-slate-800 px-2 py-1 text-xs font-bold tracking-widest uppercase mb-6 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
         >
-          HALLO EVERYONE
+          {t("halloEveryone")}
         </Button>
       </div>
 
@@ -262,18 +280,22 @@ export const SectionHeader = () => {
         style={{ perspective: "1000px" }}
       >
         <span className="animate-line block overflow-hidden">
-          <span className="inline-block">I&apos;m Alfi Nur Danialin</span>
+          <span className="inline-block">
+            {language === "id"
+              ? "Saya Alfi Nur Danialin"
+              : "I'm Alfi Nur Danialin"}
+          </span>
         </span>
         <span className="animate-line block overflow-hidden">
           <span className="inline-block">
-            a{" "}
+            {language === "id" ? "seorang " : "a "}
             <span className="font-Libre_Baskerville italic text-primary">
               <span ref={roleRef} className="inline-block relative">
                 <Highlighter
-                  action={roles[currentRoleIndex].action}
-                  color={roles[currentRoleIndex].color}
+                  action={currentRoles[currentRoleIndex].action}
+                  color={currentRoles[currentRoleIndex].color}
                 >
-                  {roles[currentRoleIndex].text}
+                  {currentRoles[currentRoleIndex].text}
                 </Highlighter>
               </span>
             </span>
@@ -281,7 +303,8 @@ export const SectionHeader = () => {
         </span>
         <span className="animate-line block overflow-hidden">
           <span className="inline-block">
-            based in <span className="text-primary">Indonesia.</span>
+            {t("basedIn")}{" "}
+            <span className="text-primary">{t("indonesia")}.</span>
           </span>
         </span>
       </h2>
@@ -301,10 +324,10 @@ export const SectionHeader = () => {
         <button className="group relative bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-full font-medium overflow-hidden transition-transform hover:scale-105">
           <span className="relative overflow-hidden h-5 inline-flex items-center">
             <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-full">
-              Let&apos;s Start
+              {t("letsStart")}
             </span>
             <span className="absolute left-0 inline-block translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0">
-              Let&apos;s Start
+              {t("letsStart")}
             </span>
           </span>
         </button>

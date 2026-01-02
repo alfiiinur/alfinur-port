@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import BlogBentoGrid from "./components/BlogBentoGrid";
+import BlogContentGrid from "./components/BlogContentGrid";
+import BlogHero from "./components/BlogHero";
 
 export const metadata = {
   title: "Blog | Articles & Insights",
@@ -25,26 +26,17 @@ async function getCategories() {
 export default async function Blogs() {
   const [blogs, categories] = await Promise.all([getBlogs(), getCategories()]);
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="container mx-auto px-4 pt-24 md:pt-32 pb-8">
-        <div className="max-w-2xl">
-          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
-            • Alfi Journal
-          </span>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Discover Stories & Insights
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Explore articles on web development, design, and technology.
-          </p>
-        </div>
-      </div>
+  // Get featured blog (first one)
+  const featuredBlog = blogs[0] || null;
 
-      {/* Bento Grid Content */}
-      <div className="container mx-auto px-4 pb-16">
-        <BlogBentoGrid blogs={blogs} categories={categories} />
+  return (
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Hero Section */}
+      <BlogHero featuredBlog={featuredBlog} />
+
+      {/* Blog Content */}
+      <div id="blog-content" className="container mx-auto px-4 pb-16">
+        <BlogContentGrid blogs={blogs} categories={categories} />
       </div>
     </div>
   );

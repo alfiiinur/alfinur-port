@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import WalletModal from "./components/WalletModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface WalletData {
   id: string;
@@ -57,6 +58,14 @@ export default function WalletsPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingWallet, setEditingWallet] = useState<WalletData | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    wallet: WalletData | null;
+  }>({
+    open: false,
+    wallet: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchWallets();
@@ -73,18 +82,20 @@ export default function WalletsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (
-      !confirm("Are you sure? All transactions in this wallet will be deleted.")
-    )
-      return;
+  const handleDelete = async () => {
+    if (!deleteModal.wallet) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/finance/wallets/${id}`, {
+      const res = await fetch(`/api/finance/wallets/${deleteModal.wallet.id}`, {
         method: "DELETE",
       });
-      if (res.ok) setWallets(wallets.filter((w) => w.id !== id));
+      if (res.ok)
+        setWallets(wallets.filter((w) => w.id !== deleteModal.wallet!.id));
     } catch (error) {
       console.error("Failed to delete:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, wallet: null });
     }
   };
 
@@ -231,7 +242,7 @@ export default function WalletsPage() {
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDelete(wallet.id)}
+                        onClick={() => setDeleteModal({ open: true, wallet })}
                         className="text-destructive"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
@@ -316,6 +327,18 @@ export default function WalletsPage() {
           setModalOpen(false);
           fetchWallets();
         }}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, wallet: open ? deleteModal.wallet : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Wallet"
+        description={`Are you sure you want to delete "${deleteModal.wallet?.name}"? All transactions in this wallet will also be deleted. This action cannot be undone.`}
+        isLoading={isDeleting}
       />
     </div>
   );

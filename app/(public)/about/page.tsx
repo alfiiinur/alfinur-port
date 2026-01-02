@@ -1,3 +1,5 @@
+"use client";
+
 import {
   galleryItems,
   socialLinks,
@@ -11,25 +13,26 @@ import MissionSection from "./sections_about/section_story";
 import { awards, testimonials } from "@/components/dataMock/awardsItems";
 import AchievementsSection from "./sections_about/achievements/AchievementsSection";
 import ServicesSection from "../home/sections/services";
-import WorkHistoryWithWrapper from "./sections_about/work-history/WorkHistoryWithWrapper";
 import GsapScrollHeader from "./sections_about/gsapScrollHeading";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 export default function AboutPage() {
+  const { t } = useLanguage();
   const sampleVideoUrl =
     "https://videos.pexels.com/video-files/5532772/5532772-uhd_2732_1440_25fps.mp4";
   return (
-    <section className="min-h-screen bg-white dark:bg-black">
+    <section className="min-h-screen bg-white dark:bg-black overflow-x-hidden">
       <RichHeadingSection />
       <GsapScrollHeader />
 
       <MissionSection
         labelLink={{
-          text: "My Journey",
+          text: t("missionLabel"),
           href: "/about",
         }}
-        badge="IT Developer"
-        title="My Mission Is Simple: To Create Digital Solutions That Make a Real Impact and Drive Success"
-        description="Explore my portfolio where creativity meets technology. Every project showcases my dedication to building innovative web applications that solve real problems and deliver exceptional user experiences."
+        badge={t("missionBadge")}
+        title={t("missionTitle")}
+        description={t("missionDescription")}
         mediaItems={[
           {
             type: "video",

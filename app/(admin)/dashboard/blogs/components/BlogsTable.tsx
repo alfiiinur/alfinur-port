@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { deleteBlog } from "../actions";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Blog {
   id: string;
@@ -82,6 +83,13 @@ export default function BlogsTable({ blogs }: BlogsTableProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    blog: Blog | null;
+  }>({
+    open: false,
+    blog: null,
+  });
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -138,12 +146,13 @@ export default function BlogsTable({ blogs }: BlogsTableProps) {
     }
   };
 
-  async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+  async function handleDelete() {
+    if (!deleteModal.blog) return;
 
-    setIsDeleting(id);
-    await deleteBlog(id);
+    setIsDeleting(deleteModal.blog.id);
+    await deleteBlog(deleteModal.blog.id);
     setIsDeleting(null);
+    setDeleteModal({ open: false, blog: null });
   }
 
   if (blogs.length === 0) {
@@ -293,7 +302,7 @@ export default function BlogsTable({ blogs }: BlogsTableProps) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDelete(blog.id)}
+                        onClick={() => setDeleteModal({ open: true, blog })}
                         disabled={isDeleting === blog.id}
                         className="text-destructive focus:text-destructive"
                       >
@@ -308,6 +317,17 @@ export default function BlogsTable({ blogs }: BlogsTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, blog: open ? deleteModal.blog : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Blog"
+        itemName={deleteModal.blog?.title}
+        isLoading={isDeleting === deleteModal.blog?.id}
+      />
     </div>
   );
 }

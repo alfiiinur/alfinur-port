@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import TransactionModal from "./components/TransactionModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Transaction {
   id: string;
@@ -77,6 +78,14 @@ export default function MoneyTrackPage() {
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    transaction: Transaction | null;
+  }>({
+    open: false,
+    transaction: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -97,17 +106,26 @@ export default function MoneyTrackPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this transaction?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.transaction) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/finance/transactions/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/finance/transactions/${deleteModal.transaction.id}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (res.ok) {
-        setTransactions(transactions.filter((t) => t.id !== id));
+        setTransactions(
+          transactions.filter((t) => t.id !== deleteModal.transaction!.id)
+        );
       }
     } catch (error) {
       console.error("Failed to delete:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, transaction: null });
     }
   };
 
@@ -839,7 +857,9 @@ export default function MoneyTrackPage() {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDelete(tx.id)}
+                          onClick={() =>
+                            setDeleteModal({ open: true, transaction: tx })
+                          }
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -870,6 +890,21 @@ export default function MoneyTrackPage() {
           setModalOpen(false);
           fetchData();
         }}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({
+            open,
+            transaction: open ? deleteModal.transaction : null,
+          })
+        }
+        onConfirm={handleDelete}
+        title="Delete Transaction"
+        itemName={deleteModal.transaction?.category}
+        isLoading={isDeleting}
       />
     </div>
   );

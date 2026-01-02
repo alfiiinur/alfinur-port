@@ -1,4 +1,6 @@
 import { ThemeProvider } from "@/components/public/theme-provider";
+import { LanguageProvider } from "@/lib/hooks/useLanguage";
+import DynamicFavicon from "@/components/public/shared/DynamicFavicon";
 import { Metadata } from "next";
 import {
   Anton,
@@ -54,7 +56,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <LanguageProvider>
+            <DynamicFavicon />
+            {children}
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

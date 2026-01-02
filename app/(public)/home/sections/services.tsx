@@ -6,8 +6,9 @@ export default function ServicesSection() {
   return (
     <>
       <HeroServices />
-      {/* <ServicesMarquee /> */}
+
       <ServiceDetail />
+      {/* <ServicesMarquee /> */}
     </>
   );
 }

@@ -1,19 +1,32 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { MediaItemRenderer, SocialMediaItem } from "./media_item";
 import { TextHeadingBottom } from "@/components/public/shared/TextHeadingBottom";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 interface SocialGallerySectionProps {
-  titleDescription: string;
+  titleDescription?: string;
+  titleDescriptionId?: string;
   items: SocialMediaItem[];
   socialLinks: { label: string; href: string }[];
 }
 
 export default function SocialGallerySection({
   titleDescription,
+  titleDescriptionId,
   items,
   socialLinks,
 }: SocialGallerySectionProps) {
+  const { language, t } = useLanguage();
+
+  // Use language-specific description or fallback
+  const description =
+    language === "id"
+      ? titleDescriptionId || titleDescription
+      : titleDescription;
+
   return (
     <section className="bg-black text-white px-6 py-16 md:py-24 border-t border-white/10 dark:bg-white dark:text-black">
       <div className="max-w-[1400px] mx-auto">
@@ -27,13 +40,13 @@ export default function SocialGallerySection({
         {/* 1. Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <p className="max-w-md text-md md:text-lg text-white font-normal leading-relaxed dark:text-black italic">
-            {titleDescription}
+            {description}
           </p>
           <Link
-            href="#"
+            href="/design"
             className="group flex items-center gap-1 text-sm font-medium uppercase tracking-wider border-b border-transparent hover:border-white transition-all pb-1 "
           >
-            See Social
+            {t("seeSocial")}
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
           </Link>
         </div>
@@ -49,12 +62,12 @@ export default function SocialGallerySection({
         {/* 3. Big Typography Divider */}
         <div className="flex items-center justify-between w-full mb-20 overflow-hidden">
           <h2 className="text-[12vw] md:text-[8vw] leading-none font-normal tracking-tight">
-            OUR
+            {language === "id" ? t("socialText") : t("ourSocial")}
           </h2>
           {/* Garis pemisah yang responsif */}
-          <div className="flex-grow mx-4 md:mx-12 h-[1px] bg-white/30 self-center dark:bg-black"></div>
+          <div className="grow mx-4 md:mx-12 h-px bg-white/30 self-center dark:bg-black"></div>
           <h2 className="text-[12vw] md:text-[8vw] leading-none font-normal tracking-tight text-right">
-            SOCIAL
+            {language === "id" ? t("ourSocial") : t("socialText")}
           </h2>
         </div>
 
@@ -63,13 +76,12 @@ export default function SocialGallerySection({
           {/* Left: Newsletter */}
           <div className="space-y-6">
             <p className="text-white text-sm max-w-sm uppercase tracking-wide dark:text-black">
-              Subscribe to our newsletter and receive more information about our
-              world and products.
+              {t("subscribeDescription")}
             </p>
             <form className="flex items-center border-b border-white/30 py-4 max-w-md group focus-within:border-white transition-colors">
               <input
                 type="email"
-                placeholder="SUBSCRIBE"
+                placeholder={t("subscribePlaceholder")}
                 className="bg-transparent border-none outline-none text-white placeholder-white/70 w-full text-sm tracking-wider uppercase dark:text-black dark:placeholder-black"
               />
               <button
@@ -85,30 +97,36 @@ export default function SocialGallerySection({
           <div className="grid grid-cols-2 gap-x-12 gap-y-4 md:justify-self-end text-sm text-gray-400">
             <div className="space-y-4 flex flex-col">
               <span className="text-white uppercase tracking-wider mb-2 dark:text-black font-bold ">
-                Menu
+                {t("menu")}
               </span>
               <Link
-                href="#"
+                href="/services"
                 className="hover:text-white dark:hover:text-black transition-colors"
               >
-                Services
+                {t("services")}
               </Link>
               <Link
-                href="#"
+                href="/project"
                 className="hover:text-white dark:hover:text-black transition-colors"
               >
-                Work
+                {t("Project")}
               </Link>
               <Link
-                href="#"
+                href="/about"
                 className="hover:text-white dark:hover:text-black transition-colors"
               >
-                About
+                {t("about")}
+              </Link>
+              <Link
+                href="/contact"
+                className="hover:text-white dark:hover:text-black transition-colors"
+              >
+                {t("contact")}
               </Link>
             </div>
             <div className="space-y-4 flex flex-col">
               <span className="text-white uppercase tracking-wider mb-2 dark:text-black font-bold">
-                Follow Us
+                {t("followUs")}
               </span>
               {socialLinks.map((link, idx) => (
                 <Link

@@ -1,58 +1,109 @@
 export type FAQItem = {
-  question: string;
-  answer: string;
+  question: { en: string; id: string };
+  answer: { en: string; id: string };
 };
 
 export type FAQCategoryData = {
-  id: string; // ID unik untuk anchor link (scroll)
-  title: string;
+  id: string;
+  title: { en: string; id: string };
   items: FAQItem[];
 };
 
 export const faqData: FAQCategoryData[] = [
   {
     id: "about",
-    title: "About the brand",
+    title: {
+      en: "About the brand",
+      id: "Tentang brand",
+    },
     items: [
       {
-        question: "What is Beautify and what makes it unique?",
-        answer: "Beautify is a skincare and suncare brand dedicated to transparency, simplicity, and self-love. We create products that feel gentle, perform beautifully, and speak honestly to your skin's needs.",
+        question: {
+          en: "What is Beautify and what makes it unique?",
+          id: "Apa itu Beautify dan apa yang membuatnya unik?",
+        },
+        answer: {
+          en: "Beautify is a skincare and suncare brand dedicated to transparency, simplicity, and self-love. We create products that feel gentle, perform beautifully, and speak honestly to your skin's needs.",
+          id: "Beautify adalah brand skincare dan suncare yang berdedikasi pada transparansi, kesederhanaan, dan cinta diri. Kami menciptakan produk yang terasa lembut, bekerja dengan baik, dan berbicara jujur untuk kebutuhan kulit Anda.",
+        },
       },
       {
-        question: "Where is Beautify based and manufactured?",
-        answer: "We are based in Seoul, South Korea, and all our products are manufactured in GMP-certified facilities.",
+        question: {
+          en: "Where is Beautify based and manufactured?",
+          id: "Di mana Beautify berbasis dan diproduksi?",
+        },
+        answer: {
+          en: "We are based in Seoul, South Korea, and all our products are manufactured in GMP-certified facilities.",
+          id: "Kami berbasis di Seoul, Korea Selatan, dan semua produk kami diproduksi di fasilitas bersertifikat GMP.",
+        },
       },
       {
-        question: "Who is Beautify for?",
-        answer: "Our products are designed for everyone, regardless of gender or skin type, focusing on barrier repair and hydration.",
+        question: {
+          en: "Who is Beautify for?",
+          id: "Untuk siapa Beautify?",
+        },
+        answer: {
+          en: "Our products are designed for everyone, regardless of gender or skin type, focusing on barrier repair and hydration.",
+          id: "Produk kami dirancang untuk semua orang, tanpa memandang gender atau jenis kulit, dengan fokus pada perbaikan barrier dan hidrasi.",
+        },
       },
     ],
   },
   {
     id: "sustainability",
-    title: "Sustainability",
+    title: {
+      en: "Sustainability",
+      id: "Keberlanjutan",
+    },
     items: [
       {
-        question: "Is Beautify cruelty-free?",
-        answer: "Yes, we are 100% cruelty-free and vegan certified.",
+        question: {
+          en: "Is Beautify cruelty-free?",
+          id: "Apakah Beautify bebas kekejaman?",
+        },
+        answer: {
+          en: "Yes, we are 100% cruelty-free and vegan certified.",
+          id: "Ya, kami 100% bebas kekejaman dan bersertifikat vegan.",
+        },
       },
       {
-        question: "Is your packaging sustainable?",
-        answer: "We use recycled glass and FSC-certified paper for all our packaging.",
+        question: {
+          en: "Is your packaging sustainable?",
+          id: "Apakah kemasan Anda berkelanjutan?",
+        },
+        answer: {
+          en: "We use recycled glass and FSC-certified paper for all our packaging.",
+          id: "Kami menggunakan kaca daur ulang dan kertas bersertifikat FSC untuk semua kemasan kami.",
+        },
       },
     ],
   },
   {
     id: "ingredients",
-    title: "Ingredients & safety",
+    title: {
+      en: "Ingredients & safety",
+      id: "Bahan & keamanan",
+    },
     items: [
       {
-        question: "Are Beautify products safe for sensitive skin?",
-        answer: "Absolutely. All formulas are dermatologically tested and hypoallergenic.",
+        question: {
+          en: "Are Beautify products safe for sensitive skin?",
+          id: "Apakah produk Beautify aman untuk kulit sensitif?",
+        },
+        answer: {
+          en: "Absolutely. All formulas are dermatologically tested and hypoallergenic.",
+          id: "Tentu saja. Semua formula telah diuji secara dermatologis dan hipoalergenik.",
+        },
       },
       {
-        question: "Do your products contain fragrance?",
-        answer: "No, our entire line is fragrance-free and essential oil-free.",
+        question: {
+          en: "Do your products contain fragrance?",
+          id: "Apakah produk Anda mengandung pewangi?",
+        },
+        answer: {
+          en: "No, our entire line is fragrance-free and essential oil-free.",
+          id: "Tidak, seluruh lini produk kami bebas pewangi dan bebas minyak esensial.",
+        },
       },
     ],
   },

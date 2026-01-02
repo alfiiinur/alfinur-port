@@ -30,6 +30,7 @@ import {
   Brackets,
   Camera,
   LibraryBig,
+  Activity,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,11 @@ const menuGroups: MenuGroup[] = [
         icon: FileText,
         subItems: [
           { label: "All Blogs", href: "/dashboard/blogs", icon: File },
+          {
+            label: "Sections",
+            href: "/dashboard/blogs/sections",
+            icon: FolderKanban,
+          },
           {
             label: "Comments",
             href: "/dashboard/comments",
@@ -167,6 +173,7 @@ const menuGroups: MenuGroup[] = [
           },
         ],
       },
+      { href: "/dashboard/performance", label: "Performance", icon: Activity },
     ],
   },
 ];

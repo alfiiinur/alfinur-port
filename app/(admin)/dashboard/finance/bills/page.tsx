@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import BillModal from "./components/BillModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Bill {
   id: string;
@@ -71,6 +72,14 @@ export default function BillsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBill, setEditingBill] = useState<Bill | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    bill: Bill | null;
+  }>({
+    open: false,
+    bill: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchBills();
@@ -87,13 +96,19 @@ export default function BillsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this bill?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.bill) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/finance/bills/${id}`, { method: "DELETE" });
-      if (res.ok) setBills(bills.filter((b) => b.id !== id));
+      const res = await fetch(`/api/finance/bills/${deleteModal.bill.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) setBills(bills.filter((b) => b.id !== deleteModal.bill!.id));
     } catch (error) {
       console.error("Failed to delete:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, bill: null });
     }
   };
 
@@ -677,7 +692,7 @@ export default function BillsPage() {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDelete(bill.id)}
+                          onClick={() => setDeleteModal({ open: true, bill })}
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -707,6 +722,18 @@ export default function BillsPage() {
           setModalOpen(false);
           fetchBills();
         }}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, bill: open ? deleteModal.bill : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Bill"
+        itemName={deleteModal.bill?.name}
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Search,
@@ -13,9 +13,15 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import ProjectHero from "./ProjectHero";
 import AnimatedSections from "./AnimatedSections";
 import { Highlighter } from "@/components/ui/highlighter";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register GSAP plugins
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface Project {
   id: string;
@@ -44,6 +50,11 @@ export default function ProjectsPage({
   const [activeCategory, setActiveCategory] = useState("All");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
+  const clearFilters = () => {
+    setSearchQuery("");
+    setActiveCategory("All");
+  };
+
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       const matchesSearch =
@@ -62,28 +73,16 @@ export default function ProjectsPage({
 
   return (
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white overflow-x-hidden">
+      <AnimatedSections />
       {/* Hero Section with Carousel */}
-      <ProjectHero />
+      {/* <ProjectHero projects={projects} /> */}
 
       {/* Animated Continuous Sections */}
-      <AnimatedSections />
-      <p className="mt-10 mx-5 text-4xl font-bold md:text-5xl leading-[1.3]">
-        <Highlighter action="underline" color="#E03D1B">
-          <span className="text-red-400 italic">Explore my portfolio</span>
-        </Highlighter>
-        where creativity meets technology. Every project showcases my dedication
-        to building innovative that
-        <Highlighter action="circle" color="#61FF74">
-          <span className="text-green-400 italic"> solve real problems</span>
-        </Highlighter>
-        and deliver exceptional{" "}
-        <Highlighter action="box" color="#30A2F2">
-          <span className="text-blue-400 italic">user experiences.</span>
-        </Highlighter>
-      </p>
+      {/* Animated Text Section with Sticky Scroll */}
+      <AnimatedTextSection />
 
       {/* Filter Section */}
-      <section className="py-12 px-4 border-t border-white/10 relative z-10">
+      <section className="py-12 px-4 border-t border-gray-200 dark:border-white/10 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Search & Filter */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
@@ -91,19 +90,19 @@ export default function ProjectsPage({
             <div className="relative w-full lg:w-80">
               <Search
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-3 rounded-full bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full pl-12 pr-12 py-3 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-white/20 transition-colors"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-white cursor-pointer"
                 >
                   <X size={18} />
                 </button>
@@ -118,8 +117,8 @@ export default function ProjectsPage({
                   onClick={() => setActiveCategory(cat)}
                   className={`px-5 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
                     activeCategory === cat
-                      ? "bg-white text-black"
-                      : "bg-white/5 text-white/70 hover:bg-white/10"
+                      ? "bg-black text-white dark:bg-white dark:text-black"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
                   }`}
                 >
                   {cat}
@@ -128,13 +127,13 @@ export default function ProjectsPage({
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-full p-1">
+            <div className="flex items-center gap-2 p-1">
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2 rounded-full transition-all cursor-pointer ${
                   viewMode === "list"
-                    ? "bg-white text-black"
-                    : "text-white/70 hover:text-white"
+                    ? "bg-black text-white dark:bg-white dark:text-black"
+                    : "text-gray-500 hover:text-gray-700 dark:text-white/70 dark:hover:text-white"
                 }`}
                 title="List View"
                 type="button"
@@ -145,8 +144,8 @@ export default function ProjectsPage({
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded-full transition-all cursor-pointer ${
                   viewMode === "grid"
-                    ? "bg-white text-black"
-                    : "text-white/70 hover:text-white"
+                    ? "bg-black text-white dark:bg-white dark:text-black"
+                    : "text-gray-500 hover:text-gray-700 dark:text-white/70 dark:hover:text-white"
                 }`}
                 title="Grid View"
                 type="button"
@@ -156,11 +155,48 @@ export default function ProjectsPage({
             </div>
           </div>
 
-          {/* Results Count */}
-          <p className="text-sm text-gray-500 border-b border-white/10 pb-4">
-            Showing {filteredProjects.length} project
-            {filteredProjects.length !== 1 ? "s" : ""}
-          </p>
+          {/* Results Count & Active Filters */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-500">
+              Showing {filteredProjects.length} project
+              {filteredProjects.length !== 1 ? "s" : ""}
+            </p>
+
+            {/* Active Filters Display */}
+            {(activeCategory !== "All" || searchQuery) && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-gray-400">Active filters:</span>
+                {activeCategory !== "All" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+                    {activeCategory}
+                    <button
+                      onClick={() => setActiveCategory("All")}
+                      className="hover:text-blue-900 dark:hover:text-blue-100"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">
+                    &quot;{searchQuery}&quot;
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="hover:text-purple-900 dark:hover:text-purple-100"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-white underline"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -171,22 +207,7 @@ export default function ProjectsPage({
           {filteredProjects.length > 0 ? (
             <AnimatePresence mode="wait">
               {viewMode === "list" ? (
-                <motion.div
-                  key="list"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-0"
-                >
-                  {filteredProjects.map((project, index) => (
-                    <ProjectRow
-                      key={project.id}
-                      project={project}
-                      index={index + 1}
-                    />
-                  ))}
-                </motion.div>
+                <ProjectList projects={filteredProjects} />
               ) : (
                 <motion.div
                   key="grid"
@@ -227,260 +248,499 @@ export default function ProjectsPage({
   );
 }
 
-// Fixed popup position configurations
-const popupPositionConfigs = [
-  [
-    { top: "-60px", left: "10%", rotate: -8 },
-    { top: "-80px", right: "15%", rotate: 12 },
-    { bottom: "-70px", left: "5%", rotate: 10 },
-  ],
-  [
-    { bottom: "-60px", right: "10%", rotate: -6 },
-    { top: "20%", left: "-80px", rotate: -12 },
-  ],
-  [
-    { top: "30%", right: "-70px", rotate: 8 },
-    { top: "-60px", left: "10%", rotate: -8 },
-    { bottom: "-70px", right: "5%", rotate: 10 },
-  ],
-  [
-    { top: "-80px", left: "15%", rotate: 12 },
-    { bottom: "-60px", left: "10%", rotate: -6 },
-  ],
-  [
-    { top: "20%", right: "-80px", rotate: -12 },
-    { bottom: "-70px", left: "5%", rotate: 10 },
-    { top: "-60px", right: "10%", rotate: -8 },
-  ],
-];
+// Animated Text Section with Sticky Scroll Effect
+function AnimatedTextSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Text content split into segments for animation
+  const textSegments = [
+    {
+      text: "Explore my portfolio",
+      highlight: "underline" as const,
+      color: "#E03D1B",
+      textColor: "text-red-400",
+    },
+    {
+      text: "where creativity meets technology. Every project showcases my dedication to building innovative that",
+      highlight: null,
+      color: null,
+      textColor: null,
+    },
+    {
+      text: "solve real problems",
+      highlight: "circle" as const,
+      color: "#61FF74",
+      textColor: "text-green-400",
+    },
+    {
+      text: "and deliver exceptional",
+      highlight: null,
+      color: null,
+      textColor: null,
+    },
+    {
+      text: "user experiences.",
+      highlight: "box" as const,
+      color: "#30A2F2",
+      textColor: "text-blue-400",
+    },
+  ];
+
+  useEffect(() => {
+    if (!sectionRef.current || !textContainerRef.current) return;
+
+    const words = wordsRef.current.filter(Boolean) as HTMLSpanElement[];
+
+    // Set initial state - all words hidden
+    gsap.set(words, {
+      opacity: 0,
+      y: 40,
+      filter: "blur(10px)",
+    });
+
+    // Create scroll-triggered animation
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 80%",
+        end: "top 20%",
+        scrub: 1,
+      },
+    });
+
+    // Animate each word sequentially
+    words.forEach((word, index) => {
+      tl.to(
+        word,
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        index * 0.03
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  // Split text into words and create refs
+  let wordIndex = 0;
+  const renderTextSegments = () => {
+    return textSegments.map((segment, segmentIndex) => {
+      const words = segment.text.split(" ").filter((w) => w);
+
+      return (
+        <span key={segmentIndex}>
+          {words.map((word, i) => {
+            const currentIndex = wordIndex++;
+            const isHighlighted = segment.highlight !== null;
+
+            return (
+              <span
+                key={`${segmentIndex}-${i}`}
+                ref={(el) => {
+                  wordsRef.current[currentIndex] = el;
+                }}
+                className={`inline-block mr-[0.25em] ${
+                  segment.textColor || ""
+                } ${isHighlighted ? "italic" : ""}`}
+              >
+                {isHighlighted ? (
+                  <Highlighter
+                    action={segment.highlight!}
+                    color={segment.color || undefined}
+                  >
+                    <span>{word}</span>
+                  </Highlighter>
+                ) : (
+                  word
+                )}
+              </span>
+            );
+          })}
+        </span>
+      );
+    });
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative min-h-[40vh] md:min-h-[50vh] flex items-center py-16 md:py-24"
+    >
+      <div ref={textContainerRef} className="max-w-7xl mx-auto px-5">
+        <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.5] md:leading-[1.4]">
+          {renderTextSegments()}
+        </p>
+      </div>
+    </section>
+  );
+}
 
 // Helper function to check if URL is a video
 function isVideo(url: string) {
   return url?.match(/\.(mp4|webm|ogg|mov)$/i);
 }
 
-// Individual Project Row with Scroll Trigger Animation - Large Version
-function ProjectRow({ project, index }: { project: Project; index: number }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const thumbnailIsVideo = isVideo(project.thumbnail);
+// Project List Container - manages hover state for all rows
+function ProjectList({ projects }: { projects: Project[] }) {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Get popup config based on index and use project's gallery (media) images
-  const popups = useMemo(() => {
-    const configIndex = (index - 1) % popupPositionConfigs.length;
-    const positions = popupPositionConfigs[configIndex];
+  const handleHover = useCallback(
+    (id: string | null) => {
+      // Prevent spam - only allow hover change if not animating
+      if (isAnimating && id !== null) return;
 
-    // Use project's media array (gallery), fallback to images, then thumbnail
-    const projectImages =
-      project.media?.length > 0
-        ? project.media.filter(
-            (m) =>
-              !m.includes(".mp4") && !m.includes(".mov") && !m.includes(".webm")
-          ) // Filter out videos
-        : project.images?.length > 0
-        ? project.images
-        : [project.thumbnail];
+      setHoveredId(id);
+      if (id !== null) {
+        setIsAnimating(true);
+        // Reset animating state after animation completes
+        setTimeout(() => setIsAnimating(false), 600);
+      }
+    },
+    [isAnimating]
+  );
 
-    // Only show popups if we have images
-    if (!projectImages || projectImages.length === 0) return [];
+  return (
+    <motion.div
+      ref={containerRef}
+      key="list"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-0"
+    >
+      {projects.map((project, index) => (
+        <ProjectRow
+          key={project.id}
+          project={project}
+          index={index + 1}
+          isHovered={hoveredId === project.id}
+          isOtherHovered={hoveredId !== null && hoveredId !== project.id}
+          onHover={handleHover}
+        />
+      ))}
+    </motion.div>
+  );
+}
 
-    // Max 3 popup images
-    const maxPopups = 3;
-    const numPopups = Math.min(
-      maxPopups,
-      positions.length,
-      projectImages.length
-    );
+// Simple List Row Component with GSAP Wave Animation
+function ProjectRow({
+  project,
+  index,
+  isHovered,
+  isOtherHovered,
+  onHover,
+}: {
+  project: Project;
+  index: number;
+  isHovered: boolean;
+  isOtherHovered: boolean;
+  onHover: (id: string | null) => void;
+}) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const waveRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const imagePopupRef = useRef<HTMLDivElement>(null);
+  const [showImage, setShowImage] = useState(false);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const floatAnimationRef = useRef<gsap.core.Tween | null>(null);
+  const mousePos = useRef({ x: 0, y: 0 });
 
-    return positions.slice(0, numPopups).map((pos, i) => ({
-      ...pos,
-      delay: i * 0.08,
-      image: projectImages[i % projectImages.length],
-    }));
-  }, [index, project.media, project.images, project.thumbnail]);
+  // Get image from project (use index-based selection instead of random)
+  const projectImage = useMemo(() => {
+    const images =
+      project.media?.filter(
+        (m) =>
+          !m.includes(".mp4") && !m.includes(".mov") && !m.includes(".webm")
+      ) ||
+      project.images ||
+      [];
+    if (images.length > 0) {
+      return images[index % images.length];
+    }
+    return project.thumbnail;
+  }, [project.media, project.images, project.thumbnail, index]);
 
-  const handleVideoHover = (e: React.MouseEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    video.play();
-    setIsVideoPlaying(true);
-  };
+  // Start floating animation when image is shown
+  useEffect(() => {
+    if (showImage && imagePopupRef.current) {
+      // Create smooth floating/swaying animation
+      floatAnimationRef.current = gsap.to(imagePopupRef.current, {
+        x: "+=15",
+        y: "+=8",
+        rotation: 3,
+        duration: 2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+    }
 
-  const handleVideoLeave = (e: React.MouseEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    video.pause();
-    video.currentTime = 0;
-    setIsVideoPlaying(false);
-  };
+    return () => {
+      if (floatAnimationRef.current) {
+        floatAnimationRef.current.kill();
+      }
+    };
+  }, [showImage]);
+
+  // Handle mouse move to update image position
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!rowRef.current || !imagePopupRef.current || !showImage) return;
+
+      const rect = rowRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      mousePos.current = { x, y };
+
+      // Smooth follow mouse with offset - more fluid movement
+      gsap.to(imagePopupRef.current, {
+        left: x + 20,
+        top: y - 100,
+        duration: 0.4,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    },
+    [showImage]
+  );
+
+  // Run animation when hover state changes
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent) => {
+      onHover(project.id);
+
+      if (!rowRef.current || !waveRef.current || !contentRef.current) return;
+
+      // Get initial mouse position
+      const rect = rowRef.current.getBoundingClientRect();
+      mousePos.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+
+      // Kill any existing animation
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+
+      // Create new timeline
+      const tl = gsap.timeline();
+      timelineRef.current = tl;
+
+      // Lift effect first
+      tl.to(
+        rowRef.current,
+        {
+          y: -12,
+          scale: 1.01,
+          zIndex: 50,
+          duration: 0.3,
+          ease: "power2.out",
+        },
+        0
+      );
+
+      // Wave animation with wavy clipPath effect
+      tl.fromTo(
+        waveRef.current,
+        {
+          clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)",
+        },
+        {
+          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+          duration: 0.5,
+          ease: "power3.out",
+          onComplete: () => {
+            setShowImage(true);
+            // Animate popup image - blip effect from mouse position
+            if (imagePopupRef.current) {
+              gsap.fromTo(
+                imagePopupRef.current,
+                {
+                  scale: 0,
+                  opacity: 0,
+                  left: mousePos.current.x,
+                  top: mousePos.current.y - 40,
+                  filter: "blur(10px)",
+                },
+                {
+                  scale: 1,
+                  opacity: 1,
+                  left: mousePos.current.x + 20,
+                  top: mousePos.current.y - 100,
+                  filter: "blur(0px)",
+                  duration: 0.5,
+                  ease: "elastic.out(1, 0.5)",
+                }
+              );
+            }
+          },
+        },
+        0.1
+      );
+    },
+    [onHover, project.id]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    onHover(null);
+
+    if (!rowRef.current || !waveRef.current) return;
+
+    // Kill any existing animation
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
+    if (floatAnimationRef.current) {
+      floatAnimationRef.current.kill();
+    }
+
+    // Hide popup image with blip out effect
+    if (imagePopupRef.current && showImage) {
+      // Get current position for smooth exit
+      const currentLeft = gsap.getProperty(
+        imagePopupRef.current,
+        "left"
+      ) as number;
+      const currentTop = gsap.getProperty(
+        imagePopupRef.current,
+        "top"
+      ) as number;
+
+      gsap.to(imagePopupRef.current, {
+        scale: 0,
+        opacity: 0,
+        left: currentLeft - 10,
+        top: currentTop + 30,
+        filter: "blur(8px)",
+        rotation: -5,
+        duration: 0.3,
+        ease: "back.in(2)",
+        onComplete: () => setShowImage(false),
+      });
+    }
+
+    // Wave animation reverse (from right to left)
+    gsap.to(waveRef.current, {
+      clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+      duration: 0.4,
+      ease: "power2.in",
+    });
+
+    // Reset lift
+    gsap.to(rowRef.current, {
+      y: 0,
+      scale: 1,
+      zIndex: 1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  }, [onHover, showImage]);
 
   return (
     <Link href={`/projects/${project.slug}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 80 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="group relative py-12 md:py-20 border-b border-white/10 cursor-pointer"
+      <div
+        ref={rowRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+        className={`group relative grid grid-cols-12 gap-4 py-5 border-b border-gray-200 dark:border-white/10 cursor-pointer px-4 -mx-4 rounded-lg overflow-visible transition-opacity duration-300 ${
+          isOtherHovered ? "opacity-30" : "opacity-100"
+        }`}
+        style={{ position: "relative" }}
       >
-        {/* Popup Images on Hover - Hidden on mobile */}
-        <AnimatePresence>
-          {isHovered && (
-            <>
-              {popups.map((popup, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.5, rotate: popup.rotate }}
-                  animate={{ opacity: 1, scale: 1, rotate: popup.rotate }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{
-                    duration: 0.35,
-                    delay: popup.delay,
-                    ease: [0.25, 0.1, 0.25, 1],
-                  }}
-                  className="absolute z-50 hidden lg:block pointer-events-none"
-                  style={{
-                    top: popup.top,
-                    bottom: popup.bottom,
-                    left: popup.left,
-                    right: popup.right,
-                  }}
-                >
-                  <div className="relative w-28 h-28 xl:w-36 xl:h-36 rounded-xl overflow-hidden shadow-2xl ring-2 ring-white/20">
-                    <Image
-                      src={popup.image}
-                      alt="Gallery"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </>
-          )}
-        </AnimatePresence>
+        {/* Wave Background with wavy shape */}
+        <div
+          ref={waveRef}
+          className="absolute inset-0 bg-black dark:bg-white rounded-lg z-0"
+          style={{
+            clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)",
+          }}
+        />
 
-        {/* Top Row: Number & Category */}
-        <div className="flex items-center justify-between mb-6">
-          <motion.span
-            initial={{ opacity: 0.5 }}
-            animate={{ opacity: isHovered ? 1 : 0.5 }}
-            className="text-2xl md:text-4xl font-black text-gray-600 transition-colors"
-          >
-            {String(index).padStart(2, "0")}
-          </motion.span>
-          <motion.span
-            initial={{ x: 0 }}
-            animate={{ x: isHovered ? -10 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-xs md:text-sm font-bold uppercase tracking-widest text-gray-400"
-          >
-            {project.category}
-          </motion.span>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Large Thumbnail - Now supports video */}
-          <motion.div
-            animate={{ scale: isHovered ? 1.02 : 1 }}
-            transition={{ duration: 0.5 }}
-            className="relative aspect-video lg:aspect-4/3 rounded-2xl overflow-hidden bg-gray-900"
-          >
-            {project.thumbnail ? (
-              thumbnailIsVideo ? (
-                <>
-                  <video
-                    src={project.thumbnail}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    muted
-                    loop
-                    playsInline
-                    onMouseOver={handleVideoHover}
-                    onMouseOut={handleVideoLeave}
-                  />
-                  {/* Video Badge */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs z-10">
-                    <Video className="w-3 h-3" />
-                    Video
-                  </div>
-                  {/* Play indicator when not playing */}
-                  {!isVideoPlaying && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                      <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                        <Play className="w-8 h-8 text-white ml-1" />
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <Image
-                  src={project.thumbnail}
-                  alt={project.title}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-              )
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-600">
-                <span className="text-6xl">📁</span>
-              </div>
-            )}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              className="absolute inset-0 bg-black/20"
-            />
-
-            {/* Hover Arrow Overlay - Only this has green color */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{
-                opacity: isHovered ? 1 : 0,
-                scale: isHovered ? 1 : 0.8,
-              }}
-              transition={{ duration: 0.3 }}
-              className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#C4F135] flex items-center justify-center z-20"
+        {/* Content */}
+        <div
+          ref={contentRef}
+          className={`col-span-12 grid grid-cols-12 gap-4 relative z-10 transition-colors duration-300 ${
+            isHovered
+              ? "text-white dark:text-black"
+              : "text-gray-900 dark:text-white"
+          }`}
+        >
+          {/* Number */}
+          <div className="col-span-1 flex items-center">
+            <span
+              className={`text-sm font-bold transition-colors duration-300 ${
+                isHovered
+                  ? "text-white/70 dark:text-black/70"
+                  : "text-gray-400 dark:text-gray-600"
+              }`}
             >
-              <ArrowUpRight size={24} className="text-black" />
-            </motion.div>
-          </motion.div>
+              {String(index).padStart(2, "0")}
+            </span>
+          </div>
 
-          {/* Title & Description */}
-          <div className="flex flex-col justify-center relative z-10">
-            <motion.h3
-              initial={{ x: 0 }}
-              animate={{ x: isHovered ? 20 : 0 }}
-              transition={{ duration: 0.4, delay: 0.05 }}
-              className="text-3xl md:text-5xl lg:text-6xl font-black uppercase leading-[0.95] mb-6 transition-colors"
+          {/* Category */}
+          <div className="col-span-2 flex items-center">
+            <span
+              className={`text-xs font-medium uppercase tracking-wider px-2 py-1 rounded transition-colors duration-300 ${
+                isHovered
+                  ? "bg-white/20 dark:bg-black/20 text-white dark:text-black"
+                  : "text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/10"
+              }`}
+            >
+              {project.category}
+            </span>
+          </div>
+
+          {/* Title */}
+          <div className="col-span-3 flex items-center">
+            <h3
+              className={`font-semibold transition-colors duration-300 line-clamp-1 ${
+                isHovered
+                  ? "text-white dark:text-black"
+                  : "text-gray-900 dark:text-white"
+              }`}
             >
               {project.title}
-            </motion.h3>
+            </h3>
+          </div>
 
-            <motion.p
-              initial={{ opacity: 0.6 }}
-              animate={{ opacity: isHovered ? 1 : 0.6 }}
-              className="text-base md:text-lg text-gray-400 leading-relaxed mb-6 max-w-lg"
+          {/* Description */}
+          <div className="col-span-3 flex items-center">
+            <p
+              className={`text-sm transition-colors duration-300 line-clamp-1 ${
+                isHovered
+                  ? "text-white/80 dark:text-black/80"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
             >
               {project.description}
-            </motion.p>
+            </p>
+          </div>
 
-            {/* Tags */}
-            {project.tags && project.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.slice(0, 4).map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Date & Client */}
-            <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-gray-500">
+          {/* Date & Client */}
+          <div className="col-span-2 flex items-center gap-2">
+            <div
+              className={`text-xs transition-colors duration-300 ${
+                isHovered
+                  ? "text-white/70 dark:text-black/70"
+                  : "text-gray-400 dark:text-gray-500"
+              }`}
+            >
               {project.createdAt && (
                 <span>
                   {new Date(project.createdAt).toLocaleDateString("en-US", {
@@ -490,28 +750,54 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
                 </span>
               )}
               {project.client && (
-                <>
-                  <span className="w-1 h-1 rounded-full bg-gray-500" />
-                  <span>Client: {project.client}</span>
-                </>
+                <span className="block truncate">{project.client}</span>
               )}
             </div>
+          </div>
 
-            <motion.div
-              initial={{ x: 0, opacity: 0.5 }}
-              animate={{
-                x: isHovered ? 20 : 0,
-                opacity: isHovered ? 1 : 0.5,
-              }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center gap-3 text-base font-bold uppercase tracking-wider"
-            >
-              <span>View Project</span>
-              <ArrowUpRight size={20} />
-            </motion.div>
+          {/* Tags & Arrow */}
+          <div className="col-span-1 flex items-center justify-end gap-2">
+            {project.tags && project.tags.length > 0 && (
+              <span
+                className={`text-xs hidden lg:block transition-colors duration-300 ${
+                  isHovered
+                    ? "text-white/70 dark:text-black/70"
+                    : "text-gray-400 dark:text-gray-500"
+                }`}
+              >
+                {project.tags.length} tags
+              </span>
+            )}
+            <ArrowUpRight
+              size={16}
+              className={`transition-colors duration-300 ${
+                isHovered ? "text-[#C4F135]" : "text-gray-400"
+              }`}
+            />
           </div>
         </div>
-      </motion.div>
+
+        {/* Popup Image - Follows Mouse with Floating Animation */}
+        {showImage && projectImage && (
+          <div
+            ref={imagePopupRef}
+            className="absolute z-[100] pointer-events-none hidden lg:block"
+            style={{
+              left: 0,
+              top: 0,
+            }}
+          >
+            <div className="relative w-40 h-48 xl:w-48 xl:h-56 rounded-xl overflow-hidden shadow-2xl ring-2 ring-white/20 dark:ring-black/20">
+              <Image
+                src={projectImage}
+                alt={project.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </Link>
   );
 }

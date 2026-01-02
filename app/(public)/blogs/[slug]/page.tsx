@@ -6,6 +6,8 @@ import RelatedPosts from "./components/RelatedPosts";
 import CommentSection from "./components/CommentSection";
 import ViewCounter from "./components/ViewCounter";
 import PostNavigation from "@/components/public/shared/PostNavigation";
+import BlogSectionSidebar from "./components/BlogSectionSidebar";
+import TableOfContents from "./components/TableOfContents";
 
 interface BlogDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -14,7 +16,32 @@ interface BlogDetailPageProps {
 async function getBlog(slug: string) {
   return prisma.blog.findUnique({
     where: { slug, published: true },
-    include: { author: { select: { name: true } } },
+    include: {
+      author: { select: { name: true } },
+      section: true,
+    },
+  });
+}
+
+async function getBlogSections() {
+  return prisma.blogSection.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+    include: {
+      blogs: {
+        where: { published: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, title: true, slug: true },
+      },
+    },
+  });
+}
+
+async function getUncategorizedBlogs() {
+  return prisma.blog.findMany({
+    where: { published: true, sectionId: null },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, title: true, slug: true },
   });
 }
 
@@ -58,7 +85,12 @@ export async function generateMetadata({ params }: BlogDetailPageProps) {
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { slug } = await params;
-  const post = await getBlog(slug);
+  const [post, sections, uncategorizedBlogs] = await Promise.all([
+    getBlog(slug),
+    getBlogSections(),
+    getUncategorizedBlogs(),
+  ]);
+
   if (!post) notFound();
 
   const [relatedPosts, { previous, next }] = await Promise.all([
@@ -67,27 +99,55 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   ]);
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-16 md:py-24">
-        <BlogDetailHero post={post} />
+    <div className="min-h-screen bg-background">
+      <div className="flex">
+        {/* Left Sidebar - Blog Sections */}
+        <BlogSectionSidebar
+          sections={sections}
+          uncategorizedBlogs={uncategorizedBlogs}
+          currentSlug={slug}
+        />
 
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-3 sm:mb-4">
-            <ViewCounter slug={slug} />
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+          <div className="flex">
+            <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+              <BlogDetailHero post={post} />
+
+              <div className="max-w-3xl mx-auto">
+                <div className="mb-3 sm:mb-4">
+                  <ViewCounter slug={slug} />
+                </div>
+                <BlogDetailContent post={post} />
+                <CommentSection blogId={post.id} />
+
+                {/* Previous/Next Navigation */}
+                <PostNavigation
+                  previous={previous}
+                  next={next}
+                  basePath="/blogs"
+                />
+              </div>
+
+              {/* Related Posts */}
+              {relatedPosts.length > 0 && (
+                <div className="max-w-5xl mx-auto mt-12">
+                  <RelatedPosts
+                    posts={relatedPosts}
+                    authorName={post.author.name}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Right Sidebar - Table of Contents */}
+            <aside className="hidden lg:block w-48 xl:w-56 shrink-0 pr-4 py-8">
+              <div className="sticky top-20">
+                <TableOfContents content={post.content} />
+              </div>
+            </aside>
           </div>
-          <BlogDetailContent post={post} />
-          <CommentSection blogId={post.id} />
-
-          {/* Previous/Next Navigation */}
-          <PostNavigation previous={previous} next={next} basePath="/blogs" />
-        </div>
-
-        {/* Related Posts - Full Width */}
-        <div className="max-w-6xl mx-auto">
-          {relatedPosts.length > 0 && (
-            <RelatedPosts posts={relatedPosts} authorName={post.author.name} />
-          )}
-        </div>
+        </main>
       </div>
     </div>
   );

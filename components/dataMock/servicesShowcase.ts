@@ -1,47 +1,88 @@
 export interface ShowcaseItem {
   id: string;
-  title: string;
-  category: string;
-  image?: string;
+  title: { en: string; id: string };
+  category: { en: string; id: string };
   bgColor: string;
   size: "small" | "medium" | "large";
+  media?: string;
+  mediaType?: "image" | "video";
 }
 
 export const showcaseItems: ShowcaseItem[] = [
   {
     id: "brand-strategy",
-    title: "Brand Strategy & Identity",
-    category: "Branding",
+    title: {
+      en: "Brand Strategy & Identity",
+      id: "Strategi & Identitas Merek",
+    },
+    category: {
+      en: "Branding",
+      id: "Branding",
+    },
     bgColor: "bg-slate-800",
     size: "small",
+    media: "/img/room.jpg",
+    mediaType: "image",
   },
   {
     id: "ui-design",
-    title: "UI & UX Design & Development",
-    category: "Design",
+    title: {
+      en: "UI & UX Design & Development",
+      id: "Desain & Pengembangan UI/UX",
+    },
+    category: {
+      en: "Design",
+      id: "Desain",
+    },
     bgColor: "bg-slate-700",
     size: "small",
+    media: "/img/room.jpg",
+    mediaType: "image",
   },
   {
     id: "featured-work",
-    title: "Featured Project",
-    category: "Web Design",
+    title: {
+      en: "Featured Project",
+      id: "Proyek Unggulan",
+    },
+    category: {
+      en: "Web Design",
+      id: "Desain Web",
+    },
     bgColor: "bg-amber-200",
     size: "large",
+    media: "/img/room.jpg",
+    mediaType: "image",
   },
   {
     id: "3d-design",
-    title: "3D & Graphic Design",
-    category: "3D Design",
+    title: {
+      en: "3D & Graphic Design",
+      id: "Desain 3D & Grafis",
+    },
+    category: {
+      en: "3D Design",
+      id: "Desain 3D",
+    },
     bgColor: "bg-purple-300",
     size: "medium",
+    media: "/img/room.jpg",
+    mediaType: "image",
   },
   {
     id: "consulting",
-    title: "Consulting Campaign & Strategy",
-    category: "Consulting",
+    title: {
+      en: "Consulting Campaign & Strategy",
+      id: "Konsultasi Kampanye & Strategi",
+    },
+    category: {
+      en: "Consulting",
+      id: "Konsultasi",
+    },
     bgColor: "bg-slate-800",
     size: "medium",
+    media: "/img/room.jpg",
+    mediaType: "image",
   },
 ];
 

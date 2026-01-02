@@ -3,11 +3,54 @@
 import { workProcessSteps } from "@/components/dataMock/servicesShowcase";
 import { AnimatedLines } from "@/components/public/shared/AnimatedText";
 import { RoundedButton } from "@/components/public/shared/RoundedButton";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 import { motion } from "motion/react";
 
-const titleLines = ["The Best Work Happens When We", "Build It Together"];
+const titleLinesEn = ["The Best Work Happens When We", "Build It Together"];
+const titleLinesId = [
+  "Karya Terbaik Terjadi Ketika Kita",
+  "Membangunnya Bersama",
+];
+
+const workProcessStepsId = [
+  {
+    number: "01",
+    title: "Penemuan",
+    description:
+      "Kami mulai dengan memahami visi, tujuan, dan tantangan Anda. Melalui riset dan kolaborasi, kami mendefinisikan ruang lingkup proyek dan menetapkan fondasi yang kuat untuk sukses.",
+  },
+  {
+    number: "02",
+    title: "Strategi",
+    description:
+      "Berdasarkan temuan kami, kami mengembangkan strategi komprehensif yang menyelaraskan tujuan bisnis Anda dengan kebutuhan pengguna. Ini termasuk wireframe, arsitektur informasi, dan perencanaan teknis.",
+  },
+  {
+    number: "03",
+    title: "Desain",
+    description:
+      "Tim desain kami menghidupkan strategi dengan visual yang menarik dan antarmuka yang intuitif. Kami fokus pada menciptakan pengalaman yang beresonansi dengan audiens Anda.",
+  },
+  {
+    number: "04",
+    title: "Pengembangan",
+    description:
+      "Menggunakan teknologi modern dan praktik terbaik, kami membangun solusi yang skalabel dan berkinerja tinggi. Kode yang bersih dan arsitektur yang kuat memastikan kesuksesan jangka panjang.",
+  },
+  {
+    number: "05",
+    title: "Peluncuran",
+    description:
+      "Kami memastikan peluncuran yang mulus dengan pengujian menyeluruh, optimasi, dan dukungan. Proyek Anda ditayangkan dengan percaya diri, siap memberikan dampak.",
+  },
+];
 
 export default function WorkProcess() {
+  const { language, t } = useLanguage();
+
+  const titleLines = language === "id" ? titleLinesId : titleLinesEn;
+  const steps = language === "id" ? workProcessStepsId : workProcessSteps;
+
   return (
     <section className="py-16">
       {/* Header */}
@@ -25,14 +68,14 @@ export default function WorkProcess() {
           className="text-right"
         >
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            OUR WORK PROCESS
+            {language === "id" ? "PROSES KERJA KAMI" : "OUR WORK PROCESS"}
           </p>
         </motion.div>
       </div>
 
       {/* Process Steps */}
       <div className="space-y-0">
-        {workProcessSteps.map((step, index) => (
+        {steps.map((step, index) => (
           <motion.div
             key={step.number}
             initial={{ opacity: 0, y: 30 }}
@@ -69,7 +112,9 @@ export default function WorkProcess() {
         transition={{ duration: 0.5, delay: 0.3 }}
         className="mt-12 flex justify-center"
       >
-        <RoundedButton href="/projects">View All Projects</RoundedButton>
+        <RoundedButton href="/projects">
+          {language === "id" ? "Lihat Semua Proyek" : "View All Projects"}
+        </RoundedButton>
       </motion.div>
     </section>
   );

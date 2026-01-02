@@ -1,8 +1,62 @@
+"use client";
+
 import { TextHeadingBottom } from "@/components/public/shared/TextHeadingBottom";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 import Image from "next/image";
 import Link from "next/link";
 
 export const ContactSection = () => {
+  const { language } = useLanguage();
+
+  const content = {
+    en: {
+      studio: "Studio",
+      address: {
+        name: "Alfinur Studio",
+        city: "Surabaya, Indonesia",
+        region: "East Java 60xxx",
+        phone: "(+62) 812 1722 1460",
+      },
+      generalEnquiries: "General Enquiries",
+      follow: "Follow",
+      manifesto:
+        "Creative Developer & Designer — Passionate about crafting digital experiences that blend aesthetics with functionality. From web applications to brand identities, every project is an opportunity to create something meaningful and impactful.",
+      headingText: "CONTACT",
+    },
+    id: {
+      studio: "Studio",
+      address: {
+        name: "Alfinur Studio",
+        city: "Surabaya, Indonesia",
+        region: "Jawa Timur 60xxx",
+        phone: "(+62) 812 1722 1460",
+      },
+      generalEnquiries: "Pertanyaan Umum",
+      follow: "Ikuti",
+      manifesto:
+        "Developer & Desainer Kreatif — Bersemangat dalam menciptakan pengalaman digital yang memadukan estetika dengan fungsionalitas. Dari aplikasi web hingga identitas merek, setiap proyek adalah kesempatan untuk menciptakan sesuatu yang bermakna dan berdampak.",
+      headingText: "KONTAK",
+    },
+  };
+
+  const t = content[language];
+
+  const socialLinks = [
+    {
+      name: "Instagram",
+      href: "https://instagram.com/alfii_nur1",
+    },
+    {
+      name: "LinkedIn",
+      href: "https://www.linkedin.com/in/alfinur/",
+    },
+    { name: "GitHub", href: "https://github.com/alfiiinur" },
+    {
+      name: "Dribbble",
+      href: "https://dribbble.com/alfiii2",
+    },
+  ];
+
   return (
     <section
       className={`w-full bg-black text-white min-h-screen flex flex-col justify-between pt-16 md:pt-24 overflow-hidden`}
@@ -16,16 +70,16 @@ export const ContactSection = () => {
             {/* Kolom 1: Alamat */}
             <div>
               <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-4 uppercase">
-                Studio
+                {t.studio}
               </h4>
               <p className="text-xs leading-loose text-gray-300 uppercase tracking-wider">
-                Alfinur Studio
+                {t.address.name}
                 <br />
-                Surabaya, Indonesia
+                {t.address.city}
                 <br />
-                East Java 60xxx
+                {t.address.region}
                 <br />
-                (+62) 812 1722 1460
+                {t.address.phone}
               </p>
             </div>
 
@@ -33,7 +87,7 @@ export const ContactSection = () => {
             <div>
               <div className="mb-6">
                 <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  General Enquiries
+                  {t.generalEnquiries}
                 </h4>
                 <Link
                   href="mailto:alfinurdanialin900@gmail.com"
@@ -42,65 +96,15 @@ export const ContactSection = () => {
                   alfinurdanialin900@gmail.com
                 </Link>
               </div>
-
-              {/* <div className="mb-6">
-                <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  New Projects
-                </h4>
-                <Link
-                  href="mailto:project@alfinur.dev"
-                  className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
-                >
-                  project@alfinur.dev
-                </Link>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  Collaboration
-                </h4>
-                <Link
-                  href="mailto:collab@alfinur.dev"
-                  className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
-                >
-                  collab@alfinur.dev
-                </Link>
-              </div>
-
-              <div>
-                <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-2 uppercase">
-                  Career
-                </h4>
-                <Link
-                  href="mailto:career@alfinur.dev"
-                  className="text-xs text-white border-b border-gray-600 pb-0.5 hover:border-white transition-colors uppercase tracking-wider"
-                >
-                  career@alfinur.dev
-                </Link>
-              </div> */}
             </div>
 
             {/* Kolom 3: Social Media */}
             <div>
               <h4 className="text-[10px] font-bold tracking-widest text-gray-500 mb-4 uppercase">
-                Follow
+                {t.follow}
               </h4>
               <div className="flex flex-col gap-2">
-                {[
-                  {
-                    name: "Instagram",
-                    href: "https://instagram.com/alfii_nur1",
-                  },
-                  {
-                    name: "LinkedIn",
-                    href: "https://www.linkedin.com/in/alfinur/",
-                  },
-                  { name: "GitHub", href: "https://github.com/alfiiinur" },
-                  {
-                    name: "Dribbble",
-                    href: "https://dribbble.com/alfiii2",
-                  },
-                ].map((social) => (
+                {socialLinks.map((social) => (
                   <Link
                     key={social.name}
                     href={social.href}
@@ -118,10 +122,7 @@ export const ContactSection = () => {
           {/* Paragraf Manifesto (Bawah Grid Info) */}
           <div className="max-w-md mt-auto mb-10 lg:mb-0">
             <p className="text-[10px] md:text-xs leading-relaxed uppercase tracking-widest text-gray-300 text-justify">
-              Creative Developer & Designer — Passionate about crafting digital
-              experiences that blend aesthetics with functionality. From web
-              applications to brand identities, every project is an opportunity
-              to create something meaningful and impactful.
+              {t.manifesto}
             </p>
           </div>
         </div>
@@ -139,7 +140,7 @@ export const ContactSection = () => {
 
       {/* === BAGIAN BAWAH: Typography Besar === */}
       <TextHeadingBottom
-        text="CONTACT"
+        text={t.headingText}
         className="text-black dark:text-white"
       />
     </section>

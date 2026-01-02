@@ -26,6 +26,7 @@ import {
   Video,
 } from "lucide-react";
 import MediaUpload from "@/components/admin/MediaUpload";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Testimonial {
   id: string;
@@ -53,6 +54,14 @@ export default function TestimonialsTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    testimonial: Testimonial | null;
+  }>({
+    open: false,
+    testimonial: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -126,13 +135,19 @@ export default function TestimonialsTab() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this testimonial?")) return;
+  const handleDelete = async () => {
+    if (!deleteModal.testimonial) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/testimonials/${id}`, { method: "DELETE" });
+      await fetch(`/api/testimonials/${deleteModal.testimonial.id}`, {
+        method: "DELETE",
+      });
       fetchTestimonials();
     } catch (error) {
       console.error("Failed to delete:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, testimonial: null });
     }
   };
 
@@ -428,7 +443,9 @@ export default function TestimonialsTab() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() =>
+                        setDeleteModal({ open: true, testimonial: item })
+                      }
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -477,6 +494,20 @@ export default function TestimonialsTab() {
           )}
         </div>
       </CardContent>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({
+            open,
+            testimonial: open ? deleteModal.testimonial : null,
+          })
+        }
+        onConfirm={handleDelete}
+        title="Delete Testimonial"
+        itemName={deleteModal.testimonial?.name}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 }

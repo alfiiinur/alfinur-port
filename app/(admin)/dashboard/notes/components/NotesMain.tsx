@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import NoteCard from "./NoteCard";
 import NoteModal from "./NoteModal";
 import NoteViewModal from "./NoteViewModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { Note, NoteFormData } from "../types";
 
 export default function NotesMain() {
@@ -17,6 +18,14 @@ export default function NotesMain() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [filterPinned, setFilterPinned] = useState<boolean | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    note: Note | null;
+  }>({
+    open: false,
+    note: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchNotes = useCallback(async () => {
     try {
@@ -77,18 +86,29 @@ export default function NotesMain() {
     setSelectedNote(null);
   };
 
-  const handleDeleteNote = async (id: string) => {
+  const handleDeleteNote = async () => {
+    if (!deleteModal.note) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/notes/${deleteModal.note.id}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
-        setNotes((prev) => prev.filter((n) => n.id !== id));
+        setNotes((prev) => prev.filter((n) => n.id !== deleteModal.note!.id));
       }
     } catch (error) {
       console.error("Failed to delete note:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false, note: null });
+      setIsModalOpen(false);
+      setIsViewModalOpen(false);
+      setSelectedNote(null);
     }
-    setIsModalOpen(false);
-    setIsViewModalOpen(false);
-    setSelectedNote(null);
+  };
+
+  const openDeleteModal = (note: Note) => {
+    setDeleteModal({ open: true, note });
   };
 
   const handleTogglePin = async (note: Note) => {
@@ -174,7 +194,7 @@ export default function NotesMain() {
               note={note}
               onView={() => handleViewNote(note)}
               onEdit={() => handleEditNote(note)}
-              onDelete={() => handleDeleteNote(note.id)}
+              onDelete={() => openDeleteModal(note)}
               onTogglePin={() => handleTogglePin(note)}
             />
           ))}
@@ -190,7 +210,7 @@ export default function NotesMain() {
         }}
         onSave={handleSaveNote}
         onDelete={
-          selectedNote ? () => handleDeleteNote(selectedNote.id) : undefined
+          selectedNote ? () => openDeleteModal(selectedNote) : undefined
         }
         note={selectedNote}
       />
@@ -208,8 +228,20 @@ export default function NotesMain() {
           setIsModalOpen(true);
         }}
         onDelete={
-          selectedNote ? () => handleDeleteNote(selectedNote.id) : undefined
+          selectedNote ? () => openDeleteModal(selectedNote) : undefined
         }
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, note: open ? deleteModal.note : null })
+        }
+        onConfirm={handleDeleteNote}
+        title="Delete Note"
+        itemName={deleteModal.note?.title}
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -29,7 +29,7 @@ interface SortableTaskRowProps {
   isSelected: boolean;
   onSelect: (id: string, checked: boolean) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onDelete: (task: Task) => void;
   onView: (task: Task) => void;
   onToggleComplete: (id: string, isCompleted: boolean) => void;
   isSubtask?: boolean;
@@ -261,7 +261,7 @@ export function SortableTaskRow({
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onDelete(task.id)}
+                onClick={() => onDelete(task)}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-2" />

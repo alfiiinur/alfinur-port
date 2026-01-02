@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { deleteDesign } from "../actions";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 
 interface Design {
   id: string;
@@ -94,6 +95,13 @@ export default function DesignsTable({ designs }: DesignsTableProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    design: Design | null;
+  }>({
+    open: false,
+    design: null,
+  });
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -150,12 +158,13 @@ export default function DesignsTable({ designs }: DesignsTableProps) {
     }
   };
 
-  async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this design?")) return;
+  async function handleDelete() {
+    if (!deleteModal.design) return;
 
-    setIsDeleting(id);
-    await deleteDesign(id);
+    setIsDeleting(deleteModal.design.id);
+    await deleteDesign(deleteModal.design.id);
     setIsDeleting(null);
+    setDeleteModal({ open: false, design: null });
   }
 
   if (designs.length === 0) {
@@ -305,7 +314,7 @@ export default function DesignsTable({ designs }: DesignsTableProps) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDelete(design.id)}
+                        onClick={() => setDeleteModal({ open: true, design })}
                         disabled={isDeleting === design.id}
                         className="text-destructive focus:text-destructive"
                       >
@@ -320,6 +329,17 @@ export default function DesignsTable({ designs }: DesignsTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({ open, design: open ? deleteModal.design : null })
+        }
+        onConfirm={handleDelete}
+        title="Delete Design"
+        itemName={deleteModal.design?.title}
+        isLoading={isDeleting === deleteModal.design?.id}
+      />
     </div>
   );
 }

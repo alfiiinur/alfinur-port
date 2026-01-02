@@ -1,19 +1,25 @@
 "use client";
 
 import { Star } from "lucide-react";
+import { useLanguage } from "@/lib/hooks/useLanguage";
 
 interface Service {
   id: string;
   name: string;
+  nameId?: string | null;
   slug: string;
   description: string;
+  descriptionId?: string | null;
   icon: string;
   price: number | null;
   priceType: string;
   currency: string;
   features: string[];
+  featuresId?: string[];
   category: string;
+  categoryId?: string | null;
   isPopular: boolean;
+  showPrice?: boolean;
 }
 
 interface ServiceCardProps {
@@ -21,8 +27,28 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
+  const { language, t } = useLanguage();
+
+  // Get localized content
+  const name =
+    language === "id" && service.nameId ? service.nameId : service.name;
+  const description =
+    language === "id" && service.descriptionId
+      ? service.descriptionId
+      : service.description;
+  const category =
+    language === "id" && service.categoryId
+      ? service.categoryId
+      : service.category;
+  const features =
+    language === "id" && service.featuresId && service.featuresId.length > 0
+      ? service.featuresId
+      : service.features;
+
   const formatPrice = () => {
-    if (service.priceType === "CONTACT_US") return "Contact Us";
+    if (service.priceType === "CONTACT_US") {
+      return language === "id" ? "Hubungi Kami" : "Contact Us";
+    }
     if (!service.price) return "-";
 
     const formatted = new Intl.NumberFormat("id-ID").format(service.price);
@@ -40,11 +66,11 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   const getPriceLabel = () => {
     switch (service.priceType) {
       case "STARTING_FROM":
-        return "Starting from";
+        return language === "id" ? "Mulai dari" : "Starting from";
       case "HOURLY":
-        return "Per hour";
+        return language === "id" ? "Per jam" : "Per hour";
       case "FIXED":
-        return "Fixed price";
+        return language === "id" ? "Harga tetap" : "Fixed price";
       default:
         return "";
     }
@@ -57,7 +83,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg flex items-center gap-1">
             <Star className="w-3 h-3 fill-current" />
-            POPULAR
+            {language === "id" ? "POPULER" : "POPULAR"}
           </span>
         </div>
       )}
@@ -73,36 +99,38 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         {/* Category Badge */}
         <div className="inline-block mb-4">
           <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase">
-            {service.category}
+            {category}
           </span>
         </div>
 
         {/* Title */}
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-          {service.name}
+          {name}
         </h3>
 
         {/* Description */}
         <p className="text-gray-500 dark:text-gray-400 mb-6 min-h-[3rem] line-clamp-2">
-          {service.description}
+          {description}
         </p>
 
-        {/* Price */}
-        <div className="mb-6 pb-6 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">
-              {formatPrice()}
-            </span>
+        {/* Price - Only show if showPrice is true (default true) */}
+        {(service.showPrice !== false) && (
+          <div className="mb-6 pb-6 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                {formatPrice()}
+              </span>
+            </div>
+            {service.priceType !== "CONTACT_US" && (
+              <span className="text-sm text-gray-500">{getPriceLabel()}</span>
+            )}
           </div>
-          {service.priceType !== "CONTACT_US" && (
-            <span className="text-sm text-gray-500">{getPriceLabel()}</span>
-          )}
-        </div>
+        )}
 
         {/* Features List */}
         <div className="flex-grow">
           <ul className="space-y-3 mb-6">
-            {service.features.map((feature, index) => (
+            {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-3">
                 <svg
                   className="w-5 h-5 text-green-500 shrink-0 mt-0.5"
@@ -130,7 +158,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           href="/contact"
           className="w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 hover:shadow-lg text-center"
         >
-          Get Started
+          {t("getStarted")}
         </a>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { TaskToolbar } from "./components/TaskToolbar";
 import { TaskGroup } from "./components/TaskGroup";
 import { TaskModal, TaskFormData } from "./components/TaskModal";
 import { TaskViewModal } from "./components/TaskViewModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import type { Task, GroupedTasks, TaskStatus, TaskPriority } from "./types";
 
 const emptyGroupedTasks: GroupedTasks = {
@@ -31,6 +32,16 @@ export default function TasksPage() {
     status?: TaskStatus;
     priority?: TaskPriority;
   } | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    task: Task | null;
+    isBulk: boolean;
+  }>({
+    open: false,
+    task: null,
+    isBulk: false,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -80,8 +91,11 @@ export default function TasksPage() {
 
   const handleBulkDelete = async () => {
     if (selectedTasks.size === 0) return;
-    if (!confirm(`Delete ${selectedTasks.size} task(s)?`)) return;
+    setDeleteModal({ open: true, task: null, isBulk: true });
+  };
 
+  const confirmBulkDelete = async () => {
+    setIsDeleting(true);
     try {
       await fetch("/api/tasks/bulk", {
         method: "POST",
@@ -93,8 +107,11 @@ export default function TasksPage() {
       });
       setSelectedTasks(new Set());
       fetchTasks();
+      setDeleteModal({ open: false, task: null, isBulk: false });
     } catch (error) {
       console.error("Failed to delete tasks:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -198,14 +215,21 @@ export default function TasksPage() {
     setViewModalOpen(true);
   };
 
-  const handleDeleteTask = async (id: string) => {
-    if (!confirm("Delete this task?")) return;
+  const handleDeleteTask = async (task: Task) => {
+    setDeleteModal({ open: true, task, isBulk: false });
+  };
 
+  const confirmDeleteTask = async () => {
+    if (!deleteModal.task) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+      await fetch(`/api/tasks/${deleteModal.task.id}`, { method: "DELETE" });
       fetchTasks();
+      setDeleteModal({ open: false, task: null, isBulk: false });
     } catch (error) {
       console.error("Failed to delete task:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -336,6 +360,27 @@ export default function TasksPage() {
         open={viewModalOpen}
         onClose={handleCloseViewModal}
         task={viewingTask}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal({
+            open,
+            task: open ? deleteModal.task : null,
+            isBulk: deleteModal.isBulk,
+          })
+        }
+        onConfirm={deleteModal.isBulk ? confirmBulkDelete : confirmDeleteTask}
+        title={deleteModal.isBulk ? "Delete Tasks" : "Delete Task"}
+        description={
+          deleteModal.isBulk
+            ? `Are you sure you want to delete ${selectedTasks.size} task(s)? This action cannot be undone.`
+            : undefined
+        }
+        itemName={deleteModal.task?.title}
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -45,10 +45,15 @@ export default async function Services() {
       <div className="container mx-auto px-4 py-16 md:py-24">
         <HeadingService
           titleLine1="let's talk"
+          titleLine1Id="mari bicara"
           titleLine2="design"
+          titleLine2Id="desain"
           topDescription="We transform spaces into timeless experiences through bold ideas and meticulous craftsmanship."
+          topDescriptionId="Kami mengubah ruang menjadi pengalaman abadi melalui ide-ide berani dan keahlian yang teliti."
           bottomDescription="From concept to completion, our interdisciplinary team combines strategy, architecture, and storytelling to create interiors that don't just look good — they feel alive. Whether it's a boutique hotel, flagship retail, or a private residence, every project is a signature."
+          bottomDescriptionId="Dari konsep hingga penyelesaian, tim interdisipliner kami menggabungkan strategi, arsitektur, dan storytelling untuk menciptakan interior yang tidak hanya terlihat bagus — tetapi terasa hidup. Baik itu hotel butik, retail flagship, atau residensi pribadi, setiap proyek adalah sebuah tanda tangan."
           badgeText="Featured Project 2025"
+          badgeTextId="Proyek Unggulan 2025"
           imageSrc="/img/room.jpg"
           imageAlt="Luxury interior design project"
         />
@@ -77,7 +82,15 @@ export default async function Services() {
             and scalable websites
           </>
         }
+        titleId={
+          <>
+            Kami membangun website
+            <br />
+            yang cepat, indah dan skalabel
+          </>
+        }
         topDescription="From landing pages to complex web apps with Next.js, Nuxt, Remix, and modern stack."
+        topDescriptionId="Dari landing page hingga aplikasi web kompleks dengan Next.js, Nuxt, Remix, dan stack modern."
         mediaItems={[
           {
             id: 1,
@@ -93,10 +106,14 @@ export default async function Services() {
           },
         ]}
         bottomLabel="Web Development"
+        bottomLabelId="Pengembangan Web"
         bottomContent={
           <>
             Clean code · Lightning performance · SEO friendly · Fully responsive
           </>
+        }
+        bottomContentId={
+          <>Kode bersih · Performa kilat · SEO friendly · Fully responsive</>
         }
       />
       {settings.showFaq && <FAQSection faqs={faqs} />}
