@@ -77,37 +77,7 @@ https://github.com/user-attachments/assets/YOUR-VIDEO-ID-HERE
 
 ---
 
-### 🏠 Homepage
 
-<img src="public/img/screenshots/homepage.png" alt="Homepage" width="100%" />
-
-### 📊 Admin Dashboard
-
-<img src="public/img/screenshots/dashboard.png" alt="Dashboard" width="100%" />
-
-### 📝 Blog Management
-
-<img src="public/img/screenshots/blog-management.png" alt="Blog Management" width="100%" />
-
-### ✅ Task Management
-
-<img src="public/img/screenshots/task-management.png" alt="Task Management" width="100%" />
-
-### 💰 Finance Tracker
-
-<img src="public/img/screenshots/finance.png" alt="Finance" width="100%" />
-
-### 💬 Live Chat
-
-<img src="public/img/screenshots/live-chat.png" alt="Live Chat" width="100%" />
-
-</div>
-
-> 📹 **Cara menambahkan video dari `public/video/`:**
->
-> 1. **GitHub Upload (Recommended):** Buka Issue baru di repo → drag & drop `videoHome.mp4` → copy link → paste di README
-> 2. **Clickable Thumbnail:** Buat screenshot video → link ke `http://alfinurdigital.com/video/videoHome.mp4`
-> 3. **Convert ke GIF:** Pakai [ezgif.com](https://ezgif.com/video-to-gif) → simpan di `public/video/demo.gif`
 
 ## 📁 Project Structure
 
