@@ -52,63 +52,6 @@ A modern, full-stack portfolio website built with Next.js 16, featuring a compre
 - **Drag & Drop:** dnd-kit
 - **Package Manager:** pnpm
 
-## 📸 Screenshots & Demo
-
-<div align="center">
-
-### 🎬 Video Demo
-
-<!-- OPSI 1: Video dari GitHub (RECOMMENDED) -->
-<!-- Upload video ke GitHub Issue/PR, lalu paste link di bawah -->
-
-https://github.com/user-attachments/assets/YOUR-VIDEO-ID-HERE
-
-<!-- OPSI 2: Clickable thumbnail yang link ke video -->
-<!-- Ganti YOUR-VIDEO-THUMBNAIL dengan screenshot, dan link ke video kamu -->
-<!--
-[![Watch Demo](public/img/screenshots/video-thumbnail.png)](http://alfinurdigital.com/video/videoHome.mp4)
--->
-
-<!-- OPSI 3: GIF dari video lokal -->
-<!-- Convert videoHome.mp4 ke GIF pakai ezgif.com lalu taruh di public/video/ -->
-<!--
-<img src="public/video/demo.gif" alt="Demo" width="100%" />
--->
-
----
-
-### 🏠 Homepage
-
-<img src="public/img/screenshots/homepage.png" alt="Homepage" width="100%" />
-
-### 📊 Admin Dashboard
-
-<img src="public/img/screenshots/dashboard.png" alt="Dashboard" width="100%" />
-
-### 📝 Blog Management
-
-<img src="public/img/screenshots/blog-management.png" alt="Blog Management" width="100%" />
-
-### ✅ Task Management
-
-<img src="public/img/screenshots/task-management.png" alt="Task Management" width="100%" />
-
-### 💰 Finance Tracker
-
-<img src="public/img/screenshots/finance.png" alt="Finance" width="100%" />
-
-### 💬 Live Chat
-
-<img src="public/img/screenshots/live-chat.png" alt="Live Chat" width="100%" />
-
-</div>
-
-> 📹 **Cara menambahkan video dari `public/video/`:**
->
-> 1. **GitHub Upload (Recommended):** Buka Issue baru di repo → drag & drop `videoHome.mp4` → copy link → paste di README
-> 2. **Clickable Thumbnail:** Buat screenshot video → link ke `http://alfinurdigital.com/video/videoHome.mp4`
-> 3. **Convert ke GIF:** Pakai [ezgif.com](https://ezgif.com/video-to-gif) → simpan di `public/video/demo.gif`
-
 ## 📁 Project Structure
 
 ```
@@ -367,7 +310,7 @@ This project is licensed under the ISC License.
 
 <div align="center">
 
-**Alfinur Hakim**
+**Alfi Nur**
 
 [![GitHub](https://img.shields.io/badge/GitHub-alfiiinur-181717?style=for-the-badge&logo=github)](https://github.com/alfiiinur)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-alfinurhakim-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/alfinurhakim)
