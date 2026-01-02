@@ -302,10 +302,6 @@ test: Add or update tests
 chore: Maintenance tasks
 ```
 
-## 📄 License
-
-This project is licensed under the ISC License.
-
 ## 👤 Author
 
 <div align="center">
@@ -313,9 +309,9 @@ This project is licensed under the ISC License.
 **Alfi Nur**
 
 [![GitHub](https://img.shields.io/badge/GitHub-alfiiinur-181717?style=for-the-badge&logo=github)](https://github.com/alfiiinur)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-alfinurhakim-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/alfinurhakim)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-alfinurhakim-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/alfinur)
 [![Portfolio](https://img.shields.io/badge/Portfolio-alfinurdigital.com-000?style=for-the-badge&logo=vercel)](http://alfinurdigital.com)
-[![Email](https://img.shields.io/badge/Email-alfinurhakim@gmail.com-EA4335?style=for-the-badge&logo=gmail)](mailto:alfinurhakim@gmail.com)
+[![Email](https://img.shields.io/badge/Email-alfinurhakim@gmail.com-EA4335?style=for-the-badge&logo=gmail)](mailto:alfinurdanialin900@gmail.com)
 
 </div>
 
@@ -325,7 +321,7 @@ This project is licensed under the ISC License.
 
 ### ⭐ Star this repo if you find it useful!
 
-Built with ❤️ using Next.js
+Built with using Next.js, GSAP, Frammer, Tailwind CSS
 
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=alfiiinur%2Falfinur-port&label=Visitors&countColor=%23263759)
 
