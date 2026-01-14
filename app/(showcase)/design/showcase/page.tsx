@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import DesignShowcaseClient from "@/app/(public)/design/components/DesignShowcaseClient";
+import DesignShowcaseClient from "@/app/(design)/design/components/DesignShowcaseClient";
 
 export const metadata = {
   title: "Design Showcase | Year in Review",

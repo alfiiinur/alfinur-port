@@ -3,8 +3,10 @@
 import { useState, useMemo, useRef } from "react";
 import DesignHero from "./DesignHero";
 import DesignCard from "./DesignCard";
+import DesignFooter from "./DesignFooter";
 import Pagination from "@/components/public/shared/Pagination";
 import { ArrowUpDown, Heart, Clock, Grid3X3, LayoutGrid } from "lucide-react";
+import { SparklesCore } from "@/components/ui/sparkles";
 
 interface Design {
   id: string;
@@ -118,7 +120,7 @@ export default function DesignPageClient({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
         {/* Hero Section */}
         <DesignHero
@@ -266,6 +268,9 @@ export default function DesignPageClient({
           </div>
         )}
       </div>
+
+      {/* Design Footer - Replaces regular footer */}
+      <DesignFooter designs={designs} />
     </div>
   );
 }

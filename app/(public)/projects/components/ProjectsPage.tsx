@@ -23,6 +23,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+const DEFAULT_COVER = "/default-cover.png";
+
 interface Project {
   id: string;
   title: string;
@@ -389,6 +391,11 @@ function isVideo(url: string) {
   return url?.match(/\.(mp4|webm|ogg|mov)$/i);
 }
 
+// Helper function to check if URL is a GIF
+function isGif(url: string) {
+  return url?.match(/\.gif$/i);
+}
+
 // Project List Container - manages hover state for all rows
 function ProjectList({ projects }: { projects: Project[] }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -469,7 +476,7 @@ function ProjectRow({
     if (images.length > 0) {
       return images[index % images.length];
     }
-    return project.thumbnail;
+    return project.thumbnail || DEFAULT_COVER;
   }, [project.media, project.images, project.thumbnail, index]);
 
   // Start floating animation when image is shown
@@ -805,21 +812,18 @@ function ProjectRow({
 // Grid Card Component
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const thumbnailIsVideo = isVideo(project.thumbnail);
+  const thumbnailIsGif = isGif(project.thumbnail);
 
-  const handleVideoHover = (e: React.MouseEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    video.play();
-    setIsVideoPlaying(true);
-  };
-
-  const handleVideoLeave = (e: React.MouseEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    video.pause();
-    video.currentTime = 0;
-    setIsVideoPlaying(false);
-  };
+  // Auto-play video when component mounts
+  useEffect(() => {
+    if (thumbnailIsVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay might be blocked, that's okay
+      });
+    }
+  }, [thumbnailIsVideo]);
 
   return (
     <Link href={`/projects/${project.slug}`}>
@@ -834,43 +838,45 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       >
         {/* Thumbnail */}
         <div className="relative aspect-4/3 overflow-hidden">
-          {project.thumbnail ? (
-            thumbnailIsVideo ? (
-              <>
-                <video
-                  src={project.thumbnail}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  muted
-                  loop
-                  playsInline
-                  onMouseOver={handleVideoHover}
-                  onMouseOut={handleVideoLeave}
-                />
-                {/* Video Badge */}
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs z-10">
-                  <Video className="w-3 h-3" />
-                  Video
-                </div>
-                {!isVideoPlaying && (
-                  <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <Play className="w-6 h-6 text-white ml-0.5" />
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Image
+          {thumbnailIsVideo ? (
+            <>
+              <video
+                ref={videoRef}
+                src={project.thumbnail}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+              {/* Video Badge */}
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs z-10">
+                <Video className="w-3 h-3" />
+                Video
+              </div>
+            </>
+          ) : thumbnailIsGif ? (
+            <>
+              {/* GIF - use img tag for better GIF animation support */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={project.thumbnail}
                 alt={project.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
-            )
+              {/* GIF Badge */}
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs z-10">
+                <Play className="w-3 h-3" />
+                GIF
+              </div>
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-900 text-gray-600">
-              <span className="text-4xl">📁</span>
-            </div>
+            <Image
+              src={project.thumbnail || DEFAULT_COVER}
+              alt={project.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
           )}
 
           {/* Overlay */}

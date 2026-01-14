@@ -21,7 +21,7 @@ export const showcaseItems: ShowcaseItem[] = [
     },
     bgColor: "bg-slate-800",
     size: "small",
-    media: "/img/room.jpg",
+    media: "/frontend/servis/servis1.png",
     mediaType: "image",
   },
   {
@@ -36,7 +36,7 @@ export const showcaseItems: ShowcaseItem[] = [
     },
     bgColor: "bg-slate-700",
     size: "small",
-    media: "/img/room.jpg",
+    media: "/frontend/servis/servis2.png",
     mediaType: "image",
   },
   {
@@ -50,23 +50,38 @@ export const showcaseItems: ShowcaseItem[] = [
       id: "Desain Web",
     },
     bgColor: "bg-amber-200",
-    size: "large",
-    media: "/img/room.jpg",
+    size: "medium",
+    media: "/frontend/servis/servis3.png",
     mediaType: "image",
   },
   {
-    id: "3d-design",
+    id: "ai-work",
     title: {
-      en: "3D & Graphic Design",
-      id: "Desain 3D & Grafis",
+      en: "AI Project",
+      id: "Proyek AI",
     },
     category: {
-      en: "3D Design",
-      id: "Desain 3D",
+      en: "AI Project",
+      id: "Proyek AI",
+    },
+    bgColor: "bg-amber-200",
+    size: "medium",
+    media: "/frontend/servis/servis6.png",
+    mediaType: "image",
+  },
+  {
+    id: "IT Support",
+    title: {
+      en: "IT Support",
+      id: "IT Support",
+    },
+    category: {
+      en: "IT Support",
+      id: "IT Support",
     },
     bgColor: "bg-purple-300",
     size: "medium",
-    media: "/img/room.jpg",
+    media: "/frontend/servis/servis4.png",
     mediaType: "image",
   },
   {
@@ -81,7 +96,7 @@ export const showcaseItems: ShowcaseItem[] = [
     },
     bgColor: "bg-slate-800",
     size: "medium",
-    media: "/img/room.jpg",
+    media: "/frontend/servis/servis5.png",
     mediaType: "image",
   },
 ];

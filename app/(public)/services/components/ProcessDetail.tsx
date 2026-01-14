@@ -23,7 +23,7 @@ const processStepsContent = {
         title: "DISCUSSION & ANALYSIS",
         description:
           "We start with a consultation session to understand your vision, needs, and business goals. I will analyze requirements in depth, identify technical opportunities and challenges, and determine a clear project scope.",
-        image: "/img/room.jpg",
+        image: "/frontend/servis/servis7.png",
       },
       {
         id: 2,

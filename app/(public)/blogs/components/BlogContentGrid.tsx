@@ -1,10 +1,28 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutGrid, List, Calendar, ArrowRight } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  Calendar,
+  ArrowRight,
+  Video,
+  Play,
+} from "lucide-react";
+
+const DEFAULT_COVER = "/default-cover.png";
+
+// Helper functions
+function isVideo(url: string) {
+  return url?.match(/\.(mp4|webm|ogg|mov)$/i);
+}
+
+function isGif(url: string) {
+  return url?.match(/\.gif$/i);
+}
 
 interface Blog {
   id: string;
@@ -152,7 +170,7 @@ export default function BlogContentGrid({
                     {/* Image */}
                     <div className="relative aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden order-1 lg:order-2">
                       <Image
-                        src={featuredBlog.thumbnail || "/img/room.jpg"}
+                        src={featuredBlog.thumbnail || DEFAULT_COVER}
                         alt={featuredBlog.title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -218,22 +236,61 @@ function GridCard({
   blog: Blog;
   formatDate: (date: Date) => string;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const thumbnailIsVideo = isVideo(blog.thumbnail);
+  const thumbnailIsGif = isGif(blog.thumbnail);
+
+  useEffect(() => {
+    if (thumbnailIsVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [thumbnailIsVideo]);
+
   return (
     <Link href={`/blogs/${blog.slug}`} className="group block h-full">
       <article className="h-full flex flex-col">
         {/* Image */}
         <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-muted dark:bg-zinc-900">
-          <Image
-            src={blog.thumbnail || "/img/room.jpg"}
-            alt={blog.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          {thumbnailIsVideo ? (
+            <video
+              ref={videoRef}
+              src={blog.thumbnail}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              muted
+              loop
+              playsInline
+              autoPlay
+            />
+          ) : thumbnailIsGif ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={blog.thumbnail}
+              alt={blog.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <Image
+              src={blog.thumbnail || DEFAULT_COVER}
+              alt={blog.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
           {/* Category Badge */}
-          <div className="absolute top-3 left-3">
+          <div className="absolute top-3 left-3 flex items-center gap-2">
             <span className="px-3 py-1 text-xs font-medium bg-black/60 backdrop-blur-sm text-white rounded-full">
               {blog.category}
             </span>
+            {thumbnailIsVideo && (
+              <span className="px-2 py-1 text-xs font-medium bg-black/60 backdrop-blur-sm text-white rounded-full flex items-center gap-1">
+                <Video className="w-3 h-3" /> Video
+              </span>
+            )}
+            {thumbnailIsGif && (
+              <span className="px-2 py-1 text-xs font-medium bg-black/60 backdrop-blur-sm text-white rounded-full flex items-center gap-1">
+                <Play className="w-3 h-3" /> GIF
+              </span>
+            )}
           </div>
         </div>
 
@@ -263,17 +320,46 @@ function ListCard({
   blog: Blog;
   formatDate: (date: Date) => string;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const thumbnailIsVideo = isVideo(blog.thumbnail);
+  const thumbnailIsGif = isGif(blog.thumbnail);
+
+  useEffect(() => {
+    if (thumbnailIsVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [thumbnailIsVideo]);
+
   return (
     <Link href={`/blogs/${blog.slug}`} className="group block">
       <article className="flex gap-4 md:gap-6 p-4 rounded-2xl bg-muted/30 dark:bg-zinc-900 hover:bg-muted/50 dark:hover:bg-zinc-800 transition-colors">
         {/* Image */}
         <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden shrink-0 bg-muted dark:bg-zinc-800">
-          <Image
-            src={blog.thumbnail || "/img/room.jpg"}
-            alt={blog.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          {thumbnailIsVideo ? (
+            <video
+              ref={videoRef}
+              src={blog.thumbnail}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              muted
+              loop
+              playsInline
+              autoPlay
+            />
+          ) : thumbnailIsGif ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={blog.thumbnail}
+              alt={blog.title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <Image
+              src={blog.thumbnail || DEFAULT_COVER}
+              alt={blog.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          )}
         </div>
 
         {/* Content */}
@@ -282,6 +368,16 @@ function ListCard({
             <span className="px-2 py-0.5 text-xs font-medium bg-muted dark:bg-zinc-800 rounded-full">
               {blog.category}
             </span>
+            {thumbnailIsVideo && (
+              <span className="px-2 py-0.5 text-xs font-medium bg-muted dark:bg-zinc-800 rounded-full flex items-center gap-1">
+                <Video className="w-3 h-3" />
+              </span>
+            )}
+            {thumbnailIsGif && (
+              <span className="px-2 py-0.5 text-xs font-medium bg-muted dark:bg-zinc-800 rounded-full flex items-center gap-1">
+                <Play className="w-3 h-3" />
+              </span>
+            )}
             <span className="text-xs text-muted-foreground">
               {formatDate(blog.createdAt)}
             </span>
@@ -306,15 +402,4 @@ function ListCard({
       </article>
     </Link>
   );
-}
-
-interface Blog {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  thumbnail: string;
-  category: string;
-  createdAt: Date;
-  author?: string;
 }

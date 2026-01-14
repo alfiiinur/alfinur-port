@@ -1,8 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { ImageIcon, Video, Heart } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Video, Heart, Play } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+
+const DEFAULT_COVER = "/default-cover.png";
+
+// Helper functions
+function isVideo(url: string) {
+  return url?.match(/\.(mp4|webm|ogg|mov)$/i);
+}
+
+function isGif(url: string) {
+  return url?.match(/\.gif$/i);
+}
 
 interface Design {
   id: string;
@@ -24,7 +36,9 @@ export default function DesignCard({ design, onLikeChange }: DesignCardProps) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(design._count?.likes || 0);
   const [isLoading, setIsLoading] = useState(false);
-  const isVideo = design.image?.match(/\.(mp4|webm|ogg)$/i);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const imageIsVideo = isVideo(design.image);
+  const imageIsGif = isGif(design.image);
 
   useEffect(() => {
     // Check if user already liked this design
@@ -36,6 +50,15 @@ export default function DesignCard({ design, onLikeChange }: DesignCardProps) {
       })
       .catch(console.error);
   }, [design.id]);
+
+  // Auto-play video when component mounts
+  useEffect(() => {
+    if (imageIsVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay might be blocked
+      });
+    }
+  }, [imageIsVideo]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,35 +85,44 @@ export default function DesignCard({ design, onLikeChange }: DesignCardProps) {
     <Link href={`/design/${design.slug}`} className="group">
       <article className="h-full">
         <div className="relative overflow-hidden rounded-2xl mb-4 bg-muted aspect-4/3">
-          {design.image ? (
-            isVideo ? (
+          {imageIsVideo ? (
+            <>
               <video
+                ref={videoRef}
                 src={design.image}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 muted
                 loop
                 playsInline
-                onMouseOver={(e) => e.currentTarget.play()}
-                onMouseOut={(e) => e.currentTarget.pause()}
+                autoPlay
               />
-            ) : (
+              <div className="absolute top-4 left-4">
+                <span className="px-2 py-1 bg-black/50 backdrop-blur-sm text-white text-xs rounded-full flex items-center gap-1">
+                  <Video className="w-3 h-3" /> Video
+                </span>
+              </div>
+            </>
+          ) : imageIsGif ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={design.image}
                 alt={design.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
-            )
+              <div className="absolute top-4 left-4">
+                <span className="px-2 py-1 bg-black/50 backdrop-blur-sm text-white text-xs rounded-full flex items-center gap-1">
+                  <Play className="w-3 h-3" /> GIF
+                </span>
+              </div>
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <ImageIcon className="w-12 h-12 text-muted-foreground" />
-            </div>
-          )}
-          {isVideo && (
-            <div className="absolute top-4 left-4">
-              <span className="px-2 py-1 bg-black/50 text-white text-xs rounded flex items-center gap-1">
-                <Video className="w-3 h-3" /> Video
-              </span>
-            </div>
+            <Image
+              src={design.image || DEFAULT_COVER}
+              alt={design.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+            />
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
 

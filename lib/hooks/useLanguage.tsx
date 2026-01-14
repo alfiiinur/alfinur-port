@@ -97,7 +97,7 @@ const translations: Record<Language, Record<string, string>> = {
     myProfessionalJourney:
       "My professional journey through various roles in technology and development.",
     alfiNurBio:
-      "I'm Alfi Nur Danialin, a passionate Full-Stack Developer with over 8 years of experience in crafting dynamic web applications. My journey began with a fascination for coding, which has since evolved into a career dedicated to building seamless digital experiences. I thrive on turning complex problems into elegant solutions, leveraging the latest technologies to deliver high-quality results. Let's connect and create something amazing together!",
+      "Hi, I'm Alfi Nur Danialin, a graduate of Informatics Engineering with expertise in Front-End Developer Designer. I'm a creative and multi-skilled Front-End Developer with a unique blend of technical development and visual design skills. Armed with a foundation of React.js, and Tailwind CSS, I build responsive and userfriendly interfaces. My design skills are honed through years of experience creating branding assets, digital content, and UI mockups using Figma, Adobe Photoshop, and Canva. Passionate about delivering visually appealing and highly functional user experiences, I thrive in collaborative environments that blend creativity and precision. Furthermore, I have excellent communication skills and can work in a team, balancing positioning and prioritizing",
     getInTouchBtn: "Get in Touch",
     richHeadingBadge: "About Me",
     richHeadingDescription:
@@ -304,7 +304,7 @@ const translations: Record<Language, Record<string, string>> = {
     myProfessionalJourney:
       "Perjalanan profesional saya melalui berbagai peran di teknologi dan pengembangan.",
     alfiNurBio:
-      "Saya Alfi Nur Danialin, seorang Full-Stack Developer yang bersemangat dengan pengalaman lebih dari 8 tahun dalam membuat aplikasi web yang dinamis. Perjalanan saya dimulai dengan ketertarikan pada coding, yang sejak itu berkembang menjadi karir yang didedikasikan untuk membangun pengalaman digital yang mulus. Saya senang mengubah masalah kompleks menjadi solusi yang elegan, memanfaatkan teknologi terbaru untuk memberikan hasil berkualitas tinggi. Mari terhubung dan ciptakan sesuatu yang luar biasa bersama!",
+      "Hai, saya Alfi Nur Danialin, lulusan Teknik Informatika dengan keahlian sebagai Desainer Pengembang Front-End. Saya seorang Pengembang Front-End yang kreatif dan multi-terampil dengan perpaduan unik antara pengembangan teknis dan keterampilan desain visual. Berbekal dasar React.js dan Tailwind CSS, saya membangun antarmuka yang responsif dan ramah pengguna. Keterampilan desain saya diasah melalui pengalaman bertahun-tahun dalam membuat aset branding, konten digital, dan mockup UI menggunakan Figma, Adobe Photoshop, dan Canva. Saya bersemangat untuk menghadirkan pengalaman pengguna yang menarik secara visual dan sangat fungsional, dan saya berkembang dalam lingkungan kolaboratif yang memadukan kreativitas dan ketelitian. Selain itu, saya memiliki keterampilan komunikasi yang sangat baik dan dapat bekerja dalam tim, menyeimbangkan pen positioning dan prioritas.",
     getInTouchBtn: "Hubungi Saya",
     richHeadingBadge: "Tentang Saya",
     richHeadingDescription:
