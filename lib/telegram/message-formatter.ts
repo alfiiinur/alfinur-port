@@ -131,25 +131,25 @@ Kirim foto struk untuk scan otomatis`;
 export function formatTemplates(): string {
   return `📝 <b>Template Input Transaksi</b>
 
-<b>Pengeluaran:</b>
+<b>💸 Pengeluaran:</b>
 <code>/expense 50000 food makan siang</code>
 <code>/expense 25.000 transport ojol</code>
-<code>/expense Rp100000 shopping belanja bulanan</code>
+<code>/expense Rp100000 shopping belanja</code>
 
-<b>Pemasukan:</b>
+<b>💵 Pemasukan:</b>
 <code>/income 5000000 salary gaji bulanan</code>
-<code>/income 500000 freelance project web</code>
+<code>/income 500000 freelance project</code>
 
-<b>Input dengan tipe:</b>
-<code>/input expense 30000 food</code>
-<code>/input income 1000000 bonus</code>
+<b>📁 Kategori Pengeluaran:</b>
+food, transport, shopping, entertainment, bills, health, education, others
 
-<b>Format jumlah yang didukung:</b>
-• 50000
-• 50.000
-• 50,000
-• Rp50000
-• Rp 50.000`;
+<b>📁 Kategori Pemasukan:</b>
+salary, freelance, investment, gift, others
+
+<b>💡 Tips:</b>
+• Tap template di atas untuk copy
+• Format jumlah: 50000, 50.000, atau Rp50000
+• Kirim foto struk untuk scan otomatis`;
 }
 
 /**
@@ -162,7 +162,7 @@ export function formatTemplates(): string {
  */
 export function formatTransactionConfirm(
   transaction: Transaction,
-  wallet: Wallet
+  wallet: Wallet,
 ): string {
   const emoji = transaction.type === "INCOME" ? "💵" : "💸";
   const typeLabel = transaction.type === "INCOME" ? "Pemasukan" : "Pengeluaran";
@@ -212,7 +212,7 @@ ${netEmoji} <b>Selisih:</b> ${netSign}${formatCurrency(data.netBalance)}
       const sign = tx.type === "INCOME" ? "+" : "-";
       const desc = tx.description ? ` - ${escapeHtml(tx.description)}` : "";
       message += `\n${emoji} ${sign}${formatCurrency(tx.amount)} (${escapeHtml(
-        tx.category
+        tx.category,
       )})${desc}`;
     }
 
@@ -242,7 +242,7 @@ export function formatBalance(data: BalanceData): string {
   for (const wallet of data.wallets) {
     const emoji = getWalletEmoji(wallet.name);
     message += `\n${emoji} <b>${escapeHtml(wallet.name)}:</b> ${formatCurrency(
-      wallet.balance
+      wallet.balance,
     )}`;
   }
 
@@ -284,7 +284,7 @@ function getWalletEmoji(name: string): string {
  */
 export function formatWalletList(
   wallets: Wallet[],
-  defaultWalletId?: string
+  defaultWalletId?: string,
 ): string {
   let message = `👛 <b>Daftar Wallet</b>\n`;
 
@@ -300,7 +300,7 @@ export function formatWalletList(
     const activeLabel = wallet.isActive ? "" : " (nonaktif)";
 
     message += `\n${emoji} <b>${escapeHtml(
-      wallet.name
+      wallet.name,
     )}</b>${defaultLabel}${activeLabel}`;
     message += `\n    Saldo: ${formatCurrency(wallet.balance)}`;
   }
@@ -339,7 +339,7 @@ export function formatCategories(): string {
  */
 export function formatError(error: string): string {
   return `❌ <b>Error</b>\n\n${escapeHtml(
-    error
+    error,
   )}\n\nKetik /help untuk bantuan.`;
 }
 
@@ -355,12 +355,12 @@ export function formatOCRConfirmation(parsed: ParsedReceipt): string {
     parsed.confidence >= 0.8
       ? "Tinggi"
       : parsed.confidence >= 0.5
-      ? "Sedang"
-      : "Rendah";
+        ? "Sedang"
+        : "Rendah";
 
   let message = `📸 <b>Hasil Scan Struk</b>\n`;
   message += `${confidenceEmoji} Confidence: ${confidenceLabel} (${Math.round(
-    parsed.confidence * 100
+    parsed.confidence * 100,
   )}%)\n`;
 
   if (parsed.amount !== undefined) {
@@ -422,7 +422,7 @@ export function formatAccessDenied(): string {
  */
 export function formatWalletNotFound(
   walletName: string,
-  availableWallets: string[]
+  availableWallets: string[],
 ): string {
   let message = `❌ <b>Wallet Tidak Ditemukan</b>\n\n`;
   message += `Wallet "${escapeHtml(walletName)}" tidak ditemukan.\n`;
@@ -444,7 +444,7 @@ export function formatWalletNotFound(
  */
 export function formatWalletSet(walletName: string): string {
   return `✅ <b>Default Wallet Diubah</b>\n\nWallet "${escapeHtml(
-    walletName
+    walletName,
   )}" sekarang menjadi default untuk transaksi berikutnya.`;
 }
 
@@ -455,7 +455,7 @@ export function formatWalletSet(walletName: string): string {
  */
 export function formatUnknownCommand(command: string): string {
   return `❓ <b>Perintah Tidak Dikenal</b>\n\nPerintah "${escapeHtml(
-    command
+    command,
   )}" tidak dikenali.\n\nKetik /help untuk melihat daftar perintah.`;
 }
 
@@ -467,7 +467,7 @@ export function formatUnknownCommand(command: string): string {
  */
 export function formatCategorySuggestion(
   category: string,
-  suggestions: string[]
+  suggestions: string[],
 ): string {
   let message = `💡 <b>Kategori Baru</b>\n\n`;
   message += `Kategori "${escapeHtml(category)}" belum ada.\n`;
@@ -481,7 +481,7 @@ export function formatCategorySuggestion(
   }
 
   message += `\nTransaksi tetap akan disimpan dengan kategori "${escapeHtml(
-    category
+    category,
   )}".`;
 
   return message;

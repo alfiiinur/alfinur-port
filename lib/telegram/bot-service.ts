@@ -49,6 +49,7 @@ import {
   getDefaultWalletId,
   getUserMapping,
 } from "./finance-service";
+import { isAuthorizedUser } from "./auth";
 
 /**
  * Telegram Bot API base URL
@@ -67,36 +68,6 @@ function getBotToken(): string {
 }
 
 /**
- * Get allowed Telegram user IDs from environment
- */
-function getAllowedUserIds(): number[] {
-  const allowedUsers = process.env.TELEGRAM_ALLOWED_USERS;
-  if (!allowedUsers) {
-    return [];
-  }
-  return allowedUsers
-    .split(",")
-    .map((id) => parseInt(id.trim(), 10))
-    .filter((id) => !isNaN(id));
-}
-
-/**
- * Check if a user is authorized to use the bot
- * Requirements: 8.2, 8.3
- *
- * @param userId - Telegram user ID
- * @returns true if user is authorized
- */
-export function isAuthorizedUser(userId: number): boolean {
-  const allowedIds = getAllowedUserIds();
-  // If no allowed users configured, allow all (for development)
-  if (allowedIds.length === 0) {
-    return true;
-  }
-  return allowedIds.includes(userId);
-}
-
-/**
  * Sends a message to a Telegram chat
  *
  * @param chatId - The chat ID to send message to
@@ -107,7 +78,7 @@ export function isAuthorizedUser(userId: number): boolean {
 export async function sendMessage(
   chatId: number,
   text: string,
-  options: SendMessageOptions = {}
+  options: SendMessageOptions = {},
 ): Promise<TelegramApiResponse<TelegramMessage>> {
   const token = getBotToken();
   const url = `${TELEGRAM_API_BASE}${token}/sendMessage`;
@@ -146,7 +117,7 @@ export async function sendMessage(
  * @returns Promise resolving to file info
  */
 export async function getFile(
-  fileId: string
+  fileId: string,
 ): Promise<TelegramApiResponse<TelegramFile>> {
   const token = getBotToken();
   const url = `${TELEGRAM_API_BASE}${token}/getFile`;
@@ -224,7 +195,30 @@ async function handleHelpCommand(chatId: number): Promise<void> {
  * Requirements: 2.1
  */
 async function handleTemplateCommand(chatId: number): Promise<void> {
-  await sendMessage(chatId, formatTemplates());
+  // Send template message with inline keyboard for quick actions
+  const inlineKeyboard = {
+    inline_keyboard: [
+      [
+        { text: "🍔 Makan", callback_data: "tpl_food" },
+        { text: "🚗 Transport", callback_data: "tpl_transport" },
+        { text: "🛒 Belanja", callback_data: "tpl_shopping" },
+      ],
+      [
+        { text: "💡 Tagihan", callback_data: "tpl_bills" },
+        { text: "🎮 Hiburan", callback_data: "tpl_entertainment" },
+        { text: "💊 Kesehatan", callback_data: "tpl_health" },
+      ],
+      [
+        { text: "💰 Gaji", callback_data: "tpl_salary" },
+        { text: "💼 Freelance", callback_data: "tpl_freelance" },
+        { text: "📈 Investasi", callback_data: "tpl_investment" },
+      ],
+    ],
+  };
+
+  await sendMessage(chatId, formatTemplates(), {
+    reply_markup: inlineKeyboard,
+  });
 }
 
 /**
@@ -234,14 +228,14 @@ async function handleTemplateCommand(chatId: number): Promise<void> {
 async function handleExpenseCommand(
   chatId: number,
   telegramUserId: number,
-  args: string[]
+  args: string[],
 ): Promise<void> {
   const parseResult = parseTransactionInput("/expense", args);
 
   if (!parseResult.success || !parseResult.data) {
     await sendMessage(
       chatId,
-      formatError(parseResult.error || "Invalid input")
+      formatError(parseResult.error || "Invalid input"),
     );
     return;
   }
@@ -251,14 +245,14 @@ async function handleExpenseCommand(
   if (!result.success || !result.data) {
     await sendMessage(
       chatId,
-      formatError(result.error || "Failed to create transaction")
+      formatError(result.error || "Failed to create transaction"),
     );
     return;
   }
 
   await sendMessage(
     chatId,
-    formatTransactionConfirm(result.data.transaction, result.data.wallet)
+    formatTransactionConfirm(result.data.transaction, result.data.wallet),
   );
 }
 
@@ -269,14 +263,14 @@ async function handleExpenseCommand(
 async function handleIncomeCommand(
   chatId: number,
   telegramUserId: number,
-  args: string[]
+  args: string[],
 ): Promise<void> {
   const parseResult = parseTransactionInput("/income", args);
 
   if (!parseResult.success || !parseResult.data) {
     await sendMessage(
       chatId,
-      formatError(parseResult.error || "Invalid input")
+      formatError(parseResult.error || "Invalid input"),
     );
     return;
   }
@@ -286,14 +280,14 @@ async function handleIncomeCommand(
   if (!result.success || !result.data) {
     await sendMessage(
       chatId,
-      formatError(result.error || "Failed to create transaction")
+      formatError(result.error || "Failed to create transaction"),
     );
     return;
   }
 
   await sendMessage(
     chatId,
-    formatTransactionConfirm(result.data.transaction, result.data.wallet)
+    formatTransactionConfirm(result.data.transaction, result.data.wallet),
   );
 }
 
@@ -303,14 +297,14 @@ async function handleIncomeCommand(
 async function handleInputCommand(
   chatId: number,
   telegramUserId: number,
-  args: string[]
+  args: string[],
 ): Promise<void> {
   const parseResult = parseInputCommand(args);
 
   if (!parseResult.success || !parseResult.data) {
     await sendMessage(
       chatId,
-      formatError(parseResult.error || "Invalid input")
+      formatError(parseResult.error || "Invalid input"),
     );
     return;
   }
@@ -320,14 +314,14 @@ async function handleInputCommand(
   if (!result.success || !result.data) {
     await sendMessage(
       chatId,
-      formatError(result.error || "Failed to create transaction")
+      formatError(result.error || "Failed to create transaction"),
     );
     return;
   }
 
   await sendMessage(
     chatId,
-    formatTransactionConfirm(result.data.transaction, result.data.wallet)
+    formatTransactionConfirm(result.data.transaction, result.data.wallet),
   );
 }
 
@@ -338,7 +332,7 @@ async function handleInputCommand(
 async function handleRecapCommand(
   chatId: number,
   telegramUserId: number,
-  args: string[]
+  args: string[],
 ): Promise<void> {
   const period = parseRecapPeriod(args);
   const result = await getRecap(telegramUserId, period);
@@ -346,7 +340,7 @@ async function handleRecapCommand(
   if (!result.success || !result.data) {
     await sendMessage(
       chatId,
-      formatError(result.error || "Failed to get recap")
+      formatError(result.error || "Failed to get recap"),
     );
     return;
   }
@@ -360,14 +354,14 @@ async function handleRecapCommand(
  */
 async function handleBalanceCommand(
   chatId: number,
-  telegramUserId: number
+  telegramUserId: number,
 ): Promise<void> {
   const result = await getBalance(telegramUserId);
 
   if (!result.success || !result.data) {
     await sendMessage(
       chatId,
-      formatError(result.error || "Failed to get balance")
+      formatError(result.error || "Failed to get balance"),
     );
     return;
   }
@@ -381,14 +375,14 @@ async function handleBalanceCommand(
  */
 async function handleWalletsCommand(
   chatId: number,
-  telegramUserId: number
+  telegramUserId: number,
 ): Promise<void> {
   const walletsResult = await getWallets(telegramUserId);
 
   if (!walletsResult.success || !walletsResult.data) {
     await sendMessage(
       chatId,
-      formatError(walletsResult.error || "Failed to get wallets")
+      formatError(walletsResult.error || "Failed to get wallets"),
     );
     return;
   }
@@ -400,7 +394,7 @@ async function handleWalletsCommand(
 
   await sendMessage(
     chatId,
-    formatWalletList(walletsResult.data, defaultWalletId || undefined)
+    formatWalletList(walletsResult.data, defaultWalletId || undefined),
   );
 }
 
@@ -411,14 +405,14 @@ async function handleWalletsCommand(
 async function handleSetWalletCommand(
   chatId: number,
   telegramUserId: number,
-  args: string[]
+  args: string[],
 ): Promise<void> {
   const parseResult = parseSetWalletCommand(args);
 
   if (!parseResult.success || !parseResult.data) {
     await sendMessage(
       chatId,
-      formatError(parseResult.error || "Invalid wallet name")
+      formatError(parseResult.error || "Invalid wallet name"),
     );
     return;
   }
@@ -436,7 +430,7 @@ async function handleSetWalletCommand(
 
     await sendMessage(
       chatId,
-      formatWalletNotFound(walletName, availableWallets)
+      formatWalletNotFound(walletName, availableWallets),
     );
     return;
   }
@@ -463,7 +457,7 @@ async function handleCategoriesCommand(chatId: number): Promise<void> {
 async function handlePhotoMessage(
   chatId: number,
   _telegramUserId: number,
-  message: TelegramMessage
+  message: TelegramMessage,
 ): Promise<void> {
   if (!message.photo || message.photo.length === 0) {
     await sendMessage(chatId, formatError("No photo found in message"));
@@ -483,7 +477,7 @@ async function handlePhotoMessage(
     if (!imageBuffer) {
       await sendMessage(
         chatId,
-        formatError("Gagal mengunduh gambar. Silakan coba lagi.")
+        formatError("Gagal mengunduh gambar. Silakan coba lagi."),
       );
       return;
     }
@@ -493,7 +487,7 @@ async function handlePhotoMessage(
 
     // Convert buffer to base64 for OCR processing
     const base64Image = `data:image/jpeg;base64,${imageBuffer.toString(
-      "base64"
+      "base64",
     )}`;
 
     // Process with OCR
@@ -525,7 +519,7 @@ async function handlePhotoMessage(
       const quickCommand = `/expense ${parsedReceipt.amount} ${category} ${description}`;
       await sendMessage(
         chatId,
-        `\n💡 <b>Quick input:</b>\n<code>${quickCommand}</code>\n\nCopy dan kirim command di atas untuk menyimpan, atau input manual dengan format yang berbeda.`
+        `\n💡 <b>Quick input:</b>\n<code>${quickCommand}</code>\n\nCopy dan kirim command di atas untuk menyimpan, atau input manual dengan format yang berbeda.`,
       );
     }
   } catch (error) {
@@ -533,8 +527,8 @@ async function handlePhotoMessage(
     await sendMessage(
       chatId,
       formatError(
-        "Gagal memproses gambar. Silakan coba lagi atau input manual dengan /expense atau /income."
-      )
+        "Gagal memproses gambar. Silakan coba lagi atau input manual dengan /expense atau /income.",
+      ),
     );
   }
 }
@@ -545,7 +539,7 @@ async function handlePhotoMessage(
 async function handleTextMessage(
   chatId: number,
   telegramUserId: number,
-  text: string
+  text: string,
 ): Promise<void> {
   const parseResult = parseCommand(text);
 
@@ -555,7 +549,7 @@ async function handleTextMessage(
     if (text.startsWith("/")) {
       await sendMessage(
         chatId,
-        formatError(parseResult.error || "Invalid command")
+        formatError(parseResult.error || "Invalid command"),
       );
     }
     // Ignore non-command messages
@@ -652,13 +646,13 @@ export async function handleUpdate(update: TelegramUpdate): Promise<void> {
   // Ensure user mapping exists
   const mappingResult = await getUserMapping(
     telegramUserId,
-    message.from?.username
+    message.from?.username,
   );
 
   if (!mappingResult.success) {
     await sendMessage(
       chatId,
-      formatError(mappingResult.error || "Failed to initialize user")
+      formatError(mappingResult.error || "Failed to initialize user"),
     );
     return;
   }
@@ -672,6 +666,70 @@ export async function handleUpdate(update: TelegramUpdate): Promise<void> {
     await handleTextMessage(chatId, telegramUserId, message.text);
   }
   // Ignore other message types (stickers, documents, etc.)
+}
+
+/**
+ * Template suggestions for callback buttons
+ */
+const TEMPLATE_SUGGESTIONS: Record<string, string> = {
+  tpl_food: "/expense 50000 food ",
+  tpl_transport: "/expense 25000 transport ",
+  tpl_shopping: "/expense 100000 shopping ",
+  tpl_bills: "/expense 500000 bills ",
+  tpl_entertainment: "/expense 75000 entertainment ",
+  tpl_health: "/expense 150000 health ",
+  tpl_salary: "/income 5000000 salary ",
+  tpl_freelance: "/income 1000000 freelance ",
+  tpl_investment: "/income 500000 investment ",
+};
+
+/**
+ * Handles callback query from inline buttons
+ */
+async function handleCallbackQuery(
+  callbackQueryId: string,
+  chatId: number,
+  data: string,
+): Promise<void> {
+  const token = getBotToken();
+
+  // Answer callback to remove loading state
+  await fetch(`${TELEGRAM_API_BASE}${token}/answerCallbackQuery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ callback_query_id: callbackQueryId }),
+  });
+
+  // Get template suggestion
+  const template = TEMPLATE_SUGGESTIONS[data];
+  if (template) {
+    await sendMessage(
+      chatId,
+      `📝 <b>Template:</b>\n<code>${template}</code>\n\n💡 Copy template di atas, tambahkan keterangan, lalu kirim!`,
+    );
+  }
+}
+
+/**
+ * Main update handler - routes all Telegram updates (with callback support)
+ */
+export async function handleUpdateWithCallback(
+  update: TelegramUpdate,
+): Promise<void> {
+  // Handle callback query (inline button clicks)
+  if (update.callback_query) {
+    const query = update.callback_query;
+    const chatId = query.message?.chat.id;
+    const data = query.data;
+
+    if (chatId && data) {
+      await handleCallbackQuery(query.id, chatId, data);
+    }
+    return;
+  }
+
+  // Handle regular messages
+  await handleUpdate(update);
 }
 
 /**

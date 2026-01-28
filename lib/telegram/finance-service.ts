@@ -39,7 +39,7 @@ export interface ServiceResult<T> {
  */
 export async function getUserMapping(
   telegramUserId: number,
-  telegramUsername?: string
+  telegramUsername?: string,
 ): Promise<ServiceResult<TelegramUserMapping>> {
   try {
     // Try to find existing mapping
@@ -61,7 +61,7 @@ export async function getUserMapping(
         data: {
           ...mapping,
           telegramUserId: mapping.telegramUserId,
-        },
+        } as TelegramUserMapping,
       };
     }
 
@@ -98,7 +98,7 @@ export async function getUserMapping(
       data: {
         ...mapping,
         telegramUserId: mapping.telegramUserId,
-      },
+      } as TelegramUserMapping,
     };
   } catch (error) {
     console.error("Failed to get/create user mapping:", error);
@@ -123,7 +123,7 @@ export async function getUserMapping(
 export async function createTransaction(
   input: TransactionInput,
   telegramUserId: number,
-  attachments?: string[]
+  attachments?: string[],
 ): Promise<ServiceResult<{ transaction: Transaction; wallet: Wallet }>> {
   try {
     // Get user mapping
@@ -230,7 +230,7 @@ export async function createTransaction(
  * @returns ServiceResult containing array of wallets
  */
 export async function getWallets(
-  telegramUserId: number
+  telegramUserId: number,
 ): Promise<ServiceResult<Wallet[]>> {
   try {
     // Verify user mapping exists
@@ -271,7 +271,7 @@ export async function getWallets(
  */
 export async function setDefaultWallet(
   telegramUserId: number,
-  walletName: string
+  walletName: string,
 ): Promise<ServiceResult<Wallet>> {
   try {
     // Get user mapping
@@ -334,7 +334,7 @@ export async function setDefaultWallet(
  * @returns ServiceResult containing the default wallet ID or null
  */
 export async function getDefaultWalletId(
-  telegramUserId: number
+  telegramUserId: number,
 ): Promise<ServiceResult<string | null>> {
   try {
     const mappingResult = await getUserMapping(telegramUserId);
@@ -369,7 +369,7 @@ export async function getDefaultWalletId(
  */
 export async function getRecap(
   telegramUserId: number,
-  period: "today" | "week" | "month"
+  period: "today" | "week" | "month",
 ): Promise<ServiceResult<RecapData>> {
   try {
     // Verify user mapping exists
@@ -453,7 +453,7 @@ export async function getRecap(
         category: t.category,
         description: t.description || undefined,
         date: t.date,
-      })
+      }),
     );
 
     return {
@@ -485,7 +485,7 @@ export async function getRecap(
  * @returns ServiceResult containing balance data
  */
 export async function getBalance(
-  telegramUserId: number
+  telegramUserId: number,
 ): Promise<ServiceResult<BalanceData>> {
   try {
     // Verify user mapping exists
@@ -596,7 +596,7 @@ export async function getCategories(): Promise<
  * @returns ServiceResult containing the wallet or null
  */
 export async function findWalletByName(
-  walletName: string
+  walletName: string,
 ): Promise<ServiceResult<Wallet | null>> {
   try {
     const wallet = await prisma.wallet.findFirst({
@@ -626,7 +626,7 @@ export async function findWalletByName(
  * @returns ServiceResult containing the transaction
  */
 export async function getTransactionById(
-  transactionId: string
+  transactionId: string,
 ): Promise<ServiceResult<Transaction>> {
   try {
     const transaction = await prisma.transaction.findUnique({

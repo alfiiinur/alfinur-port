@@ -184,9 +184,9 @@ export interface ParsedReceipt {
 export interface TelegramUserMapping {
   id: string;
   telegramUserId: bigint;
-  telegramUsername?: string;
+  telegramUsername?: string | null;
   userId: string;
-  defaultWalletId?: string;
+  defaultWalletId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
